@@ -261,8 +261,15 @@ HTMLObject* create_from_xml_fix_align(HTMLObject *object, HTMLElement *element, 
 HTMLEmbedded* create_object_from_xml (HTMLEngine *e, HTMLElement *testElement);
 HTMLForm * 	create_form_from_xml(HTMLEngine *e, HTMLElement *element);
 HTMLObject * create_input_from_xml(HTMLEngine *e, HTMLElement *element);
+HTMLSelect * create_select_from_xml (HTMLEngine *e, HTMLElement *element);
 gchar * getcorrect_text(xmlNode* current, HTMLEngine *e, gboolean need_trim);
-void element_parse_nodedump(xmlNode* element, gint pos);
+gchar * get_text_from_children(xmlNode* xmlelement, HTMLEngine *e, gboolean need_trim);
+
+void element_parse_nodedump             (xmlNode* element, gint pos);
+void elementtree_parse_select           (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element);
+void elementtree_parse_textarea         (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element);
+void elementtree_parse_select_in_node   (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLSelect *formSelect);
+void elementtree_parse_option_in_node   (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLSelect *formSelect);
 
 static gchar *
 parse_element_name (const gchar *str)
@@ -475,8 +482,9 @@ gen_style_for_element(const gchar *name, HTMLStyle *style)
 		 style = html_style_set_list_type(style, HTML_LIST_TYPE_DIR);
 	} else if (	!g_ascii_strcasecmp(name, ID_DL)){
 		 style = html_style_set_list_type(style, HTML_LIST_TYPE_GLOSSARY_DL);
-	} else if (	!g_ascii_strcasecmp(name, "object")){
-		style = html_style_set_display (style, DISPLAY_NONE);
+	} else if (	!g_ascii_strcasecmp(name, "object") ||
+				!g_ascii_strcasecmp(name, ID_SELECT)){
+		style = html_style_set_display (style, HTMLDISPLAY_NONE);
 	}
 
 	return style;
@@ -2764,86 +2772,13 @@ element_parse_dl (ELEMENT_PARSE_PARAMS)
 }
 
 static void
-element_parse_nodedump_option(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLSelect *formSelect)
-{
-	HTMLElement *element;
-	gchar *value = NULL;
-	gboolean selected = FALSE;
-
-	g_return_if_fail (HTML_IS_ENGINE (e));
-
-	if (!formSelect)
-		return;
-
-	element = html_element_from_xml (e, xmlelement, NULL);
-
-	html_element_get_attr (element, "value", &value);
-
-	if (html_element_has_attr (element, "selected"))
-		selected = TRUE;
-
-	element->style = html_style_set_display (element->style, HTMLDISPLAY_NONE);
-
-	html_select_add_option (formSelect, value, selected);
-
-	if(xmlelement->children)
-		if( xmlelement->children->type == XML_TEXT_NODE &&
-				g_ascii_strcasecmp(XMLCHAR2GCHAR(xmlelement->children->name), ID_TEXT) == 0) {
-					gchar * txtvalue = getcorrect_text(xmlelement->children,e, TRUE);
-					if (txtvalue) {
-						html_select_set_text (formSelect, txtvalue);
-					}
-				}
-}
-
-void
-element_parse_nodedump_select(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLSelect *formSelect)
-{
-	xmlNode *current = NULL; /* current node */
-    for (current = xmlelement; current; current = current->next)
-    {
-		if(!g_ascii_strcasecmp(ID_OPTION,XMLCHAR2GCHAR(current->name))) {
-			element_parse_nodedump_option(current, pos+1, e, formSelect);
-		} else
-			g_printerr("unknow tag in option:%s\n", XMLCHAR2GCHAR(current->name));
-    }
-}
-
-static void
 element_parse_select (ELEMENT_PARSE_PARAMS)
 {
 	HTMLElement *element;
-	gchar *value;
-	gchar *name = NULL;
-	gint size = 0;
-	gboolean multi = FALSE;
-	HTMLSelect *formSelect;
-
 	g_return_if_fail (HTML_IS_ENGINE (e));
 
-	if (!e->form)
-		return;
-
 	element = html_element_from_xml (e, xmlelement, NULL);
-
-	if (html_element_get_attr (element, "name", &value))
-		name = g_strdup (value);
-
-	if (element->style->height)
-		size = element->style->height->val;
-
-	if (html_element_has_attr (element, "multiple"))
-		multi = TRUE;
-
-	element->style = html_style_set_display (element->style, HTMLDISPLAY_NONE);
-
-	formSelect = HTML_SELECT (html_select_new (GTK_WIDGET(e->widget), name, size, multi));
-	html_form_add_element (e->form, HTML_EMBEDDED ( formSelect ));
-	append_element (e, clue, HTML_OBJECT (formSelect));
-	g_free(name);
-
-	element_parse_nodedump_select(xmlelement->children, 0, e, formSelect);
-
+	elementtree_parse_select(xmlelement, 0, e, clue, element);
 }
 
 static void
@@ -3136,46 +3071,11 @@ element_parse_cell (ELEMENT_PARSE_PARAMS)
 static void
 element_parse_textarea (ELEMENT_PARSE_PARAMS)
 {
-	HTMLTextArea *formTextArea;
-	xmlAttr *currprop;
-	gchar *name = NULL;
-	gint rows = 5, cols = 40;
-
+	HTMLElement *element;
 	g_return_if_fail (HTML_IS_ENGINE (e));
 
-	if (!e->form)
-		return;
-
-	for(currprop = xmlelement->properties; currprop; currprop = currprop->next)
-        {
-		gchar * token = XMLCHAR2GCHAR(currprop->name);
-		gchar * value = XMLCHAR2GCHAR(currprop->children->content);
-		if(name && value) {
-			if (g_ascii_strncasecmp (token, "name", 5) == 0) {
-				name = g_strdup(value);
-			} else if (g_ascii_strncasecmp (token, "rows", 4) == 0) {
-				rows = atoi (value);
-			} else if (g_ascii_strncasecmp (token, "cols", 4) == 0) {
-				cols = atoi (value);
-			}
-		}
-	}
-
-	formTextArea = HTML_TEXTAREA (html_textarea_new (GTK_WIDGET(e->widget), name, rows, cols));
-	html_form_add_element (e->form, HTML_EMBEDDED ( formTextArea ));
-
-	append_element (e, clue, HTML_OBJECT (formTextArea));
-
-	g_free(name);
-
-	if(xmlelement->children)
-		if( xmlelement->children->type == XML_TEXT_NODE &&
-			g_ascii_strcasecmp(XMLCHAR2GCHAR(xmlelement->children->name), ID_TEXT) == 0) {
-				gchar * value = getcorrect_text(xmlelement->children,e, FALSE);
-				if (value) {
-					html_textarea_set_text (formTextArea, value);
-				}
-			}
+	element = html_element_from_xml (e, xmlelement, NULL);
+	elementtree_parse_textarea(xmlelement, 0, e, clue, element);
 }
 
 /* mainly inline elements */
@@ -3298,7 +3198,7 @@ static HTMLDispatchEntry basic_table[] = {
 	 */
 	{"noscript",          element_parse_hide},
 	{"link",              element_parse_hide},
-	{"label",              element_parse_hide},
+	{"label",             element_parse_hide},
 	{NULL,                NULL}
 };
 
@@ -4334,6 +4234,17 @@ element_parse_nodedump_meta(xmlNode* xmlelement, gint pos, HTMLEngine *e)
 	}
 }
 
+gchar*
+get_text_from_children(xmlNode* xmlelement, HTMLEngine *e, gboolean need_trim)
+{
+	if (xmlelement)
+		if (xmlelement->children)
+			if (xmlelement->children->type == XML_TEXT_NODE &&
+			    g_ascii_strcasecmp(XMLCHAR2GCHAR(xmlelement->children->name), ID_TEXT) == 0)
+					return getcorrect_text(xmlelement->children,e, need_trim);
+	return NULL;
+}
+
 gchar *
 getcorrect_text(xmlNode* current, HTMLEngine *e, gboolean need_trim)
 {
@@ -4372,25 +4283,19 @@ getcorrect_text(xmlNode* current, HTMLEngine *e, gboolean need_trim)
 static void
 element_parse_nodedump_title(xmlNode* xmlelement, gint pos, HTMLEngine *e)
 {
+	gchar * value;
 	g_return_if_fail (HTML_IS_ENGINE (e));
-	if (xmlelement) {
-		if(xmlelement->children){
-			if( xmlelement->children->type == XML_TEXT_NODE &&
-				g_ascii_strcasecmp(XMLCHAR2GCHAR(xmlelement->children->name), ID_TEXT) == 0) {
-					gchar * value = getcorrect_text(xmlelement->children,e, TRUE);
-					if (value) {
-						if(e->title)
-							g_free(e->title);
-						e->title = value;
-						g_signal_emit (e, signals [TITLE_CHANGED], 0);
-					}
-				}
-		}
+	value = get_text_from_children(xmlelement,e, TRUE);
+	if (value) {
+		if(e->title)
+			g_free(e->title);
+		e->title = value;
+		g_signal_emit (e, signals [TITLE_CHANGED], 0);
 	}
 }
 
 static const gchar *
-getNormalNameTypeXml(xmlElementType type) {
+get_normal_name_typexml(xmlElementType type) {
 	const gchar *typeName = "unknow";
     switch (type) {
 		case XML_ELEMENT_NODE: typeName = "XML_ELEMENT_NODE"; break;
@@ -4445,7 +4350,7 @@ void element_parse_nodedump_one_node(xmlNode* current, gint pos)
 	if(!current)
 		return;
 
-    typeName = getNormalNameTypeXml(current->type);
+    typeName = get_normal_name_typexml(current->type);
 	for(i=0;i<pos;i++)
 		g_print("\t");
 	g_print("%s=%s(%d)->%s<-\n",current->name,typeName, current->type,current->content);
@@ -4734,6 +4639,34 @@ create_cell_from_xml(HTMLEngine *e, HTMLElement *element)
 	return cell;
 }
 
+HTMLSelect *
+create_select_from_xml (HTMLEngine *e, HTMLElement *element)
+{
+	gchar *value;
+	gchar *name = NULL;
+	gint size = 0;
+	gboolean multi = FALSE;
+	HTMLSelect *formSelect;
+
+	if (!e->form)
+		return NULL;
+
+	if (html_element_get_attr (element, "name", &value))
+		name = g_strdup (value);
+
+	if (element->style->height)
+		size = element->style->height->val;
+
+	if (html_element_has_attr (element, "multiple"))
+		multi = TRUE;
+
+	formSelect = HTML_SELECT (html_select_new (GTK_WIDGET(e->widget), name, size, multi));
+	g_free(name);
+
+	html_form_add_element (e->form, HTML_EMBEDDED ( formSelect ));
+	return formSelect;
+}
+
 /*create object and automatic register him in current form*/
 HTMLEmbedded *
 create_object_from_xml (HTMLEngine *e, HTMLElement *element)
@@ -4975,6 +4908,32 @@ create_from_xml_fix_align(HTMLObject *object, HTMLElement *element, gint max_wid
 	return object;
 }
 
+HTMLTextArea *
+create_textarea_from_xml(HTMLEngine *e, HTMLElement *element)
+{
+	gchar *name = NULL;
+	gint rows = 5, cols = 40;
+	HTMLTextArea *formTextArea;
+	gchar * value;
+
+	if (!e->form)
+		return NULL;
+
+	if (html_element_get_attr (element, "name", &value))
+			name = g_strdup(value);
+
+	if (html_element_get_attr (element, "rows", &value))
+			rows = atoi (value);
+
+	if (html_element_get_attr (element, "cols", &value))
+			cols = atoi (value);
+
+	formTextArea = HTML_TEXTAREA (html_textarea_new (GTK_WIDGET(e->widget), name, rows, cols));
+	html_form_add_element (e->form, HTML_EMBEDDED ( formTextArea ));
+	g_free(name);
+	return formTextArea;
+}
+
 HTMLObject*
 create_flow_from_xml(HTMLEngine *e, HTMLElement *testElement)
 {
@@ -5022,18 +4981,8 @@ void element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngin
 					html_clue_append (HTML_CLUE (htmlelement), html_object);
 					if (current->children)
 						g_print("In hr sub elements?");
-			} else if(	!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h1") ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h2") ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h3") ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h4") ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h5") ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h6") ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "p") ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_LI) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "html")
-			) {
-				if (!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_LI) &&
-					count &&
+			} else if (!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_LI)) {
+				if (count &&
 					testElement->style) {
 						gchar *value;
 						if (html_element_get_attr (testElement, "value", &value))
@@ -5041,6 +4990,18 @@ void element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngin
 						testElement->style->listnumber = *count;
 						(*count)++;
 				}
+				html_object = create_flow_from_xml(e, testElement);
+				html_clue_append (HTML_CLUE (htmlelement), html_object);
+				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
+			} else if(	!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h1") ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h2") ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h3") ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h4") ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h5") ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h6") ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "p") ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "html")
+			) {
 				html_object = create_flow_from_xml(e, testElement);
 				html_clue_append (HTML_CLUE (htmlelement), html_object);
 				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
@@ -5089,13 +5050,20 @@ void element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngin
 						!g_ascii_strcasecmp("nobr",		XMLCHAR2GCHAR(current->name)) ||
 						!g_ascii_strcasecmp(ID_SPAN,	XMLCHAR2GCHAR(current->name)) ||
 						!g_ascii_strcasecmp("i",		XMLCHAR2GCHAR(current->name))) {
-				element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
+				html_object = create_flow_from_xml(e, testElement);
+				html_clue_append (HTML_CLUE (htmlelement), html_object);
+				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
+				//element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
 			} else if(	!g_ascii_strcasecmp("img",	XMLCHAR2GCHAR(current->name))) {
 				html_object = HTML_OBJECT (create_image_from_xml(e, testElement, htmlelement->max_width));
 				if(!html_object)
 					return; /*FIXME*/
 				html_clue_append (HTML_CLUE (htmlelement), html_object);
 				/*sub element in img not exist*/
+			} else if(	!g_ascii_strcasecmp(ID_TEXTAREA,  XMLCHAR2GCHAR(current->name))) {
+				elementtree_parse_textarea(current, pos+1, e, htmlelement, testElement);
+			} else if(	!g_ascii_strcasecmp(ID_SELECT,  XMLCHAR2GCHAR(current->name))) {
+				elementtree_parse_select(current, pos+1, e, htmlelement, testElement);
 			} else if(	!g_ascii_strcasecmp(ID_FORM,  XMLCHAR2GCHAR(current->name))) {
 				/*FIXME its bug becase form must be HTMLObject */
 				create_form_from_xml(e, testElement);
@@ -5129,6 +5097,79 @@ void element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngin
 			html_element_free(testElement);
 			element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parent_style);
 		}
+}
+
+void
+elementtree_parse_option_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLSelect *formSelect)
+{
+	HTMLElement *element;
+	gchar *value = NULL;
+	gboolean selected = FALSE;
+	gchar * txtvalue;
+
+	g_return_if_fail (HTML_IS_ENGINE (e));
+
+	if (!formSelect)
+		return;
+
+	element = html_element_from_xml (e, xmlelement, NULL);
+
+	html_element_get_attr (element, "value", &value);
+
+	if (html_element_has_attr (element, "selected"))
+		selected = TRUE;
+
+	element->style = html_style_set_display (element->style, HTMLDISPLAY_NONE);
+
+	html_select_add_option (formSelect, value, selected);
+
+	txtvalue = get_text_from_children(xmlelement,e, TRUE);
+	if (txtvalue)
+		html_select_set_text (formSelect, txtvalue);
+
+}
+
+void
+elementtree_parse_select_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLSelect *formSelect)
+{
+	xmlNode *current = NULL; /* current node */
+    for (current = xmlelement; current; current = current->next)
+    {
+		if(!g_ascii_strcasecmp(ID_OPTION,XMLCHAR2GCHAR(current->name))) {
+			elementtree_parse_option_in_node(current, pos+1, e, formSelect);
+		} else
+			g_printerr("unknow tag in option:%s\n", XMLCHAR2GCHAR(current->name));
+    }
+}
+
+void
+elementtree_parse_textarea(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element)
+{
+	gchar * value;
+	HTMLTextArea *formTextArea;
+
+	g_return_if_fail (HTML_IS_ENGINE (e));
+
+	formTextArea = create_textarea_from_xml(e, element);
+	if (formTextArea) {
+		html_clue_append (HTML_CLUE (clue), HTML_OBJECT (formTextArea));
+		value = get_text_from_children(xmlelement,e, FALSE);
+		if (value)
+			html_textarea_set_text (formTextArea, value);
+	}
+}
+
+void
+elementtree_parse_select(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element)
+{
+	HTMLSelect *formSelect;
+	formSelect = create_select_from_xml(e, element);
+
+	if (formSelect) {
+		html_clue_append (HTML_CLUE (clue), HTML_OBJECT (formSelect));
+		elementtree_parse_select_in_node(xmlelement->children, pos+1, e, formSelect);
+	}
+
 }
 
 void element_parse_nodedump_htmlobject(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style)
