@@ -35,6 +35,8 @@ gtk_html_stream_new (GtkHTML *html,
 		     GtkHTMLStreamTypesFunc types_func,
 		     GtkHTMLStreamWriteFunc write_func,
 		     GtkHTMLStreamCloseFunc close_func,
+		     GtkHTMLStreamMIMEFunc mime_func,
+		     GtkHTMLStreamHREFFunc href_func,
 		     gpointer user_data)
 {
 	GtkHTMLStream *new_stream;
@@ -44,6 +46,8 @@ gtk_html_stream_new (GtkHTML *html,
 	new_stream->types_func = types_func;
 	new_stream->write_func = write_func;
 	new_stream->close_func = close_func;
+	new_stream->mime_func = mime_func;
+	new_stream->href_func = href_func;
 	new_stream->user_data = user_data;
 
 	return new_stream;
@@ -58,10 +62,48 @@ gtk_html_stream_destroy (GtkHTMLStream *stream)
 }
 
 /**
+ * gtk_html_stream_mime:
+ * @stream:
+ * @mime_type: mime type or content type
+ *
+ * Set mime type for data in stream.
+ *
+ */
+void
+gtk_html_stream_mime (GtkHTMLStream *stream,
+		       const gchar *mime_type)
+{
+	g_return_if_fail (stream != NULL);
+	g_return_if_fail (mime_type != NULL);
+
+	if (stream->mime_func != NULL)
+		stream->mime_func (stream, mime_type, stream->user_data);
+}
+
+/**
+ * gtk_html_stream_href:
+ * @stream:
+ * @href: base url for content
+ *
+ * Set base url for content.
+ *
+ */
+void
+gtk_html_stream_href (GtkHTMLStream *stream,
+		       const gchar *href)
+{
+	g_return_if_fail (stream != NULL);
+	g_return_if_fail (href != NULL);
+
+	if (stream->href_func != NULL)
+		stream->href_func (stream, href, stream->user_data);
+}
+
+/**
  * gtk_html_stream_write:
  * @stream:
- * @buffer:
- * @size:
+ * @buffer: data
+ * @size: size data to write
  *
  * Write data to a GtkHTMLStream.
  *
@@ -139,6 +181,14 @@ gtk_html_stream_close (GtkHTMLStream *stream,
 	gtk_html_stream_destroy (stream);
 }
 
+/**
+ * gtk_html_stream_get_types:
+ * @stream: the GkHTMLStream to write to.
+ *
+ * Get all content type understanding in this time
+ *
+ * Returns: all understanding types in this time.
+ **/
 gchar **
 gtk_html_stream_get_types (GtkHTMLStream *stream)
 {
@@ -161,6 +211,34 @@ stream_log_types (GtkHTMLStream *stream,
 	GtkHTMLLog *log = user_data;
 
 	return gtk_html_stream_get_types (log->stream);
+}
+
+static void
+stream_log_mime (GtkHTMLStream *stream,
+	       const gchar *mime_type,
+	       gpointer user_data)
+{
+	GtkHTMLLog *log = user_data;
+
+	if (mime_type)
+		fprintf (log->file, "\nSet mime type to %s\n", mime_type);
+
+        gtk_html_stream_mime (log->stream, mime_type);
+
+}
+
+static void
+stream_log_href (GtkHTMLStream *stream,
+	       const gchar *href,
+	       gpointer user_data)
+{
+	GtkHTMLLog *log = user_data;
+
+	if (href)
+		fprintf (log->file, "\nSet base url to %s\n", href);
+
+        gtk_html_stream_href (log->stream, href);
+
 }
 
 static void
@@ -213,6 +291,8 @@ gtk_html_stream_log_new (GtkHTML *html, GtkHTMLStream *stream)
 					  stream_log_types,
 					  stream_log_write,
 					  stream_log_close,
+					  stream_log_mime,
+					  stream_log_href,
 					  log);
 
 	return new_stream;

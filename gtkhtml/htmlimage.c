@@ -1017,8 +1017,6 @@ html_image_factory_types (GtkHTMLStream *stream,
 {
 	static gchar **image_content_types = NULL;
 
-#if 0
-	/* this code should work in gtk+-2.2 but it is untested */
 	if (image_content_types == NULL) {
 		GSList *formats;
 		GSList *cur;
@@ -1031,9 +1029,9 @@ html_image_factory_types (GtkHTMLStream *stream,
 			GdkPixbufFormat *format = cur->data;
 			gchar **mime;
 
-			mime = gdk_pixbuf_formats_get_mime_types ();
+			mime = gdk_pixbuf_format_get_mime_types (format);
 			for (i = 0; mime && mime[i]; i++)
-				g_slist_prepend (types, g_strdup (mime[i]));
+				types = g_slist_prepend (types, g_strdup (mime[i]));
 
 		}
 		g_slist_free (formats);
@@ -1049,9 +1047,6 @@ html_image_factory_types (GtkHTMLStream *stream,
 			image_content_types = fallback_image_content_types;
 		}
 	}
-#else
-	image_content_types = fallback_image_content_types;
-#endif
 
 	return image_content_types;
 }
@@ -1419,6 +1414,8 @@ html_image_pointer_load (HTMLImagePointer *ip)
 				    html_image_factory_types,
 				    html_image_factory_write_pixbuf,
 				    html_image_factory_end_pixbuf,
+				    NULL, /* original image type not needed */
+				    NULL, /* original url not needed */
 				    ip);
 }
 

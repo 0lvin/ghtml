@@ -265,6 +265,8 @@ struct _HTMLEngine {
 	gboolean need_update;
 
 	HTMLObject *parser_clue;  /* the root of the currently parsed block */
+
+	gchar  *href; /* url where getted  this object*/
 };
 
 /* must be forward referenced *sigh* */
@@ -317,10 +319,13 @@ void           html_engine_stop             (HTMLEngine  *e);
 void           html_engine_flush            (HTMLEngine  *e);
 void           html_engine_set_engine_type   (HTMLEngine *e,
 					 gboolean engine_type);
-gboolean       html_engine_get_engine_type   (HTMLEngine *e);
-void		   html_engine_set_content_type(HTMLEngine *e,
+gboolean       html_engine_get_engine_type  (HTMLEngine *e);
+void           html_engine_set_content_type (HTMLEngine *e,
 					const gchar * content_type);
-const gchar *  html_engine_get_content_type(HTMLEngine *e);
+const gchar *  html_engine_get_content_type (HTMLEngine *e);
+const gchar *  html_engine_get_href         (HTMLEngine *e);
+void           html_engine_set_href         (HTMLEngine *e,
+                                        const gchar * url);
 
 /* Rendering control.  */
 gint  html_engine_calc_min_width       (HTMLEngine *e);

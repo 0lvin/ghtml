@@ -41,6 +41,12 @@ typedef gchar **(* GtkHTMLStreamTypesFunc) (GtkHTMLStream *stream,
 typedef void   (* GtkHTMLStreamCloseFunc) (GtkHTMLStream *stream,
 					   GtkHTMLStreamStatus status,
 					   gpointer user_data);
+typedef void   (* GtkHTMLStreamMIMEFunc) (GtkHTMLStream *stream,
+					   const gchar *mime_type,
+					   gpointer user_data);
+typedef void   (* GtkHTMLStreamHREFFunc) (GtkHTMLStream *stream,
+					   const gchar *href,
+					   gpointer user_data);
 typedef void   (* GtkHTMLStreamWriteFunc) (GtkHTMLStream *stream,
 					   const gchar *buffer,
 					   gsize size,

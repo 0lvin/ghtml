@@ -41,8 +41,6 @@ struct _GtkHTMLPrivate {
 
 	gint selection_type;
 
-	gchar  *base_url;
-
 	GtkWidget *search_input_line;
 
 	guint notify_monospace_font_id;

@@ -165,6 +165,14 @@ void                       gtk_html_write                         (GtkHTML      
 								   GtkHTMLStream             *handle,
 								   const gchar               *buffer,
 								   gsize                     size);
+void                       gtk_html_set_href                      (GtkHTML                   *html,
+								   GtkHTMLStream             *handle,
+								   const gchar               *href);
+gchar **                   gtk_html_get_types                     (GtkHTML *html,
+								   GtkHTMLStream *handle);
+void                       gtk_html_set_mime_type                 (GtkHTML                   *html,
+								   GtkHTMLStream             *handle,
+								   const gchar               *mime_type);
 void                       gtk_html_end                           (GtkHTML                   *html,
 								   GtkHTMLStream             *handle,
 								   GtkHTMLStreamStatus        status);

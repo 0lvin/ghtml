@@ -112,6 +112,12 @@ static void      html_engine_stream_write     (GtkHTMLStream       *stream,
 					       const gchar         *buffer,
 					       gsize               size,
 					       gpointer             data);
+static void      html_engine_stream_href      (GtkHTMLStream *handle,
+					       const gchar *href,
+					       gpointer data);
+static void      html_engine_stream_mime      (GtkHTMLStream *handle,
+					       const gchar *mime_type,
+					       gpointer data);
 static void      html_engine_stream_end       (GtkHTMLStream       *stream,
 					       GtkHTMLStreamStatus  status,
 					       gpointer             data);
@@ -2785,15 +2791,33 @@ html_engine_get_engine_type( HTMLEngine *e)
 	return html_tokenizer_get_engine_type(e->ht);
 }
 
+const gchar *
+html_engine_get_href (HTMLEngine *e)
+{
+	g_return_val_if_fail (HTML_IS_ENGINE (e), NULL);
+
+	return e->href;
+}
+
 void
-html_engine_set_content_type(HTMLEngine *e, const gchar * content_type)
+html_engine_set_href (HTMLEngine *e, const gchar * url)
+{
+	g_return_if_fail (HTML_IS_ENGINE (e));
+	if (e->href)
+		g_free(e->href);
+
+	e->href = g_strdup(url);
+}
+
+void
+html_engine_set_content_type (HTMLEngine *e, const gchar * content_type)
 {
 	g_return_if_fail (HTML_IS_ENGINE (e));
 	html_tokenizer_change_content_type(e->ht, content_type);
 }
 
 const gchar *
-html_engine_get_content_type(HTMLEngine *e)
+html_engine_get_content_type (HTMLEngine *e)
 {
 	g_return_val_if_fail (HTML_IS_ENGINE (e), NULL);
 	return html_tokenizer_get_content_type(e->ht);
@@ -4028,6 +4052,9 @@ html_engine_finalize (GObject *object)
 
 	engine = HTML_ENGINE (object);
 
+	if (engine->href)
+		g_free(engine->href);
+
         /* it is critical to destroy timers immediately so that
 	 * if widgets contained in the object tree manage to iterate the
 	 * mainloop we don't reenter in an inconsistant state.
@@ -4343,6 +4370,8 @@ html_engine_init (HTMLEngine *engine)
 {
 	engine->clue = engine->parser_clue = NULL;
 
+	engine->href = g_strdup("");
+
 	/* STUFF might be missing here!   */
 	engine->freeze_count = 0;
 	engine->thaw_idle_id = 0;
@@ -4653,6 +4682,8 @@ html_engine_begin (HTMLEngine *e, const gchar *content_type)
 					  html_engine_stream_types,
 					  html_engine_stream_write,
 					  html_engine_stream_end,
+					  html_engine_stream_mime,
+					  html_engine_stream_href,
 					  e);
 #ifdef LOG_INPUT
 	if (getenv("GTK_HTML_LOG_INPUT_STREAM") != NULL)
@@ -4699,6 +4730,38 @@ html_engine_stream_types (GtkHTMLStream *handle,
 			  gpointer data)
 {
 	return engine_content_types;
+}
+
+static void
+html_engine_stream_mime (GtkHTMLStream *handle,
+			  const gchar *mime_type,
+			  gpointer data)
+{
+	HTMLEngine *e;
+
+	e = HTML_ENGINE (data);
+
+	if (mime_type == NULL)
+		return;
+
+	html_engine_set_content_type (e, mime_type);
+
+}
+
+static void
+html_engine_stream_href (GtkHTMLStream *handle,
+			  const gchar *href,
+			  gpointer data)
+{
+	HTMLEngine *e;
+
+	e = HTML_ENGINE (data);
+
+	if (href == NULL)
+		return;
+
+	html_engine_set_href (e, href);
+
 }
 
 static void

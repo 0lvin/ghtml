@@ -29,6 +29,8 @@ struct _GtkHTMLStream {
 	GtkHTMLStreamWriteFunc write_func;
 	GtkHTMLStreamCloseFunc close_func;
 	GtkHTMLStreamTypesFunc types_func;
+	GtkHTMLStreamMIMEFunc  mime_func;
+	GtkHTMLStreamHREFFunc  href_func;
 	gpointer user_data;
 };
 
@@ -37,10 +39,16 @@ GtkHTMLStream *gtk_html_stream_new       (GtkHTML                *html,
 					  GtkHTMLStreamTypesFunc  type_func,
 					  GtkHTMLStreamWriteFunc  write_func,
 					  GtkHTMLStreamCloseFunc  close_func,
+					  GtkHTMLStreamMIMEFunc   mime_func,
+					  GtkHTMLStreamHREFFunc   href_func,
 					  gpointer                user_data);
 void           gtk_html_stream_write     (GtkHTMLStream          *stream,
 					  const gchar            *buffer,
 					  gsize                  size);
+void           gtk_html_stream_mime      (GtkHTMLStream *stream,
+					  const gchar *mime_type);
+void           gtk_html_stream_href      (GtkHTMLStream *stream,
+					  const gchar *href);
 void           gtk_html_stream_destroy   (GtkHTMLStream          *stream);
 void           gtk_html_stream_close     (GtkHTMLStream          *stream,
 					  GtkHTMLStreamStatus     status);

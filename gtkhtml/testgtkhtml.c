@@ -93,9 +93,9 @@ static void url_requested (GtkHTML *html, const gchar *url, GtkHTMLStream *handl
 static void entry_goto_url(GtkWidget *widget, gpointer data);
 static void goto_url(const gchar *url, gint back_or_forward);
 static void on_set_base (GtkHTML *html, const gchar *url, gpointer data);
-
-static gchar *parse_href (const gchar *s);
-
+static void change_status_bar(GtkStatusbar * statusbar, const gchar * text);
+gboolean enabled_type(GtkHTML *html, GtkHTMLStream *stream, const gchar *mime_type);
+static void http_requested(GtkHTML *html, const gchar *action, const gchar * method,const gchar * encoding, GtkHTMLStream *handle);
 static SoupSession *session;
 
 static gchar * decode (const gchar * token);
@@ -103,12 +103,10 @@ static gchar * get_data_url (const gchar * action, gsize * length, gchar ** cont
 static void get_data_url_content(GtkHTML * html, GtkHTMLStream * stream, const gchar* url);
 
 static GtkHTML *html;
-static GtkHTMLStream *html_stream_handle = NULL;
 static GtkWidget *entry;
 static GtkWidget *popup_menu, *popup_menu_back, *popup_menu_forward, *popup_menu_home;
 static GtkWidget *toolbar_back, *toolbar_forward;
 static GtkWidget *statusbar;
-static HTMLURL *baseURL = NULL;
 
 static GList *go_list;
 static gint go_position;
@@ -623,13 +621,11 @@ entry_goto_url(GtkWidget *widget, gpointer data)
 
 	/* Add "http://" if no protocol is specified */
 	if (strchr(tmpurl, ':')) {
-		on_set_base (NULL, tmpurl, NULL);
 		goto_url (tmpurl, 0);
 	} else {
 		gchar *url;
 
 		url = g_strdup_printf("http://%s", tmpurl);
-		on_set_base (NULL, url, NULL);
 		goto_url (url, 0);
 		g_free(url);
 	}
@@ -703,7 +699,6 @@ stop_cb (GtkWidget *widget, gpointer data)
 {
 	/* Kill all requests */
 	soup_session_abort (session);
-	html_stream_handle = NULL;
 }
 
 static void
@@ -742,14 +737,6 @@ static void
 on_set_base (GtkHTML *html, const gchar *url, gpointer data)
 {
 	gtk_entry_set_text (GTK_ENTRY (entry), url);
-	if (baseURL)
-		html_url_destroy (baseURL);
-
-	if (html) {
-		gtk_html_set_base (html, url);
-	}
-
-	baseURL = html_url_new (url);
 }
 
 static gboolean
@@ -776,22 +763,32 @@ on_redirect (GtkHTML *html, const gchar *url, gint delay, gpointer data) {
 
 static void
 on_submit (GtkHTML *html, const gchar *method, const gchar *action, const gchar *encoding, gpointer data) {
-	GString *tmpstr = g_string_new (action);
 
-	g_print("submitting '%s' to '%s' using method '%s'\n", encoding, action, method);
+        if (g_ascii_strcasecmp (method, "GET") == 0) {
+                gsize length;
+                gchar *tmpstr;
 
-	if (g_ascii_strcasecmp(method, "GET") == 0) {
+                length = strlen (action) + strlen (encoding) + 2;
+                tmpstr = g_new0 (gchar, length);
+                strcpy (tmpstr, action);
+                if (encoding != NULL && *encoding != '\0') {
+                        if (strchr (tmpstr, '?') == NULL)
+                                strcat (tmpstr, "?");
+                        strcat (tmpstr, encoding);
+                }
+                goto_url (tmpstr, 0);
+                g_free (tmpstr);
 
-		tmpstr = g_string_append_c (tmpstr, '?');
-		tmpstr = g_string_append (tmpstr, encoding);
+        } else if (g_ascii_strcasecmp (method, "POST") == 0) {
+                GtkHTMLStream *handle;
+                const gchar *content_type;
 
-		goto_url(tmpstr->str, 0);
+                content_type = gtk_html_get_default_content_type (html);
+                handle = gtk_html_begin_content (html, content_type);
+                http_requested (html, action, method, encoding, handle);
 
-		g_string_free (tmpstr, TRUE);
-	} else {
+	} else
 		g_warning ("Unsupported submit method '%s'\n", method);
-	}
-
 }
 
 static void
@@ -857,14 +854,43 @@ object_requested_cmd (GtkHTML *html, GtkHTMLEmbedded *eb, gpointer data)
 	return TRUE;
 }
 
+gboolean enabled_type(GtkHTML *html, GtkHTMLStream *stream,
+		       const gchar *mime_type)
+{
+	gboolean knowtype = FALSE;
+	gchar ** types;
+	gsize len_mimetype;
+	gchar * cleantype;
+	if (!mime_type)
+		return FALSE;
+	if (!stream)
+		return FALSE;
+	len_mimetype =  strcspn(mime_type," \t;");
+	cleantype = g_new(gchar, len_mimetype + 1);
+	memcpy(cleantype,mime_type,len_mimetype);
+	cleantype[len_mimetype] = 0;
+	types = gtk_html_get_types(html, stream);
+	if (types != NULL)
+		while (*types != NULL && !knowtype) {
+			if (!strncmp(*types,cleantype, len_mimetype))
+				knowtype = TRUE;
+			types ++;
+		}
+	g_free(cleantype);
+	return knowtype;
+}
+
 static void
 got_data (SoupSession *session, SoupMessage *msg, gpointer user_data)
 {
 	const gchar *ContentType;
 	GtkHTMLStream *handle = user_data;
+	gchar * href;
+
+	href = soup_uri_to_string(soup_message_get_uri(msg), FALSE);
 
 	if (!SOUP_STATUS_IS_SUCCESSFUL (msg->status_code)) {
-		g_warning ("%d - %s", msg->status_code, msg->reason_phrase);
+		g_warning ("%d - %s(%s)", msg->status_code, msg->reason_phrase, href);
 		gtk_html_end (html, handle, GTK_HTML_STREAM_ERROR);
 		return;
 	}
@@ -874,7 +900,48 @@ got_data (SoupSession *session, SoupMessage *msg, gpointer user_data)
 	ContentType = soup_message_headers_get (msg->response_headers, "Content-type");
 
 	if (ContentType != NULL)
-		gtk_html_set_default_content_type (html, ContentType);
+		if (!enabled_type (html, handle, ContentType))
+		{
+			/*
+			check received and understanding types
+			gchar ** types;
+			g_print("Recieved type:\n\t%s\n", ContentType);
+			g_print("Supported type:\n");
+			types = gtk_html_get_types(html, handle);
+			if (types != NULL)
+				while (*types != NULL) {
+					g_print("\t%s\n", *types);
+					types ++;
+				}
+			*/
+			if (enabled_type (html, handle, "text/html")) {/*support html*/
+
+				if (!g_ascii_strncasecmp (ContentType, "text/plain", strlen("text/plain"))) {
+					/*generate html with include text*/
+					gtk_html_write (html, handle, "<html><body><pre>",strlen("<html><body><pre>"));
+					gtk_html_write (html, handle, msg->response_body->data, msg->response_body->length);
+					gtk_html_write (html, handle, "</pre></body></html>",strlen("</pre></body></html>"));
+					gtk_html_end (html, handle, GTK_HTML_STREAM_OK);
+					g_free (href);
+					return;
+				} else if (	href && /*i know from*/
+						!g_ascii_strncasecmp(ContentType,"image/",6 /*strlen("image/")*/) /*recieve image*/
+				) {
+					/*generate html with include image*/
+					gchar * new_content = g_strdup_printf("<html><body><img src='%s'>%s</img></body></html>",href,href);
+					gtk_html_write (html, handle, new_content, strlen(new_content));
+					gtk_html_end (html, handle, GTK_HTML_STREAM_OK);
+					g_free (href);
+					g_free (new_content);
+					return;
+				}
+			}
+		}
+	if (ContentType != NULL)
+		gtk_html_set_mime_type (html, handle, ContentType);
+
+	gtk_html_set_href (html, handle, href);
+	g_free(href);
 
 	gtk_html_write (html, handle, msg->response_body->data,
 			msg->response_body->length);
@@ -900,7 +967,9 @@ get_data_url_content(GtkHTML * html, GtkHTMLStream * stream, const gchar* url) {
 	buf = get_data_url (url, &length, &ContentType);
 	if (buf!= NULL) {
 		if (ContentType!=NULL) {
-			gtk_html_set_default_content_type (html, ContentType);
+			gtk_html_set_mime_type (html, stream, ContentType);
+			gtk_html_set_href (html, stream, url);
+			g_free (ContentType);
 		}
 		gtk_html_write (html, stream, buf, length);
 		gtk_html_end (html, stream, GTK_HTML_STREAM_OK);
@@ -1011,24 +1080,44 @@ decode(const gchar * token)
 /*end datauri*/
 
 static void
+http_requested(GtkHTML *html, const gchar *action, const gchar * method,const gchar * encoding, GtkHTMLStream *handle)
+{
+	if (action && !strncmp (action, "http", 4)) {
+		SoupMessage *msg = NULL;
+		if (!g_ascii_strcasecmp(method, "POST")) {
+			msg = soup_message_new("POST", action);
+			soup_message_set_request(msg,
+				"application/x-www-form-urlencoded",
+				SOUP_MEMORY_TAKE, (gchar *) action,
+				strlen(encoding));
+		} else if (!g_ascii_strcasecmp(method, "GET")) {
+			msg = soup_message_new("GET", action);
+		}
+		if (msg) {
+			if (gtk_html_get_base (html) != NULL)
+				soup_message_headers_append(msg->request_headers, "Referer",
+					gtk_html_get_base(html));
+			soup_session_queue_message (session, msg, got_data, handle);
+		}
+	}
+}
+
+static void
 url_requested (GtkHTML *html, const gchar *url, GtkHTMLStream *handle, gpointer data)
 {
-	gchar *full_url = NULL;
 
-	full_url = parse_href (url);
-
-	if (full_url && !strncmp (full_url, "http", 4)) {
-		SoupMessage *msg;
-		msg = soup_message_new (SOUP_METHOD_GET, full_url);
-		soup_session_queue_message (session, msg, got_data, handle);
+	if (url && !strncmp (url, "http", 4)) {
+		http_requested(html, url, "GET", NULL, handle);
 	} else if (url && !strncmp (url, "data:", 5)) {
 		/* RFC 2397 (data url) */
 		get_data_url_content( html, handle, url);
-	} else if (full_url && !strncmp (full_url, "file:", 5)) {
-		gchar *filename = gtk_html_filename_from_uri (full_url);
+	} else if (url && !strncmp (url, "file:", 5)) {
+		gchar *filename = gtk_html_filename_from_uri (url);
 		struct stat st;
 		gchar *buf;
 		gint fd, nread, total;
+
+		gtk_html_set_href (html, handle, url);
 
 		fd = g_open (filename, O_RDONLY|O_BINARY, 0);
 		g_free (filename);
@@ -1053,72 +1142,7 @@ url_requested (GtkHTML *html, const gchar *url, GtkHTMLStream *handle, gpointer 
 		if (fd != -1)
 			close (fd);
 	} else
-		g_warning ("Unrecognized URL %s", full_url);
-
-	g_free (full_url);
-}
-
-static gchar *
-parse_href (const gchar *s)
-{
-	gchar *retval;
-	gchar *tmp;
-	HTMLURL *tmpurl;
-
-	if (s == NULL || *s == 0)
-		return g_strdup ("");
-
-	if (s[0] == '#') {
-		tmpurl = html_url_dup (baseURL, HTML_URL_DUP_NOREFERENCE);
-		html_url_set_reference (tmpurl, s + 1);
-
-		tmp = html_url_to_string (tmpurl);
-		html_url_destroy (tmpurl);
-
-		return tmp;
-	}
-
-	tmpurl = html_url_new (s);
-	if (html_url_get_protocol (tmpurl) == NULL) {
-		if (s[0] == '/') {
-			if (s[1] == '/') {
-				gchar *t;
-
-				/* Double slash at the beginning.  */
-
-				/* FIXME?  This is a bit sucky.  */
-				t = g_strconcat (html_url_get_protocol (baseURL),
-						 ":", s, NULL);
-				html_url_destroy (tmpurl);
-				tmpurl = html_url_new (t);
-				retval = html_url_to_string (tmpurl);
-				html_url_destroy (tmpurl);
-				g_free (t);
-			} else {
-				/* Single slash at the beginning.  */
-
-				html_url_destroy (tmpurl);
-				tmpurl = html_url_dup (baseURL,
-						       HTML_URL_DUP_NOPATH);
-				html_url_set_path (tmpurl, s);
-				retval = html_url_to_string (tmpurl);
-				html_url_destroy (tmpurl);
-			}
-		} else {
-			html_url_destroy (tmpurl);
-			if (baseURL) {
-				tmpurl = html_url_append_path (baseURL, s);
-				retval = html_url_to_string (tmpurl);
-				html_url_destroy (tmpurl);
-			} else
-				retval = g_strdup (s);
-		}
-	} else {
-		retval = html_url_to_string (tmpurl);
-		html_url_destroy (tmpurl);
-	}
-
-	return retval;
+		g_warning ("Unrecognized URL %s", url);
 }
 
 static void
@@ -1169,8 +1193,7 @@ goto_url(const gchar *url, gint back_or_forward)
 	gint tmp, i;
 	go_item *item;
 	GSList *group = NULL;
-	gchar *full_url;
-
+	GtkHTMLStream * handle;
 	/* Kill all requests */
 	soup_session_abort (session);
 
@@ -1182,14 +1205,13 @@ goto_url(const gchar *url, gint back_or_forward)
 	}
 
 	/* TODO2 animator start */
-	html_stream_handle = gtk_html_begin_content (html, (gchar *)gtk_html_get_default_content_type (html));
+	handle = gtk_html_begin_content (html, (gchar *)gtk_html_get_default_content_type (html));
 
 	/* Yuck yuck yuck.  Well this code is butt-ugly already
 	anyway.  */
 
-	full_url = parse_href (url);
-	on_set_base (NULL, full_url, NULL);
-	url_requested (html, url, html_stream_handle, NULL);
+	on_set_base (NULL, url, NULL);
+	url_requested (html, url, handle, NULL);
 
 	if (!back_or_forward) {
 		if (go_position) {
@@ -1229,7 +1251,7 @@ goto_url(const gchar *url, gint back_or_forward)
 		gtk_widget_set_sensitive(toolbar_forward, FALSE);
 
 		item = g_malloc0(sizeof(go_item));
-		item->url = g_strdup(full_url);
+		item->url = g_strdup(url);
 
 		/* Remove old go list */
 		g_list_foreach(go_list, remove_go_list, NULL);
@@ -1274,7 +1296,6 @@ goto_url(const gchar *url, gint back_or_forward)
 		g_free(redirect_url);
 		redirect_url = NULL;
 	}
-	g_free (full_url);
 }
 
 static void

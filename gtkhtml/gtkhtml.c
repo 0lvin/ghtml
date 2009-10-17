@@ -488,10 +488,14 @@ html_engine_url_requested_cb (HTMLEngine *engine,
 {
 	GtkHTML *gtk_html;
 	gchar *expanded = NULL;
-	gtk_html = GTK_HTML (data);
+
+	if (!url)
+		return;
 
 	if (engine->stopped)
 		return;
+
+	gtk_html = GTK_HTML (data);
 
 	expanded = gtk_html_get_url_base_relative (gtk_html, url);
 	g_signal_emit (gtk_html, signals[URL_REQUESTED], 0, expanded, handle);
@@ -516,10 +520,15 @@ html_engine_redirect_cb (HTMLEngine *engine,
 			 gpointer data)
 {
 	GtkHTML *gtk_html;
+	gchar *expanded = NULL;
+
+	if (!url)
+		return;
 
 	gtk_html = GTK_HTML (data);
-
-	g_signal_emit (gtk_html, signals[REDIRECT], 0, url, delay);
+	expanded = gtk_html_get_url_base_relative (gtk_html, url);
+	g_signal_emit (gtk_html, signals[REDIRECT], 0, expanded, delay);
+	g_free (expanded);
 }
 
 static void
@@ -530,10 +539,16 @@ html_engine_submit_cb (HTMLEngine *engine,
 		       gpointer data)
 {
 	GtkHTML *gtk_html;
+	gchar *expanded = NULL;
+
+	if (!url)
+		return;
 
 	gtk_html = GTK_HTML (data);
 
-	g_signal_emit (gtk_html, signals[SUBMIT], 0, method, url, encoding);
+	expanded = gtk_html_get_url_base_relative (gtk_html, url);
+	g_signal_emit (gtk_html, signals[SUBMIT], 0, method, expanded, encoding);
+	g_free (expanded);
 }
 
 static gboolean
@@ -805,7 +820,6 @@ destroy (GtkObject *object)
 			html->priv->im_context = NULL;
 		}
 
-		g_free (html->priv->base_url);
 		g_free (html->priv->caret_first_focus_anchor);
 		g_free (html->priv);
 		html->priv = NULL;
@@ -1027,6 +1041,19 @@ update_mouse_cursor (GtkWidget *widget, guint state)
 	motion_notify_event (widget, &event);
 }
 
+static void
+link_clicked(GtkHTML *gtk_html, gchar *url)
+{
+	gchar *expanded = NULL;
+
+	if (!url)
+		return;
+
+	expanded = gtk_html_get_url_base_relative (gtk_html, url);
+	g_signal_emit (gtk_html, signals [LINK_CLICKED], 0, expanded);
+	g_free (expanded);
+}
+
 static gint
 key_press_event (GtkWidget *widget, GdkEventKey *event)
 {
@@ -1092,7 +1119,7 @@ key_press_event (GtkWidget *widget, GdkEventKey *event)
 					/* printf ("link clicked: %s\n", url); */
                                         if (HTML_IS_TEXT(focus_object)) {
 						html_text_set_link_visited (HTML_TEXT (focus_object), focus_object_offset, html->engine, TRUE);
-					g_signal_emit (html, signals [LINK_CLICKED], 0, url);
+					link_clicked (html, url);
 					}
 					g_free (url);
 				}
@@ -1552,19 +1579,44 @@ skip_host (const gchar *url)
 	return url;
 }
 
+/* length path in uri*/
 static gsize
-path_len (const gchar *base, gboolean absolute)
+full_path_len (const gchar *base)
+{
+	/*skip '?' and '#'*/
+	return strcspn(base, "?#");
+
+}
+
+static gsize
+current_path_len (const gchar *base, gboolean absolute)
 {
 	const gchar *last;
-	const gchar *cur;
 	const gchar *start;
 
 	start = last = skip_host (base);
-	if (!absolute) {
-		cur = strrchr (start, '/');
 
-		if (cur)
-			last = cur;
+	if (absolute) {
+		return last - base;
+	} else {
+		gsize skip;
+
+		skip = full_path_len(base);
+
+		while (*start  != '\0') {
+			start = strchr (start, '/');
+			/* '/' not exist */
+			if (!start)
+				return last - base;
+			/* '/' after '#' or '?' */
+			if ((start - base) > skip)
+				return last - base;
+			last = start;
+			start++;
+		}
+
+		if (start)
+			last = start;
 	}
 
 	return last - base;
@@ -1636,21 +1688,19 @@ expand_relative (const gchar *base, const gchar *url)
 {
 	gchar *new_url = NULL;
 	gsize base_len, url_len;
-	gboolean absolute = FALSE;
 
 	if (!base || url_is_absolute (url)) {
-		/*
-		  g_warning ("base = %s url = %s new_url = %s",
-		  base, url, new_url);
-		*/
 		return g_strdup (url);
 	}
 
 	if (*url == '/') {
-		absolute = TRUE;;
+		base_len = current_path_len (base, TRUE);
+	} else if (*url == '?' || *url == '#' ) {
+		base_len = full_path_len (base);
+	} else {
+		base_len = current_path_len (base, FALSE);
 	}
 
-	base_len = path_len (base, absolute);
 	url_len = strlen (url);
 
 	new_url = g_malloc (base_len + url_len + 2);
@@ -1658,17 +1708,19 @@ expand_relative (const gchar *base, const gchar *url)
 	if (base_len) {
 		memcpy (new_url, base, base_len);
 
-		if (base[base_len - 1] != '/')
+		if (
+			base[base_len - 1] != '/' &&
+			*url != '/' &&
+			*url != '#' &&
+			*url != '?'
+		)
 			new_url[base_len++] = '/';
-		if (absolute)
-			url++;
 	}
 
 	memcpy (new_url + base_len, url, url_len);
 	new_url[base_len + url_len] = '\0';
-
 	/*
-	   g_warning ("base = %s url = %s new_url = %s",
+	   g_warning ("path:\n\tbase = %s\n\turl = %s\n\tnew_url = %s\n",
 	   base, url, new_url);
 	*/
 	return new_url;
@@ -2057,7 +2109,7 @@ button_release_event (GtkWidget *initial_widget,
 		if (!html->priv->dnd_in_progress
 		    && html->pointer_url != NULL && ! html->in_selection
 		    && (!gtk_html_get_editable (html) || html->priv->in_url_test_mode)) {
-			g_signal_emit (widget,  signals[LINK_CLICKED], 0, html->pointer_url);
+			link_clicked (GTK_HTML (widget), html->pointer_url);
 			focus_object = html_engine_get_focus_object (html->engine, &focus_object_offset);
 			if (HTML_IS_TEXT(focus_object)) {
 				html_text_set_link_visited (HTML_TEXT(focus_object), focus_object_offset, html->engine, TRUE);
@@ -3698,6 +3750,54 @@ gtk_html_begin_content (GtkHTML *html, const gchar *content_type)
 }
 
 /**
+ * gtk_html_set_href:
+ * @html: the GtkHTML widget the stream belongs to (unused)
+ * @handle: the GkHTMLStream to write to.
+ * @href: url from loaded content.
+ *
+ * Set @href from loaded content in @stream.
+ **/
+void
+gtk_html_set_href (GtkHTML *html,
+		GtkHTMLStream *handle,
+		const gchar *href)
+{
+	gtk_html_stream_href (handle, href);
+}
+
+/**
+ * gtk_html_get_types:
+ * @html: the GtkHTML widget the stream belongs to (unused)
+ * @handle: the GkHTMLStream to write to.
+ *
+ * Get all content type understanding in this time
+ *
+ * Returns: all understanding types in this time.
+ **/
+gchar **
+gtk_html_get_types (GtkHTML *html,
+		GtkHTMLStream *handle)
+{
+	return gtk_html_stream_get_types (handle);
+}
+
+/**
+ * gtk_html_set_mime_type:
+ * @html: the GtkHTML widget the stream belongs to (unused)
+ * @handle: the GkHTMLStream to write to.
+ * @mime_type: stream mime type.
+ *
+ * Set @mime_type for content in @stream.
+ **/
+void
+gtk_html_set_mime_type (GtkHTML *html,
+		GtkHTMLStream *handle,
+		const gchar *mime_type)
+{
+	gtk_html_stream_mime (handle, mime_type);
+}
+
+/**
  * gtk_html_write:
  * @html: the GtkHTML widget the stream belongs to (unused)
  * @handle: the GkHTMLStream to write to.
@@ -4177,8 +4277,8 @@ gtk_html_set_base (GtkHTML *html, const gchar *url)
 {
 	g_return_if_fail (GTK_IS_HTML (html));
 
-	g_free (html->priv->base_url);
-	html->priv->base_url = g_strdup (url);
+	html_engine_set_href (html->engine, url);
+
 }
 
 const gchar *
@@ -4186,7 +4286,7 @@ gtk_html_get_base (GtkHTML *html)
 {
 	g_return_val_if_fail (GTK_IS_HTML (html), NULL);
 
-	return html->priv->base_url;
+	return html_engine_get_href (html->engine);
 }
 
 
@@ -4652,12 +4752,25 @@ gtk_html_get_default_engine(GtkHTML *html)
 	return html_engine_get_engine_type( html->engine);
 }
 
+/**
+ * gtk_html_set_default_content_type:
+ * @html: the GtkHTML widget
+ * @content_type: default content for main page.
+ *
+ * Set default @content_type for main page in @html widget.
+ **/
 void
 gtk_html_set_default_content_type (GtkHTML *html, const gchar *content_type)
 {
     html_engine_set_content_type( html->engine, content_type);
 }
 
+/**
+ * gtk_html_get_default_content_type:
+ * @html: the GtkHTML widget
+ *
+ * Returns: default content_type for main page in @html widget.
+ **/
 const gchar *
 gtk_html_get_default_content_type (GtkHTML *html)
 {
