@@ -25,7 +25,6 @@
 #include <string.h>
 #include "gtkhtml.h"
 #include "gtkhtml-stream.h"
-#include "htmltokenizer.h"
 #include "gtkhtml-private.h"
 #include "htmlcolorset.h"
 #include "htmlgdkpainter.h"
@@ -454,7 +453,6 @@ html_frame_init (HTMLFrame *frame,
 		  gboolean border)
 {
 	HTMLEmbedded *em = HTML_EMBEDDED (frame);
-	HTMLTokenizer *new_tokenizer;
 	GtkWidget *new_widget;
 	GtkHTML   *new_html;
 	GtkHTML   *parent_html;
@@ -472,12 +470,6 @@ html_frame_init (HTMLFrame *frame,
 
 	new_widget = gtk_html_new ();
 	new_html = GTK_HTML (new_widget);
-
-	new_tokenizer = html_tokenizer_clone (parent_html->engine->ht);
-
-	html_engine_set_tokenizer (new_html->engine, new_tokenizer);
-	g_object_unref (G_OBJECT (new_tokenizer));
-	new_tokenizer = NULL;
 
 	gtk_html_set_default_content_type (new_html,
 					   gtk_html_get_default_content_type(parent_html));

@@ -449,7 +449,7 @@ html_engine_title_changed_cb (HTMLEngine *engine, gpointer data)
 	GtkHTML *gtk_html;
 
 	gtk_html = GTK_HTML (data);
-	g_signal_emit (gtk_html, signals [TITLE_CHANGED], 0, engine->title->str);
+	g_signal_emit (gtk_html, signals [TITLE_CHANGED], 0, engine->title);
 }
 
 static void
@@ -3762,6 +3762,8 @@ gtk_html_set_href (GtkHTML *html,
 		GtkHTMLStream *handle,
 		const gchar *href)
 {
+	g_return_if_fail (href!=NULL);
+	g_return_if_fail (handle!=NULL);
 	gtk_html_stream_href (handle, href);
 }
 
@@ -3794,6 +3796,8 @@ gtk_html_set_mime_type (GtkHTML *html,
 		GtkHTMLStream *handle,
 		const gchar *mime_type)
 {
+	g_return_if_fail (mime_type!=NULL);
+	g_return_if_fail (handle!=NULL);
 	gtk_html_stream_mime (handle, mime_type);
 }
 
@@ -3864,7 +3868,7 @@ gtk_html_get_title (GtkHTML *html)
 	if (html->engine->title == NULL)
 		return NULL;
 
-	return html->engine->title->str;
+	return html->engine->title;
 }
 
 /**
@@ -6538,14 +6542,6 @@ gtk_html_get_cursor_image_src (GtkHTML *html)
 	}
 
 	return NULL;
-}
-
-void
-gtk_html_set_tokenizer (GtkHTML *html, HTMLTokenizer *tokenizer)
-{
-	g_return_if_fail (GTK_IS_HTML (html));
-
-	html_engine_set_tokenizer (html->engine, tokenizer);
 }
 
 gboolean

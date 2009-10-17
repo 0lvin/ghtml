@@ -26,6 +26,7 @@
 
 #include <gtk/gtk.h>
 #include "gtkhtml-types.h"
+#include <libxml/parser.h>
 
 #include "htmltypes.h"
 #include "htmlenums.h"
@@ -81,11 +82,25 @@ struct _HTMLEngine {
 	gboolean need_redraw;
 	GSList *pending_expose;
 
-	gboolean parsing;
-	HTMLTokenizer *ht;
-	HTMLStringTokenizer *st;
-	HTMLObject *clue;         /* the document root */
+	/*------real used with new engine, other maybe yes maybe no----*/
+	gchar  *href; /* url where getted  this object*/
+	
+	gboolean enableconvert;        /*enable convert encoding*/
+	gchar * content_type;          /*current encoding*/
+	GIConv iconv_cd;               /*current encoding page*/
+	
+	gchar * css;                   /* current css */
 
+	gboolean parsing;
+	xmlParserCtxtPtr parser;    /*html parser*/
+	HTMLObject *clue;           /*the document root*/
+
+	HTMLForm *form;             /*current form*/
+	GList *formList;            /*list forms on the page*/
+		
+	gchar *title;               /*title*/
+	/*end real use*/
+	
 	HTMLObject *flow;
 
 	gint leftBorder;
@@ -100,17 +115,10 @@ struct _HTMLEngine {
 	gint width;
 	gint height;
 
-	/* Number of tokens parsed in the current time-slice */
-	gint parseCount;
-	gint granularity;
-
 	/* Offsets */
 	gint x_offset, y_offset;
 
-	gboolean inTitle;
 	gboolean inPre;
-	gboolean inOption;
-	gboolean inTextArea;
 	gboolean eat_space;
 	gboolean allow_frameset;
 	gboolean newPage;
@@ -132,9 +140,6 @@ struct _HTMLEngine {
 	guint timerId;
 
 	guint redraw_idle_id;
-
-	/* FIXME: replace with a `gchar *'?  */
-	GString *title;
 
 	gboolean writing;
 
@@ -161,11 +166,6 @@ struct _HTMLEngine {
 	GList *tempStrings;
 
 	HTMLMap *map;
-	HTMLForm *form;
-	HTMLSelect *formSelect;
-	HTMLTextArea *formTextArea;
-	GList *formList;
-	GString *formText;
 
 	/* This is TRUE if we cannot insert a paragraph break (which is just an
            extra empty line).  It's set to FALSE as soon as some element is
@@ -265,8 +265,6 @@ struct _HTMLEngine {
 	gboolean need_update;
 
 	HTMLObject *parser_clue;  /* the root of the currently parsed block */
-
-	gchar  *href; /* url where getted  this object*/
 };
 
 /* must be forward referenced *sigh* */
@@ -306,10 +304,6 @@ gboolean  html_engine_get_editable  (HTMLEngine *e);
 void  html_engine_set_focus  (HTMLEngine *engine,
 			      gboolean    have_focus);
 
-/* Tokenizer. */
-void html_engine_set_tokenizer (HTMLEngine *engine,
-				HTMLTokenizer *tok);
-
 /* Parsing control.  */
 GtkHTMLStream *html_engine_begin            (HTMLEngine  *p,
 					     const gchar  *content_type);
@@ -317,7 +311,7 @@ void           html_engine_parse            (HTMLEngine  *p);
 void           html_engine_stop_parser      (HTMLEngine  *e);
 void           html_engine_stop             (HTMLEngine  *e);
 void           html_engine_flush            (HTMLEngine  *e);
-void           html_engine_set_engine_type   (HTMLEngine *e,
+void           html_engine_set_engine_type  (HTMLEngine *e,
 					 gboolean engine_type);
 gboolean       html_engine_get_engine_type  (HTMLEngine *e);
 void           html_engine_set_content_type (HTMLEngine *e,
@@ -503,4 +497,12 @@ void html_engine_opened_streams_set (HTMLEngine *e, gint value);
 
 void html_engine_refresh_fonts (HTMLEngine *e);
 
+/*for convert input code page to -->utf */
+GIConv     generate_iconv_from (const gchar * content_type);
+/*for convert resulted query to needed encoding <--utf*/
+GIConv     generate_iconv_to (const gchar * content_type);
+/*convert test to needed encoding*/
+gchar *     convert_text_encoding (const GIConv iconv_cd, const gchar * token);
+/*validate result g_iconv_open*/
+gboolean   is_valid_g_iconv (const GIConv iconv_cd);
 #endif /* _HTMLENGINE_H_ */

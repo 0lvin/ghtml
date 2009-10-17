@@ -33,6 +33,7 @@ struct _HTMLColor {
 };
 
 HTMLColor * html_color_new                (void);
+HTMLColor * html_color_copy               (HTMLColor *orig);
 HTMLColor * html_color_new_from_gdk_color (const GdkColor *color);
 HTMLColor * html_color_new_from_rgb       (gushort red, gushort green, gushort blue);
 

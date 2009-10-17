@@ -35,7 +35,6 @@
 #include "htmlsearch.h"
 #include "htmlselection.h"
 #include "htmlsettings.h"
-#include "htmltokenizer.h"
 #include "htmlembedded.h"
 
 HTMLIFrameClass html_iframe_class;
@@ -574,7 +573,6 @@ html_iframe_init (HTMLIFrame *iframe,
 		  gboolean border)
 {
 	HTMLEmbedded *em = HTML_EMBEDDED (iframe);
-	HTMLTokenizer *new_tokenizer;
 	GtkWidget *new_widget;
 	GtkHTML   *new_html;
 	GtkHTML   *parent_html;
@@ -602,12 +600,6 @@ html_iframe_init (HTMLIFrame *iframe,
 	new_widget = gtk_html_new ();
 	new_html = GTK_HTML (new_widget);
 	new_html->engine->cursor_hide_count = 0;
-
-	new_tokenizer = html_tokenizer_clone (parent_html->engine->ht);
-
-	html_engine_set_tokenizer (new_html->engine, new_tokenizer);
-	g_object_unref (G_OBJECT (new_tokenizer));
-	new_tokenizer = NULL;
 
 	gtk_html_set_default_content_type (new_html,
 					   gtk_html_get_default_content_type(parent_html));

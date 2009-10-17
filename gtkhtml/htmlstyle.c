@@ -24,6 +24,14 @@
 #include <ctype.h>
 #include "htmlstyle.h"
 
+HTMLLength * parse_length (const gchar *str);
+HTMLLength * html_length_copy(HTMLLength * orig);
+HTMLStyle  * parse_border_style (HTMLStyle *style,const gchar *value);
+HTMLStyle  * parse_border_color (HTMLStyle *style,const gchar *value);
+HTMLStyle  * parse_border (HTMLStyle *style,const gchar *origvalue);
+HTMLStyle  * parse_border_width (HTMLStyle *style,const gchar *value);
+HTMLStyle  * get_list_type (HTMLStyle *style, const gchar* value);
+
 /* Color handling.  */
 gboolean
 html_parse_color (const gchar *text,
@@ -50,9 +58,22 @@ html_parse_color (const gchar *text,
 	return gdk_color_parse (c, color);
 }
 
-static HTMLLength *
-parse_length (gchar *str) {
-	gchar *cur = str;
+HTMLLength *
+html_length_copy(HTMLLength * orig)
+{
+	HTMLLength *len;
+	if(!orig)
+		return NULL;
+
+	len = g_new0 (HTMLLength, 1);
+	len->type = orig->type;
+	len->val = orig->val;
+	return len;
+}
+
+HTMLLength *
+parse_length (const gchar *str) {
+	const gchar *cur = str;
 	HTMLLength *len;
 
 	len = g_new0 (HTMLLength, 1);
@@ -97,7 +118,7 @@ html_style_new (void)
 {
 	HTMLStyle *style = g_new0 (HTMLStyle, 1);
 
-	style->display = DISPLAY_NONE;
+	style->display = HTMLDISPLAY_NONE;
 
 	style->color = NULL;
 	style->mask = 0;
@@ -106,9 +127,83 @@ html_style_new (void)
 	/* BLOCK */
 	style->text_align = HTML_HALIGN_NONE;
 	style->clear = HTML_CLEAR_NONE;
+	style->listtype = HTML_LIST_TYPE_BLOCKQUOTE;
 
 	style->text_valign = HTML_VALIGN_NONE;
+	style->dir = HTML_DIRECTION_DERIVED;
+	style->listnumber = 0;
+	return style;
+}
 
+HTMLStyle *
+html_style_copy(HTMLStyle *orig)
+{
+	HTMLStyle *style;
+	
+	if (!orig)
+		return NULL;
+	style = g_new0 (HTMLStyle, 1);
+	style->color = html_color_copy(orig->color);
+
+	if (orig->face)
+		style->face = g_strdup(orig->face);
+		
+	style->settings = orig->settings;
+	style->mask = orig->mask;
+
+	/* Block Level */
+	style->text_align = orig->text_align;
+	style->clear = orig->clear;
+	style->dir = orig->dir;
+	style->listtype = orig->listtype;
+
+	/* Cell Level */
+	style->text_valign = orig->text_valign;
+
+	/* box settings */
+	orig->width = html_length_copy(orig->width);
+	orig->height = html_length_copy(orig->height);
+
+	if(orig->bg_image)
+		style->bg_image = g_strdup(orig->bg_image);
+		
+	style->bg_color = html_color_copy(orig->bg_color);
+	style->display = orig->display;
+	style->listnumber = 0;
+	style->listtype = HTML_LIST_TYPE_BLOCKQUOTE;
+	
+	/* border */
+	style->border_width = orig->border_width;
+	style->border_style = orig->border_style;
+	style->border_color = html_color_copy(orig->border_color);
+	style->padding = orig->padding;
+	/*url*/
+	if (orig->url)
+		style->url = g_strdup(orig->url);
+	if (orig->target)
+		style->url = g_strdup(orig->target);
+	if (orig->href)
+		style->href = g_strdup(orig->href);
+	/*flow*/
+	style->fstyle = orig->fstyle;
+	return style;
+}
+
+HTMLStyle *
+html_style_copy_onlyinherit(HTMLStyle *orig)
+{
+	HTMLStyle *style;
+	if (!orig)
+		return NULL;
+		
+	style = html_style_copy(orig);
+	
+	style->border_width = 0;
+	style->border_style = HTML_BORDER_NONE;
+	if (style->border_color)
+		html_color_unref (style->border_color);
+	style->border_color = NULL;
+	style->padding = 0;
 	return style;
 }
 
@@ -131,8 +226,42 @@ html_style_free (HTMLStyle *style)
 
 	if (style->border_color)
 		html_color_unref (style->border_color);
-
+	g_free(style->url);
+	g_free(style->target);
 	g_free (style);
+}
+
+HTMLStyle * 
+html_style_set_list_type (HTMLStyle *style, HTMLListType value)
+{
+	if (!style)
+		style = html_style_new ();
+	style->listtype = value;
+	return style;
+}
+
+HTMLStyle * 
+parse_list_type (HTMLStyle *style, const gchar* value)
+{
+	if (!g_ascii_strcasecmp (value, "A"))
+		style = html_style_set_list_type (style, HTML_LIST_TYPE_ORDERED_UPPER_ALPHA);
+	else if (!g_ascii_strcasecmp (value, "a"))
+		style = html_style_set_list_type (style, HTML_LIST_TYPE_ORDERED_LOWER_ALPHA);
+	else if (!g_ascii_strcasecmp (value, "I"))
+		style = html_style_set_list_type (style, HTML_LIST_TYPE_ORDERED_UPPER_ROMAN);
+	else if (!g_ascii_strcasecmp (value, "i"))
+		style = html_style_set_list_type (style, HTML_LIST_TYPE_ORDERED_LOWER_ROMAN);
+	else if (!g_ascii_strcasecmp (value, "1"))
+		style = html_style_set_list_type (style, HTML_LIST_TYPE_ORDERED_ARABIC);
+	else if (!g_ascii_strcasecmp (value, "cite"))
+		style = html_style_set_list_type (style, HTML_LIST_TYPE_BLOCKQUOTE_CITE);
+	else if (!g_ascii_strcasecmp (value, "circle"))
+		style = html_style_set_list_type (style, HTML_LIST_TYPE_CIRCLE);
+	else if (!g_ascii_strcasecmp (value, "disc"))
+		style = html_style_set_list_type (style, HTML_LIST_TYPE_DISC);
+	else if (!g_ascii_strcasecmp (value, "square"))
+		style = html_style_set_list_type (style, HTML_LIST_TYPE_SQUARE);
+	return style;
 }
 
 HTMLStyle *
@@ -154,6 +283,49 @@ html_style_add_color (HTMLStyle *style, HTMLColor *color)
 		html_color_unref (old);
 
 	return style;
+}
+
+HTMLStyle *
+html_style_add_dir (HTMLStyle *style, const gchar* dir_text)
+{
+	if (dir_text) {
+		
+		if (!style)
+			style = html_style_new ();
+			
+		if (!g_ascii_strncasecmp (dir_text, "ltr", 3))
+			style->dir = HTML_DIRECTION_LTR;
+		else if (!g_ascii_strncasecmp (dir_text, "rtl", 3))
+			style->dir = HTML_DIRECTION_RTL;
+	}
+	
+	return style;
+}
+
+HTMLHAlignType
+parse_halign (const gchar *token, HTMLHAlignType default_val)
+{
+	if (g_ascii_strcasecmp (token, "right") == 0)
+		return HTML_HALIGN_RIGHT;
+	else if (g_ascii_strcasecmp (token, "left") == 0)
+		return HTML_HALIGN_LEFT;
+	else if (g_ascii_strcasecmp (token, "center") == 0 || g_ascii_strcasecmp (token, "middle") == 0)
+		return HTML_HALIGN_CENTER;
+	else
+		return default_val;
+}
+
+HTMLVAlignType
+parse_valign (const gchar *token, HTMLVAlignType default_val)
+{			
+	if (g_ascii_strcasecmp (token, "top") == 0)
+		return HTML_VALIGN_TOP;
+	else if (g_ascii_strcasecmp (token, "bottom") == 0)
+		return HTML_VALIGN_BOTTOM;
+	else if (g_ascii_strcasecmp (token, "middle") == 0)
+		return HTML_VALIGN_MIDDLE;
+	else
+		return default_val;
 }
 
 HTMLStyle *
@@ -273,7 +445,7 @@ html_style_set_clear (HTMLStyle *style, HTMLClearType clear)
 }
 
 HTMLStyle *
-html_style_add_width (HTMLStyle *style, gchar *len)
+html_style_add_width (HTMLStyle *style,const gchar *len)
 {
 	if (!style)
 		style = html_style_new ();
@@ -286,7 +458,7 @@ html_style_add_width (HTMLStyle *style, gchar *len)
 }
 
 HTMLStyle *
-html_style_add_height (HTMLStyle *style, gchar *len)
+html_style_add_height (HTMLStyle *style,const gchar *len)
 {
 	if (!style)
 		style = html_style_new ();
@@ -364,9 +536,10 @@ html_style_set_border_color (HTMLStyle *style, HTMLColor *color)
 	return style;
 }
 
-static HTMLStyle *
-parse_border_style (HTMLStyle *style, gchar *value)
+HTMLStyle *
+parse_border_style (HTMLStyle *style,const gchar *value)
 {
+	
 	while (isspace (*value))
 		value ++;
 
@@ -378,11 +551,11 @@ parse_border_style (HTMLStyle *style, gchar *value)
 	return style;
 }
 
-static HTMLStyle *
-parse_border_color (HTMLStyle *style, gchar *value)
+HTMLStyle *
+parse_border_color (HTMLStyle *style,const gchar *value)
 {
 	GdkColor color;
-
+		
 	if (html_parse_color (value, &color)) {
 		HTMLColor *hc = html_color_new_from_gdk_color (&color);
 		style = html_style_set_border_color (style, hc);
@@ -392,8 +565,8 @@ parse_border_color (HTMLStyle *style, gchar *value)
 	return style;
 }
 
-static HTMLStyle *
-parse_border_width (HTMLStyle *style, gchar *value)
+HTMLStyle *
+parse_border_width (HTMLStyle *style,const gchar *value)
 {
 	while (isspace (*value))
 		value ++;
@@ -410,147 +583,170 @@ parse_border_width (HTMLStyle *style, gchar *value)
 	return style;
 }
 
-static HTMLStyle *
-parse_border (HTMLStyle *style, gchar *value)
+HTMLStyle *
+parse_border (HTMLStyle *style,const gchar *origvalue)
 {
-	while (value && *value) {
-		gchar *next;
-		gint modified;
-		gchar orig = 0;
-
-		while (isspace (*value))
-			value ++;
-
-		next = value;
-		while (*next && !isspace (*next))
-			next ++;
-		if (*next) {
-			orig = *next;
-			*next = 0;
-			modified = 1;
-		} else
-			modified = 0;
-
-		style = parse_border_style (style, value);
-		style = parse_border_color (style, value);
-		style = parse_border_width (style, value);
-
-		if (modified) {
-			*next = orig;
-			next ++;
+	if (origvalue && *origvalue) {
+		gchar * value = g_strdup(origvalue);
+		gchar * tmpvalue = value;
+		while (value && *value) {
+			gchar *next;
+			gint modified;
+			gchar orig = 0;
+	
+			while (isspace (*value))
+				value ++;
+	
+			next = value;
+			while (*next && !isspace (*next))
+				next ++;
+			if (*next) {
+				orig = *next;
+				*next = 0;
+				modified = 1;
+			} else
+				modified = 0;
+	
+			style = parse_border_style (style, value);
+			style = parse_border_color (style, value);
+			style = parse_border_width (style, value);
+	
+			if (modified) {
+				*next = orig;
+				next ++;
+			}
+	
+			value = next;
 		}
-
-		value = next;
+		g_free(tmpvalue);
 	}
-
 	return style;
 }
 
 HTMLStyle *
-html_style_add_attribute (HTMLStyle *style, const gchar *attr)
+html_style_add_attribute (HTMLStyle *style, const gchar *attr, const gchar *value)
 {
-	gchar **prop;
+	if (!attr)
+		return style;
+	if (!value)
+		return style;
 
-	prop = g_strsplit (attr, ";", 100);
-	if (prop) {
-		gint i;
-		for (i = 0; prop[i]; i++) {
-			gchar *text;
+	if (!g_ascii_strcasecmp ("align", attr)) {
+		style = html_style_add_text_align (style, parse_halign (value, HTML_VALIGN_NONE));
+	} else if (!g_ascii_strcasecmp ("valign", attr)) {
+		style = html_style_add_text_valign (style, parse_valign (value, HTML_VALIGN_MIDDLE));
+	} else if (!g_ascii_strcasecmp ("width", attr) ||
+		   !g_ascii_strcasecmp ("length", attr) ) { //hr
+		style = html_style_add_width (style, value);	
+	} else if (!g_ascii_strcasecmp ("height", attr) ||
+		   !g_ascii_strcasecmp ("size", attr)) { //hr,font,select
+		style = html_style_add_height (style, value);
+	} else if (!g_ascii_strcasecmp ("color", attr)) {
+		GdkColor color;
 
-			text = g_strstrip (prop[i]);
-			if (!g_ascii_strncasecmp ("color: ", text, 7)) {
-				GdkColor color;
+		if (html_parse_color (value, &color)) {
+			HTMLColor *hc = html_color_new_from_gdk_color (&color);
+			style = html_style_add_color (style, hc);
+			html_color_unref (hc);
 
-				if (html_parse_color (g_strstrip (text + 7), &color)) {
-					HTMLColor *hc = html_color_new_from_gdk_color (&color);
-					style = html_style_add_color (style, hc);
-					html_color_unref (hc);
-
-				}
-			} else if (!g_ascii_strncasecmp ("background: ", text, 12)) {
-				GdkColor color;
-
-				if (html_parse_color (text + 12, &color)) {
-					HTMLColor *hc = html_color_new_from_gdk_color (&color);
-					style = html_style_add_background_color (style, hc);
-					html_color_unref (hc);
-				}
-			} else if (!g_ascii_strncasecmp ("background-color: ", text, 18)) {
-				GdkColor color;
-
-				if (html_parse_color (text + 18, &color)) {
-					HTMLColor *hc = html_color_new_from_gdk_color (&color);
-					style = html_style_add_background_color (style, hc);
-					html_color_unref (hc);
-				}
-			} else if (!g_ascii_strncasecmp ("background-image: ", text, 18)) {
-				style = html_style_add_background_image (style, text + 18);
-
-			} else if (!g_ascii_strncasecmp ("border: ", text, 8)) {
-				style = parse_border (style, text + 8);
-			} else if (!g_ascii_strncasecmp ("border-style: ", text, 14)) {
-				style = parse_border_style (style, text + 14);
-			} else if (!g_ascii_strncasecmp ("border-color: ", text, 14)) {
-				style = parse_border_color (style, text + 14);
-			} else if (!g_ascii_strncasecmp ("border-width: ", text, 14)) {
-				style = parse_border_width (style, text + 14);
-			} else if (!g_ascii_strncasecmp ("padding: ", text, 9)) {
-				gchar *value = text + 9;
-
-				style = html_style_set_padding (style, atoi (value));
-			} else if (!g_ascii_strncasecmp ("white-space: ", text, 13)) {
-				/* normal, pre, nowrap, pre-wrap, pre-line, inherit  */
-				/*
-				if (!g_ascii_strcasecmp ("normal", text + 13)) {
-					style = html_style_set_white_space (style, HTML_WHITE_SPACE_NORMAL);
-				} else if (!g_ascii_strcasecmp ("pre", text + 13)) {
-					style = html_style_set_white_space (style, HTML_WHITE_SPACE_PRE);
-				} else if (!g_ascii_strcasecmp ("nowrap", text + 13)) {
-					style = html_style_set_white_space (style, HTML_WHITE_SPACE_NOWRAP);
-				} else if (!g_ascii_strcasecmp ("pre-wrap", text + 13)) {
-					style = html_style_set_white_space (style, HTML_WHITE_SPACE_PRE_WRAP);
-				} else if (!g_ascii_strcasecmp ("pre-line", text + 13)) {
-					style = html_style_set_white_space (style, HTML_WHITE_SPACE_PRE_LINE);
-				} else if (!g_ascii_strcasecmp ("inherit", text + 13)) {
-					style = html_style_set_white_space (style, HTML_WHITE_SPACE_INHERIT);
-				}
-				*/
-			} else if (!g_ascii_strncasecmp ("text-decoration: none", text, 21)) {
-				style = html_style_unset_decoration (style, ~GTK_HTML_FONT_STYLE_SIZE_MASK);
-			} else if (!g_ascii_strncasecmp ("display: ", text, 9)) {
-				gchar *value = text + 9;
-				if (!g_ascii_strcasecmp ("block", value)) {
-					style = html_style_set_display (style, DISPLAY_BLOCK);
-				} else if (!g_ascii_strcasecmp ("inline", value)) {
-					style = html_style_set_display (style, DISPLAY_INLINE);
-				} else if (!g_ascii_strcasecmp ("none", value)) {
-					style = html_style_set_display (style, DISPLAY_NONE);
-				} else if (!g_ascii_strcasecmp ("inline-table", value)) {
-					style = html_style_set_display (style, DISPLAY_INLINE_TABLE);
-				}
-			} else if (!g_ascii_strncasecmp ("text-align: center", text, 18)) {
-				style = html_style_add_text_align (style, HTML_HALIGN_CENTER);
-			} else if (!g_ascii_strncasecmp ("width: ", text, 7)) {
-				style = html_style_add_width (style, text + 7);
-			} else if (!g_ascii_strncasecmp ("height: ", text, 8)) {
-				style = html_style_add_height (style, text + 8);
-			} else if (!g_ascii_strncasecmp ("clear: ", text, 7)) {
-				gchar *value = text + 7;
-
-				if (!g_ascii_strcasecmp ("left", value)) {
-					style = html_style_set_clear (style, HTML_CLEAR_LEFT);
-				} else if (!g_ascii_strcasecmp ("right", value)) {
-					style = html_style_set_clear (style, HTML_CLEAR_RIGHT);
-				} else if (!g_ascii_strcasecmp ("both", value)) {
-					style = html_style_set_clear (style, HTML_CLEAR_ALL);
-				} else if (!g_ascii_strcasecmp ("inherit", value)) {
-					style = html_style_set_clear (style, HTML_CLEAR_INHERIT);
-				} else if (!g_ascii_strcasecmp ("none", value)) {
-					style = html_style_set_clear (style, HTML_CLEAR_NONE);
-				}
-			}
 		}
-		g_strfreev (prop);
+	} else if (!g_ascii_strcasecmp ("face", attr)) {
+		style = html_style_add_font_face (style, value);
+	} else if (!g_ascii_strcasecmp ("background-color", attr) ||
+		   !g_ascii_strcasecmp ("background", attr) ||
+		   !g_ascii_strcasecmp ("bgcolor", attr) ) {
+		GdkColor color;
+
+		if (html_parse_color (value, &color)) {
+			HTMLColor *hc = html_color_new_from_gdk_color (&color);
+			style = html_style_add_background_color (style, hc);
+			html_color_unref (hc);
+		}
+	} else if (!g_ascii_strcasecmp ("background-image", attr)) {
+		style = html_style_add_background_image (style, value);
+	} else if (!g_ascii_strcasecmp ("border", attr)) {
+		style = parse_border (style, value);
+	} else if (!g_ascii_strcasecmp ("border-style", attr)) {
+		style = parse_border_style (style, value);
+	} else if (!g_ascii_strcasecmp ("dir", attr)) {
+		style = html_style_add_dir (style, value);		
+	} else if (!g_ascii_strcasecmp ("border-color", attr)) {
+		style = parse_border_color (style, value);
+	} else if (!g_ascii_strcasecmp ("border-width", attr)) {
+		style = parse_border_width (style, value);
+	} else if (!g_ascii_strcasecmp ("padding", attr)) {
+		style = html_style_set_padding (style, atoi (value));
+	} else if (!g_ascii_strcasecmp ("white-space", attr)) {
+		/* normal, pre, nowrap, pre-wrap, pre-line, inherit  */
+		/*
+		if (!g_ascii_strcasecmp ("normal", value)) {
+			style = html_style_set_white_space (style, HTML_WHITE_SPACE_NORMAL);
+		} else if (!g_ascii_strcasecmp ("pre", value)) {
+			style = html_style_set_white_space (style, HTML_WHITE_SPACE_PRE);
+		} else if (!g_ascii_strcasecmp ("nowrap", value)) {
+			style = html_style_set_white_space (style, HTML_WHITE_SPACE_NOWRAP);
+		} else if (!g_ascii_strcasecmp ("pre-wrap", value)) {
+			style = html_style_set_white_space (style, HTML_WHITE_SPACE_PRE_WRAP);
+		} else if (!g_ascii_strcasecmp ("pre-line", value)) {
+			style = html_style_set_white_space (style, HTML_WHITE_SPACE_PRE_LINE);
+		} else if (!g_ascii_strcasecmp ("inherit", value)) {
+			style = html_style_set_white_space (style, HTML_WHITE_SPACE_INHERIT);
+		}*/
+	} else if (!g_ascii_strcasecmp ("attr-decoration", attr)) {
+		if (!g_ascii_strcasecmp ("none", value)) {
+			style = html_style_unset_decoration (style, ~GTK_HTML_FONT_STYLE_SIZE_MASK);
+		}
+	} else if (!g_ascii_strcasecmp ("display", attr)) {
+		if (!g_ascii_strcasecmp ("block", value)) {
+			style = html_style_set_display (style, HTMLDISPLAY_BLOCK);
+		} else if (!g_ascii_strcasecmp ("inline", value)) {
+			style = html_style_set_display (style, HTMLDISPLAY_INLINE);
+		} else if (!g_ascii_strcasecmp ("none", value)) {
+			style = html_style_set_display (style, HTMLDISPLAY_NONE);
+		} else if (!g_ascii_strcasecmp ("inline-table", value)) {
+			style = html_style_set_display (style, HTMLDISPLAY_INLINE_TABLE);
+		}
+	} else if (!g_ascii_strcasecmp ("attr-align", attr)) {
+		if (!g_ascii_strcasecmp ("center", value)) {
+			style = html_style_add_text_align (style, HTML_HALIGN_CENTER);
+		}
+	} else if (!g_ascii_strcasecmp ("width", attr)) {
+		style = html_style_add_width (style, value);
+	} else if (!g_ascii_strcasecmp ("height", attr)) {
+		style = html_style_add_height (style, value);
+	} else if (!g_ascii_strcasecmp ("clear", attr)) {
+		if (!g_ascii_strcasecmp ("left", value)) {
+			style = html_style_set_clear (style, HTML_CLEAR_LEFT);
+		} else if (!g_ascii_strcasecmp ("right", value)) {
+			style = html_style_set_clear (style, HTML_CLEAR_RIGHT);
+		} else if (!g_ascii_strcasecmp ("both", value)) {
+			style = html_style_set_clear (style, HTML_CLEAR_ALL);
+		} else if (!g_ascii_strcasecmp ("inherit", value)) {
+			style = html_style_set_clear (style, HTML_CLEAR_INHERIT);
+		} else if (!g_ascii_strcasecmp ("none", value)) {
+			style = html_style_set_clear (style, HTML_CLEAR_NONE);
+		}
+	} else if (!g_ascii_strcasecmp ("href", attr)) { /*a*/
+		if (!style)
+			style = html_style_new ();
+		if (style->href)
+			g_free (style->href);
+		style->href = g_strdup(value);
+	} else if (!g_ascii_strcasecmp ("src", attr)) { /*iframe, frame, img*/
+		if (!style)
+			style = html_style_new ();
+		if (style->url)
+			g_free (style->url);
+		style->url = g_strdup(value);
+	} else if (!g_ascii_strcasecmp ("target", attr)) {
+		if (!style)
+			style = html_style_new ();
+		if (style->target)
+			g_free (style->target);
+		style->target = g_strdup(value);
+	} else if ( !g_ascii_strcasecmp ("type", attr) ||
+				!g_ascii_strcasecmp ("list-style-type", attr)) { /*ol li*/
+		style = parse_list_type (style, value);
 	}
 	return style;
 }

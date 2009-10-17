@@ -136,7 +136,7 @@ PKG_CHECK_MODULES(GTHREAD, $GTHREAD_MODULES)
 AC_SUBST(GTHREAD_CFLAGS)
 AC_SUBST(GTHREAD_LIBS)
 
-GTKHTML_MODULES="gtk+-2.0 >= gtk_minimum_version enchant gconf-2.0 iso-codes"
+GTKHTML_MODULES="gtk+-2.0 >= gtk_minimum_version enchant gconf-2.0 iso-codes libxml-2.0 libcroco-0.6"
 PKG_CHECK_MODULES(GTKHTML, $GTKHTML_MODULES)
 AC_SUBST(GTKHTML_CFLAGS)
 AC_SUBST(GTKHTML_LIBS)

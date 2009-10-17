@@ -40,7 +40,10 @@ struct _HTMLStyle {
 	/* Block Level */
 	HTMLHAlignType      text_align;
 	HTMLClearType       clear;
-
+	HTMLDirection       dir;
+	HTMLListType        listtype;
+	gint                listnumber;
+	
 	/* Cell Level */
 	HTMLVAlignType      text_valign;
 
@@ -49,17 +52,27 @@ struct _HTMLStyle {
 	HTMLLength     *height;
 
 	gchar           *bg_image;
-	HTMLColor      *bg_color;
+	HTMLColor       *bg_color;
 	HTMLDisplayType display;
-
+	
 	/* border */
 	gint border_width;
 	HTMLBorderStyle border_style;
 	HTMLColor *border_color;
 	gint padding;
+	/*url*/
+	gchar *url;     /* for download url */
+	gchar *target;  /* for target */
+	gchar *href;    /* for click url */
+	/*flow*/
+	HTMLClueFlowStyle fstyle;
 };
 
 HTMLStyle *html_style_new                  (void);
+/*copy all fields*/
+HTMLStyle *html_style_copy                 (HTMLStyle *style);
+/*copy only inherit */
+HTMLStyle *html_style_copy_onlyinherit     (HTMLStyle *orig);
 HTMLStyle *html_style_unset_decoration     (HTMLStyle *style, GtkHTMLFontStyle decoration);
 HTMLStyle *html_style_set_decoration       (HTMLStyle *style, GtkHTMLFontStyle decoration);
 HTMLStyle *html_style_set_font_size        (HTMLStyle *style, GtkHTMLFontStyle decoration);
@@ -74,13 +87,17 @@ HTMLStyle *html_style_add_text_align       (HTMLStyle *style, HTMLHAlignType typ
 HTMLStyle *html_style_add_text_valign      (HTMLStyle *style, HTMLVAlignType type);
 HTMLStyle *html_style_add_font_face        (HTMLStyle *style, const HTMLFontFace *face);
 HTMLStyle *html_style_add_color            (HTMLStyle *style, HTMLColor *face);
-HTMLStyle *html_style_add_attribute        (HTMLStyle *style, const gchar *attr);
+HTMLStyle *html_style_add_attribute        (HTMLStyle *style, const gchar *attr, const gchar *value);
 HTMLStyle *html_style_add_background_image (HTMLStyle *style, const gchar *url);
+HTMLStyle *html_style_add_dir              (HTMLStyle *style, const gchar *dir_text);
 HTMLStyle *html_style_add_background_color (HTMLStyle *style, HTMLColor *color);
-HTMLStyle *html_style_add_width            (HTMLStyle *style, gchar *width);
-HTMLStyle *html_style_add_height           (HTMLStyle *style, gchar *height);
+HTMLStyle *html_style_add_width            (HTMLStyle *style, const gchar *width);
+HTMLStyle *html_style_add_height           (HTMLStyle *style, const gchar *height);
+HTMLStyle *html_style_set_list_type        (HTMLStyle *style, HTMLListType value);
+HTMLStyle *parse_list_type                 (HTMLStyle *style, const gchar* value);
 void       html_style_free                 (HTMLStyle *style);
 
 gboolean   html_parse_color                (const gchar *text, GdkColor *color);
-
+HTMLHAlignType parse_halign                (const gchar *token, HTMLHAlignType default_val);
+HTMLVAlignType parse_valign                (const gchar *token, HTMLVAlignType default_val);
 #endif /* __HTML_COLOR_H__ */

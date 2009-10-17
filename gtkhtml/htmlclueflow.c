@@ -1191,6 +1191,12 @@ get_item_marker_str (HTMLClueFlow *flow, gboolean ascii_only)
 	case HTML_LIST_TYPE_ORDERED_LOWER_ROMAN:
 	case HTML_LIST_TYPE_ORDERED_UPPER_ROMAN:
 		return get_roman_value (flow->item_number, flow->item_type == HTML_LIST_TYPE_ORDERED_LOWER_ROMAN);
+	case HTML_LIST_TYPE_CIRCLE:
+		return g_strdup ("\342\227\213 "); /* U+25CB WHITE CIRCLE */
+	case HTML_LIST_TYPE_DISC:
+		return g_strdup ("\342\227\217 "); /* U+25CF BLACK CIRCLE */
+	case HTML_LIST_TYPE_SQUARE:
+		return g_strdup ("\342\226\240 "); /* U+25AA BLACK SQUARE */
 	case HTML_LIST_TYPE_UNORDERED:
 		if (ascii_only)
 			return g_strdup ("* ");
@@ -1572,6 +1578,12 @@ get_start_indent_item (HTMLListType type)
 		return "BLOCKQUOTE TYPE=CITE";
 	case HTML_LIST_TYPE_BLOCKQUOTE:
 		return "BLOCKQUOTE";
+	case HTML_LIST_TYPE_CIRCLE:
+		return "OL TYPE=circle";
+	case HTML_LIST_TYPE_DISC:
+		return "OL TYPE=disc";
+	case HTML_LIST_TYPE_SQUARE:
+		return "OL TYPE=square";
 	}
 	return "";
 }

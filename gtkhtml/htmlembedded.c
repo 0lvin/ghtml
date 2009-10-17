@@ -33,8 +33,6 @@
 #include "htmliframe.h"
 #include "htmlpainter.h"
 #include "htmlengine.h"
-/*For use converter based on g_iconv*/
-#include "htmltokenizer.h"
 
 HTMLEmbeddedClass html_embedded_class;
 static HTMLObjectClass *parent_class = NULL;

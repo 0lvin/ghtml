@@ -46,7 +46,6 @@ libgtkhtml_HEADERS =				\
 	gtkhtml.h				\
 	htmltypes.h				\
 	htmlenums.h				\
-	htmltokenizer.h				\
 	$(NULL)
 
 libgtkhtml_3_14_la_SOURCES =			\
@@ -111,7 +110,6 @@ libgtkhtml_3_14_la_SOURCES =			\
 	htmlsettings.c				\
 	htmlshape.c				\
 	htmlstack.c				\
-	htmlstringtokenizer.c			\
 	htmlstyle.c				\
 	htmltable.c				\
 	htmltablecell.c				\
@@ -119,7 +117,6 @@ libgtkhtml_3_14_la_SOURCES =			\
 	htmltextarea.c				\
 	htmltextinput.c				\
 	htmltextslave.c				\
-	htmltokenizer.c				\
 	htmltype.c				\
 	htmlundo.c				\
 	htmlundo-action.c			\
@@ -185,7 +182,6 @@ libgtkhtml_3_14_la_SOURCES =			\
 	htmlsettings.h				\
 	htmlshape.h				\
 	htmlstack.h				\
-	htmlstringtokenizer.h			\
 	htmlstyle.h				\
 	htmltable.h				\
 	htmltablepriv.h				\

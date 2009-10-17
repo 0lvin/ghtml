@@ -301,10 +301,10 @@ write_header (HTMLEngineSaveState *state)
 
 	/* Title.  */
 	if (state->engine->title != NULL
-	    && state->engine->title->str != NULL
-	    && state->engine->title->str[0] != '\0') {
+	    && state->engine->title != NULL
+	    && state->engine->title[0] != '\0') {
 		if (! html_engine_save_delims_and_vals (state,
-				"  <TITLE>", state->engine->title->str,
+				"  <TITLE>", state->engine->title,
 				"</TITLE>\n", NULL))
 			return FALSE;
 	}

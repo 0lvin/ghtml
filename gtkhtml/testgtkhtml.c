@@ -624,7 +624,6 @@ entry_goto_url(GtkWidget *widget, gpointer data)
 		goto_url (tmpurl, 0);
 	} else {
 		gchar *url;
-
 		url = g_strdup_printf("http://%s", tmpurl);
 		goto_url (url, 0);
 		g_free(url);
@@ -763,32 +762,30 @@ on_redirect (GtkHTML *html, const gchar *url, gint delay, gpointer data) {
 
 static void
 on_submit (GtkHTML *html, const gchar *method, const gchar *action, const gchar *encoding, gpointer data) {
-
-        if (g_ascii_strcasecmp (method, "GET") == 0) {
-                gsize length;
-                gchar *tmpstr;
-
-                length = strlen (action) + strlen (encoding) + 2;
-                tmpstr = g_new0 (gchar, length);
-                strcpy (tmpstr, action);
-                if (encoding != NULL && *encoding != '\0') {
-                        if (strchr (tmpstr, '?') == NULL)
-                                strcat (tmpstr, "?");
-                        strcat (tmpstr, encoding);
-                }
-                goto_url (tmpstr, 0);
-                g_free (tmpstr);
-
-        } else if (g_ascii_strcasecmp (method, "POST") == 0) {
-                GtkHTMLStream *handle;
-                const gchar *content_type;
-
-                content_type = gtk_html_get_default_content_type (html);
-                handle = gtk_html_begin_content (html, content_type);
-                http_requested (html, action, method, encoding, handle);
-
-	} else
+	if (!g_ascii_strcasecmp(method, "GET")) {
+		gchar *tmpstr;
+		gchar *tmpencoding;
+		if (encoding)
+			tmpencoding = g_strdup(encoding);
+		else
+			tmpencoding = g_strdup("");
+		tmpstr = g_new0(gchar,strlen(action) + strlen(tmpencoding) + 2);
+		strcpy (tmpstr, action);
+		if (*tmpencoding != 0) {
+			if (!strchr(tmpstr,'?'))
+				strcat(tmpstr, "?");
+			strcat (tmpstr, tmpencoding);
+		}
+		goto_url (tmpstr, 0);
+		g_free (tmpstr);
+		g_free (tmpencoding);
+	} else if(! g_ascii_strcasecmp(method, "POST")) {
+		GtkHTMLStream* handle = gtk_html_begin_content (html, (gchar *)gtk_html_get_default_content_type (html));
+		http_requested(html, action, method, encoding, handle);
+	} else {
 		g_warning ("Unsupported submit method '%s'\n", method);
+	}
+
 }
 
 static void

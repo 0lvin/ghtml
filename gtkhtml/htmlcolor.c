@@ -37,6 +37,15 @@ html_color_new (void)
 }
 
 HTMLColor *
+html_color_copy (HTMLColor *orig)
+{
+	if(!orig)
+		return NULL;
+
+	return html_color_new_from_rgb(orig->color.red,orig->color.green, orig->color.blue);
+}
+
+HTMLColor *
 html_color_new_from_gdk_color (const GdkColor *color)
 {
 	HTMLColor *nc = html_color_new ();
