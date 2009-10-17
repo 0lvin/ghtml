@@ -98,6 +98,10 @@ static gchar *parse_href (const gchar *s);
 
 static SoupSession *session;
 
+static gchar * decode (const gchar * token);
+static gchar * get_data_url (const gchar * action, gsize * length, gchar ** contentType);
+static void get_data_url_content(GtkHTML * html, GtkHTMLStream * stream, const gchar* url);
+
 static GtkHTML *html;
 static GtkHTMLStream *html_stream_handle = NULL;
 static GtkWidget *entry;
@@ -877,6 +881,135 @@ got_data (SoupSession *session, SoupMessage *msg, gpointer user_data)
 	gtk_html_end (html, handle, GTK_HTML_STREAM_OK);
 }
 
+/* data uri */
+
+/*
+ * write content for data url to stream
+ */
+static void
+get_data_url_content(GtkHTML * html, GtkHTMLStream * stream, const gchar* url) {
+
+	gsize length = 0;
+	gchar *ContentType = NULL;
+	gchar *buf = NULL;
+	
+	g_return_if_fail (url!=NULL);
+	g_return_if_fail (stream!=NULL);
+	g_return_if_fail (html!=NULL);
+	
+	buf = get_data_url (url, &length, &ContentType);
+	if (buf!= NULL) {
+		if (ContentType!=NULL) {
+			gtk_html_set_default_content_type (html, ContentType);
+		}
+		gtk_html_write (html, stream, buf, length);
+		gtk_html_end (html, stream, GTK_HTML_STREAM_OK);
+		g_free (buf);
+	} else
+		gtk_html_end (html, stream, GTK_HTML_STREAM_ERROR);
+}
+
+
+/*
+ * support data url by RFC 2397
+ * dataurl := "data:" [ contentType ] [ ";base64" ] "," data
+ *
+ * return content and as params: content length and content type
+ */
+static gchar*
+get_data_url (const gchar * action, gsize * length, gchar ** contentType) {
+	guchar *buf = NULL;
+	g_return_val_if_fail (action != NULL, NULL);
+	g_return_val_if_fail (length != NULL, NULL);
+	g_return_val_if_fail (contentType != NULL, NULL);
+	if (!strncmp(action, "data:", 5 /*strlen("data:")*/)) {
+		const gchar *real_action = action + 5 /*strlen("data:")*/;
+		/*find first ','*/
+		const gchar *start_data = strchr(real_action, ',');
+		if (start_data != NULL) {
+			gboolean isbase64 = FALSE;
+			const char *endcontent = start_data;
+			gchar *result_decode = NULL;
+			/* is base 64?*/
+			if ( (start_data - real_action) > 7 ) /*8 == strlen(";base64,")*/
+				if (!strncmp(start_data - 7, ";base64",  7)) {
+					isbase64 = TRUE;
+					endcontent -= 7;
+				}
+			/* get content type */
+			{
+				gsize ContentType_length = endcontent - real_action;
+				*contentType = g_new(gchar, ContentType_length + 1);
+				memcpy(*contentType, real_action, ContentType_length);
+				*(*contentType + ContentType_length) = 0;
+			}
+			/*unescape content*/
+			result_decode = decode(start_data + 1); /* skip ','*/
+			*length = strlen( result_decode );
+			if (isbase64) {
+				gint state = 0;
+				guint save = 0;
+				buf = g_new(guchar,( (*length) * 3) / 4 + 3);
+				*length = g_base64_decode_step(result_decode,
+					       strlen(result_decode),
+					       buf, &state, &save);
+			} else {
+				buf = g_new(guchar, (*length) + 1);
+				buf [*length] = 0;
+				memcpy(buf, result_decode, *length);
+			}
+			g_free(result_decode);
+		}
+    }
+    return (gchar *)buf;
+}
+
+/*unescape url*/
+static gchar *
+decode(const gchar * token)
+{
+    const gchar *full_pos;
+    gchar *resulted;
+    gchar *write_pos;
+    const gchar *read_pos;
+
+    if (token == NULL)
+		return NULL;
+
+    /*stop pointer */
+    full_pos = token + strlen (token);
+    resulted = g_new (gchar, strlen(token) + 1);
+    write_pos = resulted;
+    read_pos = token;
+    while (read_pos < full_pos) {
+	size_t count_chars = strcspn (read_pos, "%");
+
+	memcpy (write_pos, read_pos, count_chars);
+	write_pos += count_chars;
+	read_pos += count_chars;
+	/*may be end string? */
+	if (read_pos < full_pos)
+	    if (*read_pos == '%') {
+		/*skip not needed % */
+		read_pos++;
+		if (*(read_pos) != 0)
+		    if (*(read_pos + 1) != 0) {
+				gchar save[3];
+				save[0] = *read_pos;
+				save[1] = *(read_pos + 1);
+				save[2] = 0;
+				(*write_pos) = strtol (save, NULL, 16);
+				write_pos += 1;
+				read_pos += 2;
+		    }
+	    }
+    }
+    *write_pos = 0;
+    return resulted;
+}
+
+/*end datauri*/
+
 static void
 url_requested (GtkHTML *html, const gchar *url, GtkHTMLStream *handle, gpointer data)
 {
@@ -888,6 +1021,9 @@ url_requested (GtkHTML *html, const gchar *url, GtkHTMLStream *handle, gpointer 
 		SoupMessage *msg;
 		msg = soup_message_new (SOUP_METHOD_GET, full_url);
 		soup_session_queue_message (session, msg, got_data, handle);
+	} else if (url && !strncmp (url, "data:", 5)) {
+		/* RFC 2397 (data url) */
+		get_data_url_content( html, handle, url);
 	} else if (full_url && !strncmp (full_url, "file:", 5)) {
 		gchar *filename = gtk_html_filename_from_uri (full_url);
 		struct stat st;
