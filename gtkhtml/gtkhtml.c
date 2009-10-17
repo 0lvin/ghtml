@@ -67,6 +67,7 @@
 #include "gtkhtml-stream.h"
 #include "gtkhtml-private.h"
 #include "gtkhtml-properties.h"
+#include "gtkhtmldebug.h"
 #include "math.h"
 
 enum DndTargetType {
@@ -3918,6 +3919,19 @@ gtk_html_save (GtkHTML *html,
 	g_return_val_if_fail (receiver != NULL, FALSE);
 
 	return html_engine_save (html->engine, receiver, data);
+}
+
+/**
+ * gtk_html_dump:
+ * @html: the GtkHTML widget
+ *
+ * Dumped simple object tree to console.
+ *
+ **/
+void
+gtk_html_dump (GtkHTML *html)
+{
+	gtk_html_debug_dump_tree_simple (html->engine->clue, 0);
 }
 
 /**

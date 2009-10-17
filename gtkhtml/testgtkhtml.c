@@ -81,6 +81,7 @@ static void animate_cb (GtkToggleButton *togglebutton, gpointer data);
 static void stop_cb (GtkWidget *widget, gpointer data);
 static void dump_cb (GtkWidget *widget, gpointer data);
 static void dump_simple_cb (GtkWidget *widget, gpointer data);
+static void dump_simple_html_cb (GtkWidget *widget, gpointer data);
 static void forward_cb (GtkWidget *widget, gpointer data);
 static void back_cb (GtkWidget *widget, gpointer data);
 static void home_cb (GtkWidget *widget, gpointer data);
@@ -155,6 +156,12 @@ static GtkActionEntry entries[] = {
 	  "<control>s",
 	  NULL,
 	  G_CALLBACK (dump_simple_cb) },
+	{ "DumpHtmlTreeSimple",
+	  NULL,
+	  "Dump Html tree (simple)",
+	  "<control>h",
+	  NULL,
+	  G_CALLBACK (dump_simple_html_cb) },
 
 	{ "ForceRepaint",
 	  NULL,                   /* name, stock id */
@@ -197,6 +204,7 @@ static const gchar *ui_info =
 "       <menuitem action='ShowBugList'/>"
 "       <menuitem action='DumpObjectTree'/>"
 "       <menuitem action='DumpObjectTreeSimple'/>"
+"       <menuitem action='DumpHtmlTreeSimple'/>"
 "       <menuitem action='ForceResize'/>"
 "       <menuitem action='ForceRepaint'/>"
 "       <menuitem action='SelectAll'/>"
@@ -572,7 +580,31 @@ dump_simple_cb (GtkWidget *widget, gpointer data)
 	g_print ("Simple Object Tree\n");
 	g_print ("-----------\n");
 
-	gtk_html_debug_dump_tree_simple (html->engine->clue, 0);
+	gtk_html_dump(html);
+}
+
+static gboolean
+save_receiver (HTMLEngine *engine,
+                      const gchar *data,
+                      guint length,
+                      gpointer user_data)
+{
+	gchar * string = g_new0(gchar, length +1);
+	memcpy(string, data, length);
+	g_print("%s",string);
+	g_free(string);
+	return TRUE;
+}
+
+static void
+dump_simple_html_cb (GtkWidget *widget, gpointer data)
+{
+	g_print ("Simple Html Tree\n");
+	g_print ("-----------\n");
+
+	gtk_html_export (
+		html, "text/html",
+		(GtkHTMLSaveReceiverFn) save_receiver, NULL/*user data*/);
 }
 
 static void
@@ -956,11 +988,11 @@ get_data_url_content(GtkHTML * html, GtkHTMLStream * stream, const gchar* url) {
 	gsize length = 0;
 	gchar *ContentType = NULL;
 	gchar *buf = NULL;
-	
+
 	g_return_if_fail (url!=NULL);
 	g_return_if_fail (stream!=NULL);
 	g_return_if_fail (html!=NULL);
-	
+
 	buf = get_data_url (url, &length, &ContentType);
 	if (buf!= NULL) {
 		if (ContentType!=NULL) {

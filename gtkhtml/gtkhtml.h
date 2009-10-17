@@ -181,7 +181,8 @@ void                       gtk_html_stop                          (GtkHTML      
 void                       gtk_html_load_from_string              (GtkHTML                   *html,
 								   const gchar               *str,
 								   gint                       len);
-
+/*dump current elements tree*/
+void                       gtk_html_dump                          (GtkHTML                   *html);
 /* Saving.  */
 gboolean                   gtk_html_export                        (GtkHTML                   *html,
 								   const gchar                *type,
