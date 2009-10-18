@@ -84,11 +84,11 @@ struct _HTMLEngine {
 
 	/*------real used with new engine, other maybe yes maybe no----*/
 	gchar  *href; /* url where getted  this object*/
-	
+
 	gboolean enableconvert;        /*enable convert encoding*/
 	gchar * content_type;          /*current encoding*/
 	GIConv iconv_cd;               /*current encoding page*/
-	
+
 	gchar * css;                   /* current css */
 
 	gboolean parsing;
@@ -97,10 +97,10 @@ struct _HTMLEngine {
 
 	HTMLForm *form;             /*current form*/
 	GList *formList;            /*list forms on the page*/
-		
+
 	gchar *title;               /*title*/
 	/*end real use*/
-	
+
 	HTMLObject *flow;
 
 	gint leftBorder;
@@ -148,9 +148,6 @@ struct _HTMLEngine {
 
 	/* Stack of lists currently active */
 	HTMLStack *listStack;
-
-	/* Stack of embedded "object"'s */
-	HTMLStack *embeddedStack;
 
 	/* The associated widget.  */
 	GtkHTML *widget;

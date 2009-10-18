@@ -251,7 +251,7 @@ struct _HTMLElement {
 void element_parse_nodedump_htmlobject(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style);
 static void element_parse_nodedump_head(xmlNode* xmlelement, gint pos, HTMLEngine *e);
 void set_style_to_text(HTMLText *text, HTMLStyle *style, HTMLEngine *e, gint start_index, gint end_index);
-HTMLText * create_text_from_xml(HTMLEngine *e, HTMLElement *testElement, gchar* text);
+HTMLText * create_text_from_xml(HTMLEngine *e, HTMLElement *testElement,const gchar* text);
 HTMLTableCell * create_cell_from_xml(HTMLEngine *e, HTMLElement *element);
 HTMLTable * create_table_from_xml(HTMLEngine *e, HTMLElement *element);
 HTMLObject* create_flow_from_xml(HTMLEngine *e, HTMLElement *testElement);
@@ -270,6 +270,8 @@ void elementtree_parse_select           (xmlNode* xmlelement, gint pos, HTMLEngi
 void elementtree_parse_textarea         (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element);
 void elementtree_parse_select_in_node   (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLSelect *formSelect);
 void elementtree_parse_option_in_node   (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLSelect *formSelect);
+void elementtree_parse_param_in_node    (xmlNode* xmlelement, gint pos, HTMLEngine *e, GtkHTMLEmbedded *eb);
+void elementtree_parse_object_in_node   (xmlNode* xmlelement, gint pos, HTMLEngine *e, GtkHTMLEmbedded *eb);
 
 static gchar *
 parse_element_name (const gchar *str)
@@ -1604,47 +1606,6 @@ element_parse_text(ELEMENT_PARSE_PARAMS)
 	/*}*/
 }
 
-static void
-element_parse_param (ELEMENT_PARSE_PARAMS)
-{
-	GtkHTMLEmbedded *eb;
-	HTMLElement *element;
-	gchar *name = NULL, *value = NULL;
-
-
-
-	g_return_if_fail (HTML_IS_ENGINE (e));
-
-	if (html_stack_is_empty (e->embeddedStack))
-		return;
-
-	eb = html_stack_top (e->embeddedStack);
-
-	element = html_element_from_xml (e, xmlelement, NULL);
-
-	html_element_get_attr (element, "value", &value);
-	if (html_element_get_attr (element, "name", &name) && name)
-		gtk_html_embedded_set_parameter(eb, name, value);
-
-	/* no close tag */
-	html_element_free (element);
-
-	if (xmlelement && e->parser_clue) {
-		stupid_render (e, clue, xmlelement->children);
-	}
-}
-
-static void
-block_end_object (HTMLEngine *e, HTMLObject *clue, HTMLElement *elem)
-{
-	g_return_if_fail (HTML_IS_ENGINE (e));
-
-	if (!html_stack_is_empty (e->embeddedStack)) {
-		GObject *o = G_OBJECT (html_stack_pop (e->embeddedStack));
-		g_object_unref (o);
-	}
-}
-
 /* It add not html tag object for add gtk elements to page test10 */
 static void
 element_parse_object (ELEMENT_PARSE_PARAMS)
@@ -1662,10 +1623,10 @@ element_parse_object (ELEMENT_PARSE_PARAMS)
 	el = create_object_from_xml (e, element);
 
 	/* show alt text on TRUE */
-	if (el)
+	if (el) {
 		append_element (e, clue, HTML_OBJECT(el));
-
-	push_block (e, "object", DISPLAY_NONE, block_end_object, FALSE, FALSE);
+		elementtree_parse_object_in_node(xmlelement, 0, e, GTK_HTML_EMBEDDED(html_embedded_get_widget (el)));
+	}
 }
 
 /* Frame parsers */
@@ -2089,8 +2050,6 @@ element_parse_br (ELEMENT_PARSE_PARAMS)
 	HTMLDirection dir = HTML_DIRECTION_DERIVED;
 	xmlAttr *currprop;
 
-
-
 	g_return_if_fail (HTML_IS_ENGINE (e));
 
 	clear = HTML_CLEAR_NONE;
@@ -2124,14 +2083,6 @@ element_parse_br (ELEMENT_PARSE_PARAMS)
 	}
 
 	add_line_break (e, clue, clear, dir);
-
-	if (xmlelement && e->parser_clue) {
-		stupid_render (e, clue, xmlelement->children);
-	}
-
-	if (xmlelement && e->parser_clue) {
-		stupid_render (e, clue, xmlelement->children);
-	}
 }
 
 
@@ -3158,7 +3109,6 @@ static HTMLDispatchEntry basic_table[] = {
 	{ID_KBD,              element_parse_inline},
 	{ID_OL,               element_parse_list},
 	{"object",            element_parse_object},
-	{"param",             element_parse_param},
 	{ID_PRE,              element_parse_pre},
 	{ID_SMALL,            element_parse_inline},
 	{ID_SPAN,             element_parse_inline},
@@ -3191,7 +3141,7 @@ static HTMLDispatchEntry basic_table[] = {
 	{"h5",                element_parse_heading},
 	{"h6",                element_parse_heading},
 	/* p and br check the close marker themselves */
-	{"p",                 element_parse_p},
+	{ID_P,                element_parse_p},
 	{"br",                element_parse_br},
 	/*
 	 * not realized yet
@@ -3404,11 +3354,6 @@ html_engine_finalize (GObject *object)
 		engine->listStack = NULL;
 	}
 
-	if (engine->embeddedStack) {
-		html_stack_destroy (engine->embeddedStack);
-		engine->embeddedStack = NULL;
-	}
-
 	if (engine->tempStrings) {
 		for (p = engine->tempStrings; p != NULL; p = p->next)
 			g_free (p->data);
@@ -3612,7 +3557,6 @@ html_engine_init (HTMLEngine *engine)
 	engine->table_stack = html_stack_new (NULL);
 
 	engine->listStack = html_stack_new ((HTMLStackFreeFunc) html_list_destroy);
-	engine->embeddedStack = html_stack_new (g_object_unref);
 
 	engine->url = NULL;
 	engine->target = NULL;
@@ -4704,8 +4648,6 @@ create_object_from_xml (HTMLEngine *e, HTMLElement *element)
 	eb = (GtkHTMLEmbedded *) gtk_html_embedded_new (classid, name, type, data,
 							width, height);
 
-	html_stack_push (e->embeddedStack, eb);
-	g_object_ref (eb);
 	el = html_embedded_new_widget (GTK_WIDGET (e->widget), eb, e);
 
 	g_free (type);
@@ -4714,7 +4656,7 @@ create_object_from_xml (HTMLEngine *e, HTMLElement *element)
 	g_free (name);
 
 	/* create the object */
-    object_found = FALSE;
+	object_found = FALSE;
 	gtk_html_debug_log (e->widget,
 			    "requesting object classid: %s\n",
 			    classid ? classid : "(null)");
@@ -4770,7 +4712,7 @@ create_table_from_xml(HTMLEngine *e, HTMLElement *element)
 }
 
 HTMLText *
-create_text_from_xml(HTMLEngine *e, HTMLElement *testElement, gchar* text)
+create_text_from_xml(HTMLEngine *e, HTMLElement *testElement,const gchar* text)
 {
 	HTMLText *html_object;
 	if (!testElement->style->color)
@@ -4822,14 +4764,14 @@ create_image_from_xml(HTMLEngine *e, HTMLElement *element, gint max_width)
 	HTMLObject 	*image;
 	gchar 		*value;
 	gboolean ismap = FALSE;
-    gint width     = -1;
-    gint height    = -1;
-    gint hspace = 0;
-    gint vspace = 0;
-    gboolean percent_width  = FALSE;
-    gboolean percent_height = FALSE;
-    gchar *mapname = NULL;
-    gchar *alt     = NULL;
+        gint width     = -1;
+	gint height    = -1;
+	gint hspace = 0;
+	gint vspace = 0;
+	gboolean percent_width  = FALSE;
+	gboolean percent_height = FALSE;
+	gchar *mapname = NULL;
+	gchar *alt     = NULL;
 
 	if (element->style->url != NULL || element->style->target != NULL)
 		element->style->border_width = 2;
@@ -4999,12 +4941,22 @@ void element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngin
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h4") ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h5") ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h6") ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "p") ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_P) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_BODY) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_CENTER) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_ADDRESS) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_DIV) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "html")
 			) {
 				html_object = create_flow_from_xml(e, testElement);
 				html_clue_append (HTML_CLUE (htmlelement), html_object);
 				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
+			} else if(!g_ascii_strcasecmp("br",XMLCHAR2GCHAR(current->name))) {
+				HTMLObject* subtext = NULL;
+				html_object = create_flow_from_xml(e, testElement);
+				html_clue_append (HTML_CLUE (htmlelement), html_object);
+				subtext = HTML_OBJECT (create_text_from_xml(e, testElement, ""));
+				html_clue_append (HTML_CLUE (html_object), subtext);
 			} else if(!g_ascii_strcasecmp(ID_FONT,XMLCHAR2GCHAR(current->name))) {
 				if (testElement->style->height) {
 					gint size = testElement->style->height->val;
@@ -5027,33 +4979,30 @@ void element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngin
 				html_object = HTML_OBJECT (create_table_from_xml(e, testElement));
 				html_clue_append (HTML_CLUE (htmlelement), html_object);
 				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
-			} else if(	!g_ascii_strcasecmp("a",		XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp("body",		XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp("b",		XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_CODE,	XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_KBD,		XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_TT,		XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_VAR,		XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_STRIKE,	XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_S,		XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_BIG,		XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_SMALL,	XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_CITE,	XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_SUB,		XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_SUP,		XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_ADDRESS,	XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_CENTER,	XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_U,		XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_I,		XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_EM,		XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_DIV,		XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp("nobr",		XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp(ID_SPAN,	XMLCHAR2GCHAR(current->name)) ||
-						!g_ascii_strcasecmp("i",		XMLCHAR2GCHAR(current->name))) {
-				html_object = create_flow_from_xml(e, testElement);
+			} else if(
+				!g_ascii_strcasecmp("a",		XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp("b",        XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp(ID_CODE,	XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp(ID_KBD,     XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp(ID_TT,      XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp(ID_VAR,     XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp(ID_STRIKE,	XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp(ID_S,       XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp(ID_BIG,     XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp(ID_SMALL,	XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp(ID_CITE,	XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp(ID_SUB,	XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp(ID_SUP,	XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp(ID_U,	XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp(ID_I,	XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp(ID_EM,	XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp("nobr",	XMLCHAR2GCHAR(current->name)) ||
+				!g_ascii_strcasecmp(ID_SPAN,	XMLCHAR2GCHAR(current->name))
+			) {
+				/*html_object = create_flow_from_xml(e, testElement);
 				html_clue_append (HTML_CLUE (htmlelement), html_object);
-				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
-				//element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
+				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);*/
+				element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
 			} else if(	!g_ascii_strcasecmp("img",	XMLCHAR2GCHAR(current->name))) {
 				html_object = HTML_OBJECT (create_image_from_xml(e, testElement, htmlelement->max_width));
 				if(!html_object)
@@ -5100,6 +5049,37 @@ void element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngin
 }
 
 void
+elementtree_parse_param_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e, GtkHTMLEmbedded *eb)
+{
+	HTMLElement *element;
+	gchar *name = NULL, *value = NULL;
+
+	g_return_if_fail (HTML_IS_ENGINE (e));
+
+	element = html_element_from_xml (e, xmlelement, NULL);
+
+	html_element_get_attr (element, "value", &value);
+	if (html_element_get_attr (element, "name", &name) && name)
+		gtk_html_embedded_set_parameter(eb, name, value);
+
+	/* no close tag */
+	html_element_free (element);
+}
+
+void
+elementtree_parse_object_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e, GtkHTMLEmbedded *eb)
+{
+    xmlNode *current = NULL; /* current node */
+    for (current = xmlelement; current; current = current->next)
+    {
+	if(!g_ascii_strcasecmp("param",XMLCHAR2GCHAR(current->name))) {
+		elementtree_parse_param_in_node(current, pos+1, e, eb);
+	} else
+		g_printerr("unknow tag in param:%s\n", XMLCHAR2GCHAR(current->name));
+    }
+}
+
+void
 elementtree_parse_option_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLSelect *formSelect)
 {
 	HTMLElement *element;
@@ -5132,13 +5112,13 @@ elementtree_parse_option_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e, H
 void
 elementtree_parse_select_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLSelect *formSelect)
 {
-	xmlNode *current = NULL; /* current node */
+    xmlNode *current = NULL; /* current node */
     for (current = xmlelement; current; current = current->next)
     {
-		if(!g_ascii_strcasecmp(ID_OPTION,XMLCHAR2GCHAR(current->name))) {
-			elementtree_parse_option_in_node(current, pos+1, e, formSelect);
-		} else
-			g_printerr("unknow tag in option:%s\n", XMLCHAR2GCHAR(current->name));
+	if(!g_ascii_strcasecmp(ID_OPTION,XMLCHAR2GCHAR(current->name))) {
+		elementtree_parse_option_in_node(current, pos+1, e, formSelect);
+	} else
+		g_printerr("unknow tag in option:%s\n", XMLCHAR2GCHAR(current->name));
     }
 }
 
