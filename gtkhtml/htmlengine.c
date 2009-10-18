@@ -249,7 +249,6 @@ struct _HTMLElement {
 };
 
 void element_parse_nodedump_htmlobject(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style);
-static void element_parse_nodedump_head(xmlNode* xmlelement, gint pos, HTMLEngine *e);
 void set_style_to_text(HTMLText *text, HTMLStyle *style, HTMLEngine *e, gint start_index, gint end_index);
 HTMLText * create_text_from_xml(HTMLEngine *e, HTMLElement *testElement,const gchar* text);
 HTMLTableCell * create_cell_from_xml(HTMLEngine *e, HTMLElement *element);
@@ -265,13 +264,19 @@ HTMLSelect * create_select_from_xml (HTMLEngine *e, HTMLElement *element);
 gchar * getcorrect_text(xmlNode* current, HTMLEngine *e, gboolean need_trim);
 gchar * get_text_from_children(xmlNode* xmlelement, HTMLEngine *e, gboolean need_trim);
 
-void element_parse_nodedump             (xmlNode* element, gint pos);
 void elementtree_parse_select           (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element);
+void elementtree_parse_text             (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element);
 void elementtree_parse_textarea         (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element);
 void elementtree_parse_select_in_node   (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLSelect *formSelect);
 void elementtree_parse_option_in_node   (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLSelect *formSelect);
 void elementtree_parse_param_in_node    (xmlNode* xmlelement, gint pos, HTMLEngine *e, GtkHTMLEmbedded *eb);
 void elementtree_parse_object_in_node   (xmlNode* xmlelement, gint pos, HTMLEngine *e, GtkHTMLEmbedded *eb);
+void elementtree_parse_title_in_node    (xmlNode* xmlelement, gint pos, HTMLEngine *e);
+void elementtree_parse_meta_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e);
+void elementtree_parse_head_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e);
+void elementtree_parse_style_in_node    (xmlNode* xmlelement, gint pos, HTMLEngine *e);
+void elementtree_parse_dumpnode         (xmlNode* xmlelement, gint pos);
+void elementtree_parse_dumpnode_in_node (xmlNode* current, gint pos);
 
 static gchar *
 parse_element_name (const gchar *str)
@@ -439,7 +444,7 @@ gen_style_for_element(const gchar *name, HTMLStyle *style)
 	) {
 		if (!style)
 			style = html_style_new();
-		style->fstyle = HTML_CLUEFLOW_STYLE_H1 + (name[1] - '1');
+		style = html_style_set_flow_style (style, HTML_CLUEFLOW_STYLE_H1 + (name[1] - '1'));
 		style = html_style_set_decoration (style, GTK_HTML_FONT_STYLE_BOLD);
 		switch (style->fstyle) {
 			case HTML_CLUEFLOW_STYLE_H6:
@@ -463,12 +468,13 @@ gen_style_for_element(const gchar *name, HTMLStyle *style)
 			default:
 				break;
 		}
+	} else if (	!g_ascii_strcasecmp(name, ID_PRE)){
+		style = html_style_set_flow_style (style, HTML_CLUEFLOW_STYLE_PRE);
 	} else if (	!g_ascii_strcasecmp(name, ID_LI)){
 		style = html_style_set_list_type (style, HTML_LIST_TYPE_UNORDERED);
-		if(style) {
+		style = html_style_set_flow_style (style, HTML_CLUEFLOW_STYLE_LIST_ITEM);
+		if(style)
 			style->listnumber = 1;
-			style->fstyle = HTML_CLUEFLOW_STYLE_LIST_ITEM;
-		}
 	} else if (	!g_ascii_strcasecmp(name, ID_OL)){
 		style = html_style_set_list_type(style, HTML_LIST_TYPE_ORDERED_ARABIC);
 	} else if (	!g_ascii_strcasecmp(name, ID_BLOCKQUOTE)){
@@ -1553,7 +1559,7 @@ element_parse_head(ELEMENT_PARSE_PARAMS)
 {
 	g_return_if_fail (HTML_IS_ENGINE (e));
 	if (xmlelement) {
-		element_parse_nodedump_head(xmlelement->children, 0,  e);
+		elementtree_parse_head_in_node(xmlelement->children, 0,  e);
 	}
 }
 
@@ -4127,8 +4133,8 @@ html_engine_get_object_base (HTMLEngine *e, HTMLObject *o)
 HTMLParseFunc get_callback_node(const gchar* tag);
 HTMLParseFunc get_callback_text_node(const gchar* tag);
 
-static void
-element_parse_nodedump_style(xmlNode* xmlelement, gint pos, HTMLEngine *e)
+void
+elementtree_parse_style_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e)
 {
 	g_return_if_fail (HTML_IS_ENGINE (e));
 
@@ -4154,8 +4160,8 @@ element_parse_nodedump_style(xmlNode* xmlelement, gint pos, HTMLEngine *e)
 	}
 }
 
-static void
-element_parse_nodedump_meta(xmlNode* xmlelement, gint pos, HTMLEngine *e)
+void
+elementtree_parse_meta_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e)
 {
 	gint refresh_delay = 0;
 	g_return_if_fail (HTML_IS_ENGINE (e));
@@ -4224,8 +4230,8 @@ getcorrect_text(xmlNode* current, HTMLEngine *e, gboolean need_trim)
 	return value;
 }
 
-static void
-element_parse_nodedump_title(xmlNode* xmlelement, gint pos, HTMLEngine *e)
+void
+elementtree_parse_title_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e)
 {
 	gchar * value;
 	g_return_if_fail (HTML_IS_ENGINE (e));
@@ -4238,7 +4244,7 @@ element_parse_nodedump_title(xmlNode* xmlelement, gint pos, HTMLEngine *e)
 	}
 }
 
-static const gchar *
+const gchar *
 get_normal_name_typexml(xmlElementType type) {
 	const gchar *typeName = "unknow";
     switch (type) {
@@ -4267,18 +4273,18 @@ get_normal_name_typexml(xmlElementType type) {
 	return typeName;
 }
 
-static
-void element_parse_nodedump_head(xmlNode* xmlelement, gint pos, HTMLEngine *e)
+void
+elementtree_parse_head_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e)
 {
 	xmlNode *current = NULL; /* current node */
     for (current = xmlelement; current; current = current->next)
     {
 		if(!g_ascii_strcasecmp(ID_STYLE,XMLCHAR2GCHAR(current->name))) {
-			element_parse_nodedump_style(current, pos+1, e);
+			elementtree_parse_style_in_node(current, pos+1, e);
 		} else if(!g_ascii_strcasecmp(ID_TITLE,XMLCHAR2GCHAR(current->name))) {
-			element_parse_nodedump_title(current, pos+1, e);
+			elementtree_parse_title_in_node(current, pos+1, e);
 		} else if(!g_ascii_strcasecmp(ID_META,XMLCHAR2GCHAR(current->name))) {
-			element_parse_nodedump_meta(current, pos+1, e);
+			elementtree_parse_meta_in_node(current, pos+1, e);
 		}
     }
 }
@@ -4286,7 +4292,8 @@ void element_parse_nodedump_head(xmlNode* xmlelement, gint pos, HTMLEngine *e)
 /*
  * dump only one node
  */
-void element_parse_nodedump_one_node(xmlNode* current, gint pos)
+void
+elementtree_parse_dumpnode_in_node(xmlNode* current, gint pos)
 {
 	int i;
 	xmlAttr *currprop;
@@ -4294,7 +4301,7 @@ void element_parse_nodedump_one_node(xmlNode* current, gint pos)
 	if(!current)
 		return;
 
-    typeName = get_normal_name_typexml(current->type);
+	typeName = get_normal_name_typexml(current->type);
 	for(i=0;i<pos;i++)
 		g_print("\t");
 	g_print("%s=%s(%d)->%s<-\n",current->name,typeName, current->type,current->content);
@@ -4313,13 +4320,13 @@ void element_parse_nodedump_one_node(xmlNode* current, gint pos)
 /*
  * dump many nodes
  */
-void element_parse_nodedump(xmlNode* element, gint pos)
+void elementtree_parse_dumpnode(xmlNode* xmlelement, gint pos)
 {
     xmlNode *current = NULL; /* current node */
-    for (current = element; current; current = current->next)
+    for (current = xmlelement; current; current = current->next)
     {
-		element_parse_nodedump_one_node(current, pos);
-        element_parse_nodedump(current->children,pos + 1);
+	elementtree_parse_dumpnode_in_node(current, pos);
+	elementtree_parse_dumpnode(current->children,pos + 1);
     }
 }
 
@@ -4903,20 +4910,60 @@ create_flow_from_xml(HTMLEngine *e, HTMLElement *testElement)
 	return flow;
 }
 
-void element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style, gint *count){
+void
+elementtree_parse_text_innode(HTMLEngine *e, HTMLObject* clue, HTMLElement *element, const gchar * text,gboolean newclue)
+{
+	HTMLObject* html_object = NULL;
+	/*FIXME Must cancate to previous text!*/
+	html_object = HTML_OBJECT (create_text_from_xml(e, element, text));
+	if (newclue) {
+		HTMLObject* subclue = create_flow_from_xml(e, element);
+		html_clue_append (HTML_CLUE (subclue), html_object);
+		html_clue_append (HTML_CLUE (clue), subclue);
+	} else {
+		html_clue_append (HTML_CLUE (clue), html_object);
+	}
+}
+
+void
+elementtree_parse_text (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element)
+{
+	gchar * text ;
+	gboolean preformated = FALSE;
+
+	if (element->style)
+		preformated =  element->style->fstyle & HTML_CLUEFLOW_STYLE_PRE;
+
+	text = getcorrect_text(xmlelement, e, !preformated);
+	if (text) {
+		/*In preformater - split to line and add by one*/
+		if (preformated) {
+			gchar** stringlist = g_strsplit(text,"\n",0);
+			gchar** stringiter = stringlist;
+			if (stringiter) {
+				while(*stringiter) {
+					if (g_ascii_strcasecmp("", *stringiter))
+						elementtree_parse_text_innode(e, clue, element, *stringiter, preformated);
+					stringiter ++;
+				}
+				g_strfreev (stringlist);
+			}
+		} else
+			elementtree_parse_text_innode(e, clue, element, text, preformated);
+	}
+	if (xmlelement->children)
+		g_printerr("I have sub elements in text");
+}
+
+void
+element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style, gint *count)
+{
 		HTMLElement *testElement = html_element_from_xml(e, current, parent_style);
 		HTMLObject* html_object = NULL;
 		if(!g_ascii_strcasecmp(ID_TEXT,XMLCHAR2GCHAR(current->name))) {
-				gchar * text = getcorrect_text(current, e, TRUE);
-				if (text) {
-					/*FIXME Must cancate to previous text!*/
-					html_object = HTML_OBJECT (create_text_from_xml(e, testElement, text));
-					html_clue_append (HTML_CLUE (htmlelement), html_object);
-					if (current->children)
-						g_printerr("I have sub elements in text");
-				}
+			elementtree_parse_text(current, pos+1, e, htmlelement, testElement);
 		} else if(!g_ascii_strcasecmp(ID_HEAD,XMLCHAR2GCHAR(current->name))) {
-			element_parse_nodedump_head(current->children, pos+1, e);
+			elementtree_parse_head_in_node(current->children, pos+1, e);
 		} else if (html_object_is_clue(htmlelement)) {
 			if(	!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "hr") ) {
 					html_object = create_rule_from_xml(e, testElement, htmlelement->max_width);
@@ -4952,11 +4999,7 @@ void element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngin
 				html_clue_append (HTML_CLUE (htmlelement), html_object);
 				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
 			} else if(!g_ascii_strcasecmp("br",XMLCHAR2GCHAR(current->name))) {
-				HTMLObject* subtext = NULL;
-				html_object = create_flow_from_xml(e, testElement);
-				html_clue_append (HTML_CLUE (htmlelement), html_object);
-				subtext = HTML_OBJECT (create_text_from_xml(e, testElement, ""));
-				html_clue_append (HTML_CLUE (html_object), subtext);
+				elementtree_parse_text_innode(e, htmlelement, testElement, "", TRUE);
 			} else if(!g_ascii_strcasecmp(ID_FONT,XMLCHAR2GCHAR(current->name))) {
 				if (testElement->style->height) {
 					gint size = testElement->style->height->val;
@@ -4980,24 +5023,25 @@ void element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngin
 				html_clue_append (HTML_CLUE (htmlelement), html_object);
 				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
 			} else if(
-				!g_ascii_strcasecmp("a",		XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp("b",        XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp(ID_CODE,	XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp(ID_KBD,     XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp(ID_TT,      XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp(ID_VAR,     XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp(ID_STRIKE,	XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp(ID_S,       XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp(ID_BIG,     XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp(ID_SMALL,	XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp(ID_CITE,	XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp(ID_SUB,	XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp(ID_SUP,	XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp(ID_U,	XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp(ID_I,	XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp(ID_EM,	XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp("nobr",	XMLCHAR2GCHAR(current->name)) ||
-				!g_ascii_strcasecmp(ID_SPAN,	XMLCHAR2GCHAR(current->name))
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_PRE) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "a") ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "b") ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_CODE) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_KBD) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_TT) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_VAR) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_STRIKE) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_S) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_BIG) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_SMALL) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_CITE) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_SUB) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_SUP) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_U) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_I) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_EM) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "nobr") ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_SPAN)
 			) {
 				/*html_object = create_flow_from_xml(e, testElement);
 				html_clue_append (HTML_CLUE (htmlelement), html_object);
@@ -5022,7 +5066,7 @@ void element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngin
 				element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
 			} else {
 				g_printerr("unknow in clue %s\n",XMLCHAR2GCHAR(current->name));
-				element_parse_nodedump_one_node(current, pos + 1);
+				elementtree_parse_dumpnode_in_node(current, pos + 1);
 			}
 		} else if (HTML_IS_TABLE(htmlelement)) {
 			if(!g_ascii_strcasecmp("tr",XMLCHAR2GCHAR(current->name))) {
@@ -5038,7 +5082,7 @@ void element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngin
 				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
 			} else {
 				g_printerr("unknow in table %s\n",XMLCHAR2GCHAR(current->name));
-				element_parse_nodedump_one_node(current, pos + 1);
+				elementtree_parse_dumpnode_in_node(current, pos + 1);
 			}
 		} else {
 			g_printerr("object not created\n");
@@ -5157,14 +5201,14 @@ void element_parse_nodedump_htmlobject(xmlNode* xmlelement, gint pos, HTMLEngine
     xmlNode *current = NULL; /* current node */
     gint i = 1; /*it's only for list*/
     for (current = xmlelement; current; current = current->next) {
-		/* verbose dump object */
-		/*element_parse_nodedump_one_node(current, pos);*/
+	/* verbose dump object */
+	/*elementtree_parse_dumpnode_in_node(current, pos);*/
         element_parse_nodedump_htmlobject_one(current, pos, e, htmlelement, parent_style, &i);
-  	}
+    }
 }
 
 static void element_parse_dump(ELEMENT_PARSE_PARAMS) {
-	element_parse_nodedump(xmlelement, 0);
+	elementtree_parse_dumpnode(xmlelement, 0);
 }
 
 static void element_parse_comment(ELEMENT_PARSE_PARAMS) {
@@ -5448,7 +5492,7 @@ html_engine_stream_end (GtkHTMLStream *stream,
 			root = xmlDocGetRootElement(e->parser->myDoc);
 	if(root) {
 		e->eat_space = FALSE;
-		/*element_parse_nodedump(root, 0);*/
+		/*elementtree_parse_dumpnode(root, 0);*/
 #ifndef USEOLDRENDER
 		element_parse_nodedump_htmlobject(root, 0, e, e->parser_clue, NULL);
 #else

@@ -30,7 +30,6 @@ HTMLStyle  * parse_border_style (HTMLStyle *style,const gchar *value);
 HTMLStyle  * parse_border_color (HTMLStyle *style,const gchar *value);
 HTMLStyle  * parse_border (HTMLStyle *style,const gchar *origvalue);
 HTMLStyle  * parse_border_width (HTMLStyle *style,const gchar *value);
-HTMLStyle  * get_list_type (HTMLStyle *style, const gchar* value);
 
 /* Color handling.  */
 gboolean
@@ -139,7 +138,7 @@ HTMLStyle *
 html_style_copy(HTMLStyle *orig)
 {
 	HTMLStyle *style;
-	
+
 	if (!orig)
 		return NULL;
 	style = g_new0 (HTMLStyle, 1);
@@ -147,7 +146,7 @@ html_style_copy(HTMLStyle *orig)
 
 	if (orig->face)
 		style->face = g_strdup(orig->face);
-		
+
 	style->settings = orig->settings;
 	style->mask = orig->mask;
 
@@ -166,12 +165,12 @@ html_style_copy(HTMLStyle *orig)
 
 	if(orig->bg_image)
 		style->bg_image = g_strdup(orig->bg_image);
-		
+
 	style->bg_color = html_color_copy(orig->bg_color);
 	style->display = orig->display;
 	style->listnumber = 0;
 	style->listtype = HTML_LIST_TYPE_BLOCKQUOTE;
-	
+
 	/* border */
 	style->border_width = orig->border_width;
 	style->border_style = orig->border_style;
@@ -195,9 +194,9 @@ html_style_copy_onlyinherit(HTMLStyle *orig)
 	HTMLStyle *style;
 	if (!orig)
 		return NULL;
-		
+
 	style = html_style_copy(orig);
-	
+
 	style->border_width = 0;
 	style->border_style = HTML_BORDER_NONE;
 	if (style->border_color)
@@ -231,7 +230,16 @@ html_style_free (HTMLStyle *style)
 	g_free (style);
 }
 
-HTMLStyle * 
+HTMLStyle *
+html_style_set_flow_style (HTMLStyle *style, HTMLClueFlowStyle value)
+{
+	if (!style)
+		style = html_style_new ();
+	style->fstyle = value;
+	return style;
+}
+
+HTMLStyle *
 html_style_set_list_type (HTMLStyle *style, HTMLListType value)
 {
 	if (!style)
@@ -240,7 +248,7 @@ html_style_set_list_type (HTMLStyle *style, HTMLListType value)
 	return style;
 }
 
-HTMLStyle * 
+HTMLStyle *
 parse_list_type (HTMLStyle *style, const gchar* value)
 {
 	if (!g_ascii_strcasecmp (value, "A"))
@@ -289,16 +297,16 @@ HTMLStyle *
 html_style_add_dir (HTMLStyle *style, const gchar* dir_text)
 {
 	if (dir_text) {
-		
+
 		if (!style)
 			style = html_style_new ();
-			
+
 		if (!g_ascii_strncasecmp (dir_text, "ltr", 3))
 			style->dir = HTML_DIRECTION_LTR;
 		else if (!g_ascii_strncasecmp (dir_text, "rtl", 3))
 			style->dir = HTML_DIRECTION_RTL;
 	}
-	
+
 	return style;
 }
 
@@ -317,7 +325,7 @@ parse_halign (const gchar *token, HTMLHAlignType default_val)
 
 HTMLVAlignType
 parse_valign (const gchar *token, HTMLVAlignType default_val)
-{			
+{
 	if (g_ascii_strcasecmp (token, "top") == 0)
 		return HTML_VALIGN_TOP;
 	else if (g_ascii_strcasecmp (token, "bottom") == 0)
@@ -539,7 +547,7 @@ html_style_set_border_color (HTMLStyle *style, HTMLColor *color)
 HTMLStyle *
 parse_border_style (HTMLStyle *style,const gchar *value)
 {
-	
+
 	while (isspace (*value))
 		value ++;
 
@@ -555,7 +563,7 @@ HTMLStyle *
 parse_border_color (HTMLStyle *style,const gchar *value)
 {
 	GdkColor color;
-		
+
 	if (html_parse_color (value, &color)) {
 		HTMLColor *hc = html_color_new_from_gdk_color (&color);
 		style = html_style_set_border_color (style, hc);
@@ -593,10 +601,10 @@ parse_border (HTMLStyle *style,const gchar *origvalue)
 			gchar *next;
 			gint modified;
 			gchar orig = 0;
-	
+
 			while (isspace (*value))
 				value ++;
-	
+
 			next = value;
 			while (*next && !isspace (*next))
 				next ++;
@@ -606,16 +614,16 @@ parse_border (HTMLStyle *style,const gchar *origvalue)
 				modified = 1;
 			} else
 				modified = 0;
-	
+
 			style = parse_border_style (style, value);
 			style = parse_border_color (style, value);
 			style = parse_border_width (style, value);
-	
+
 			if (modified) {
 				*next = orig;
 				next ++;
 			}
-	
+
 			value = next;
 		}
 		g_free(tmpvalue);
@@ -637,7 +645,7 @@ html_style_add_attribute (HTMLStyle *style, const gchar *attr, const gchar *valu
 		style = html_style_add_text_valign (style, parse_valign (value, HTML_VALIGN_MIDDLE));
 	} else if (!g_ascii_strcasecmp ("width", attr) ||
 		   !g_ascii_strcasecmp ("length", attr) ) { //hr
-		style = html_style_add_width (style, value);	
+		style = html_style_add_width (style, value);
 	} else if (!g_ascii_strcasecmp ("height", attr) ||
 		   !g_ascii_strcasecmp ("size", attr)) { //hr,font,select
 		style = html_style_add_height (style, value);
@@ -669,7 +677,7 @@ html_style_add_attribute (HTMLStyle *style, const gchar *attr, const gchar *valu
 	} else if (!g_ascii_strcasecmp ("border-style", attr)) {
 		style = parse_border_style (style, value);
 	} else if (!g_ascii_strcasecmp ("dir", attr)) {
-		style = html_style_add_dir (style, value);		
+		style = html_style_add_dir (style, value);
 	} else if (!g_ascii_strcasecmp ("border-color", attr)) {
 		style = parse_border_color (style, value);
 	} else if (!g_ascii_strcasecmp ("border-width", attr)) {

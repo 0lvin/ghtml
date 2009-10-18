@@ -43,7 +43,7 @@ struct _HTMLStyle {
 	HTMLDirection       dir;
 	HTMLListType        listtype;
 	gint                listnumber;
-	
+
 	/* Cell Level */
 	HTMLVAlignType      text_valign;
 
@@ -54,7 +54,7 @@ struct _HTMLStyle {
 	gchar           *bg_image;
 	HTMLColor       *bg_color;
 	HTMLDisplayType display;
-	
+
 	/* border */
 	gint border_width;
 	HTMLBorderStyle border_style;
@@ -85,6 +85,7 @@ HTMLStyle *html_style_set_border_color     (HTMLStyle *style, HTMLColor *color);
 HTMLStyle *html_style_set_padding          (HTMLStyle *style, gint padding);
 HTMLStyle *html_style_add_text_align       (HTMLStyle *style, HTMLHAlignType type);
 HTMLStyle *html_style_add_text_valign      (HTMLStyle *style, HTMLVAlignType type);
+HTMLStyle *html_style_set_flow_style       (HTMLStyle *style, HTMLClueFlowStyle value);
 HTMLStyle *html_style_add_font_face        (HTMLStyle *style, const HTMLFontFace *face);
 HTMLStyle *html_style_add_color            (HTMLStyle *style, HTMLColor *face);
 HTMLStyle *html_style_add_attribute        (HTMLStyle *style, const gchar *attr, const gchar *value);
