@@ -182,6 +182,7 @@ static guint signals [LAST_SIGNAL] = { 0 };
 #define ID_FONT "font"
 #define ID_FORM "form"
 #define ID_MAP "map"
+#define ID_MENU "menu"
 #define ID_META "meta"
 #define ID_HEAD "head"
 #define ID_HEADING "h"
@@ -189,6 +190,7 @@ static guint signals [LAST_SIGNAL] = { 0 };
 #define ID_IMG "img"
 #define ID_INPUT "input"
 #define ID_KBD "kbd"
+#define ID_OBJECT "object"
 #define ID_OL "ol"
 #define ID_P "p"
 #define ID_PRE "pre"
@@ -433,7 +435,7 @@ gen_style_for_element(const gchar *name, HTMLStyle *style)
 	} else if (	!g_ascii_strcasecmp(name, ID_SPAN)){
 		style = html_style_set_display (style, HTMLDISPLAY_INLINE);
 	} else if (	!g_ascii_strcasecmp(name, ID_DIV) ||
-				!g_ascii_strcasecmp(name, "nobr")){
+			!g_ascii_strcasecmp(name, "nobr")){
 		style = html_style_set_display (style, HTMLDISPLAY_BLOCK);
 	} else if (!g_ascii_strcasecmp(name, "h1") ||
 		!g_ascii_strcasecmp(name, "h2") ||
@@ -478,20 +480,21 @@ gen_style_for_element(const gchar *name, HTMLStyle *style)
 	} else if (	!g_ascii_strcasecmp(name, ID_OL)){
 		style = html_style_set_list_type(style, HTML_LIST_TYPE_ORDERED_ARABIC);
 	} else if (	!g_ascii_strcasecmp(name, ID_BLOCKQUOTE)){
-		 style = html_style_set_list_type(style, HTML_LIST_TYPE_BLOCKQUOTE);
+		style = html_style_set_flow_style (style, HTML_CLUEFLOW_STYLE_LIST_ITEM);
+		style = html_style_set_list_type(style, HTML_LIST_TYPE_BLOCKQUOTE);
 	} else if (	!g_ascii_strcasecmp(name, ID_UL) ||
-				!g_ascii_strcasecmp(name, ID_BLOCKQUOTE) ||
-				!g_ascii_strcasecmp(name, ID_DIR) ||
-				!g_ascii_strcasecmp(name, ID_OL) ){
+			!g_ascii_strcasecmp(name, ID_DIR)||
+			!g_ascii_strcasecmp(name, ID_OL) ){
 		 style = html_style_set_list_type(style, HTML_LIST_TYPE_UNORDERED);
 	} else if (	!g_ascii_strcasecmp(name, ID_DD)) {
+		style = html_style_set_flow_style (style, HTML_CLUEFLOW_STYLE_LIST_ITEM);
 		style = html_style_set_list_type(style, HTML_LIST_TYPE_GLOSSARY_DD);
 	} else if (	!g_ascii_strcasecmp(name, ID_DIR)){
-		 style = html_style_set_list_type(style, HTML_LIST_TYPE_DIR);
+		style = html_style_set_list_type(style, HTML_LIST_TYPE_DIR);
 	} else if (	!g_ascii_strcasecmp(name, ID_DL)){
-		 style = html_style_set_list_type(style, HTML_LIST_TYPE_GLOSSARY_DL);
-	} else if (	!g_ascii_strcasecmp(name, "object") ||
-				!g_ascii_strcasecmp(name, ID_SELECT)){
+		style = html_style_set_list_type(style, HTML_LIST_TYPE_GLOSSARY_DL);
+	} else if (	!g_ascii_strcasecmp(name, ID_OBJECT) ||
+			!g_ascii_strcasecmp(name, ID_SELECT)){
 		style = html_style_set_display (style, HTMLDISPLAY_NONE);
 	}
 
@@ -3114,7 +3117,7 @@ static HTMLDispatchEntry basic_table[] = {
 	{"iframe",            element_parse_iframe},
 	{ID_KBD,              element_parse_inline},
 	{ID_OL,               element_parse_list},
-	{"object",            element_parse_object},
+	{ID_OBJECT,            element_parse_object},
 	{ID_PRE,              element_parse_pre},
 	{ID_SMALL,            element_parse_inline},
 	{ID_SPAN,             element_parse_inline},
@@ -4993,6 +4996,9 @@ element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e,
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_CENTER) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_ADDRESS) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_DIV) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_DT) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_DD) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_BLOCKQUOTE) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "html")
 			) {
 				html_object = create_flow_from_xml(e, testElement);
@@ -5014,7 +5020,7 @@ element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e,
 					html_clue_append (HTML_CLUE (htmlelement), html_object);
 					element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
 				}
-			} else if(!g_ascii_strcasecmp("object",XMLCHAR2GCHAR(current->name))) {
+			} else if(!g_ascii_strcasecmp(ID_OBJECT,XMLCHAR2GCHAR(current->name))) {
 				HTMLEmbedded *el = create_object_from_xml(e, testElement);
 				if (el)
 					html_clue_append (HTML_CLUE (htmlelement), HTML_OBJECT(el));
@@ -5062,7 +5068,11 @@ element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e,
 				create_form_from_xml(e, testElement);
 				element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
 				e->form = NULL;
-			} else if(	!g_ascii_strcasecmp(ID_UL,  XMLCHAR2GCHAR(current->name))) {
+			} else if(	!g_ascii_strcasecmp(ID_UL,  XMLCHAR2GCHAR(current->name)) ||
+					!g_ascii_strcasecmp(ID_OL,  XMLCHAR2GCHAR(current->name)) ||
+					!g_ascii_strcasecmp(ID_DIR, XMLCHAR2GCHAR(current->name))||
+					!g_ascii_strcasecmp(ID_MENU,XMLCHAR2GCHAR(current->name))||
+					!g_ascii_strcasecmp(ID_DL,  XMLCHAR2GCHAR(current->name)) ) {
 				element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
 			} else {
 				g_printerr("unknow in clue %s\n",XMLCHAR2GCHAR(current->name));
