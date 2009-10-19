@@ -177,6 +177,7 @@ static guint signals [LAST_SIGNAL] = { 0 };
 #define ID_DL "dl"
 #define ID_DT "dt"
 #define ID_DD "dd"
+#define ID_LABEL "label"
 #define ID_LI "li"
 #define ID_EM "em"
 #define ID_FONT "font"
@@ -389,10 +390,7 @@ gen_style_for_element(const gchar *name, HTMLStyle *style)
 {
 	if(!name)
 		return style;
-	if (!g_ascii_strcasecmp(name, ID_I)) {
-		style = html_style_set_decoration (style, GTK_HTML_FONT_STYLE_ITALIC);
-		style = html_style_set_display (style, HTMLDISPLAY_INLINE);
-	} else if (!g_ascii_strcasecmp(name, ID_B)) {
+	if (!g_ascii_strcasecmp(name, ID_B)) {
 		style = html_style_set_decoration (style, GTK_HTML_FONT_STYLE_BOLD);
 		style = html_style_set_display (style, HTMLDISPLAY_INLINE);
 	} else if (	!g_ascii_strcasecmp(name, ID_CODE) ||
@@ -429,8 +427,9 @@ gen_style_for_element(const gchar *name, HTMLStyle *style)
 		style = html_style_set_decoration (style, GTK_HTML_FONT_STYLE_UNDERLINE);
 		style = html_style_set_display (style, HTMLDISPLAY_INLINE);
 	} else if (	!g_ascii_strcasecmp(name, ID_I) ||
-				!g_ascii_strcasecmp(name, ID_EM) ){
+			!g_ascii_strcasecmp(name, ID_EM) ){
 		style = html_style_set_decoration (style, GTK_HTML_FONT_STYLE_ITALIC);
+		style = html_style_set_display (style, HTMLDISPLAY_INLINE);
 		style = html_style_set_display (style, HTMLDISPLAY_INLINE);
 	} else if (	!g_ascii_strcasecmp(name, ID_SPAN)){
 		style = html_style_set_display (style, HTMLDISPLAY_INLINE);
@@ -3103,6 +3102,7 @@ static HTMLDispatchEntry basic_table[] = {
 	{ID_DT,               element_parse_dt},
 	{ID_DD,               element_parse_dd},
 	{ID_LI,               element_parse_li},
+	{ID_LABEL,            element_parse_inline},
 	{ID_EM,               element_parse_inline},
 	{ID_FONT,             element_parse_font},
 	{ID_FORM,             element_parse_form},
@@ -3117,7 +3117,7 @@ static HTMLDispatchEntry basic_table[] = {
 	{"iframe",            element_parse_iframe},
 	{ID_KBD,              element_parse_inline},
 	{ID_OL,               element_parse_list},
-	{ID_OBJECT,            element_parse_object},
+	{ID_OBJECT,           element_parse_object},
 	{ID_PRE,              element_parse_pre},
 	{ID_SMALL,            element_parse_inline},
 	{ID_SPAN,             element_parse_inline},
@@ -3157,7 +3157,6 @@ static HTMLDispatchEntry basic_table[] = {
 	 */
 	{"noscript",          element_parse_hide},
 	{"link",              element_parse_hide},
-	{"label",             element_parse_hide},
 	{NULL,                NULL}
 };
 
@@ -5045,6 +5044,7 @@ element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e,
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_SUP) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_U) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_I) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_LABEL) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_EM) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "nobr") ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_SPAN)
