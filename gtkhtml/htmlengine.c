@@ -1604,7 +1604,7 @@ element_parse_text(ELEMENT_PARSE_PARAMS)
 	} else {*/
 		tempstr_trim = trim_text(XMLCHAR2GCHAR(xmlelement->content));
 		if(tempstr_trim) {
-			tempstr_iconv = html_engine_convert_entity (convert_text_encoding (e->iconv_cd, tempstr_trim));
+			tempstr_iconv = html_engine_convert_entity (g_strdup (tempstr_trim));
 			if(tempstr_iconv) {
 				insert_text (e, clue, tempstr_iconv);
 				g_free(tempstr_iconv);
@@ -2532,12 +2532,6 @@ html_engine_set_content_type (HTMLEngine *e, const gchar * content_type)
 	if (!content_type)
 		content_type=default_content_type;
 	e->content_type = g_ascii_strdown ( content_type, -1);
-
-	if(is_valid_g_iconv (e->iconv_cd))
-		g_iconv_close (e->iconv_cd);
-
-	e->iconv_cd = generate_iconv_from (e->content_type);
-
 }
 
 const gchar *
@@ -3221,9 +3215,6 @@ html_engine_finalize (GObject *object)
 	if(engine->href)
 		g_free(engine->href);
 
-	if(is_valid_g_iconv (engine->iconv_cd))
-		g_iconv_close (engine->iconv_cd);
-
 	if(engine->content_type)
 		g_free(engine->content_type);
 
@@ -3629,7 +3620,6 @@ html_engine_init (HTMLEngine *engine)
 	engine->enableconvert = FALSE;
 
 	engine->content_type = g_strdup (default_content_type);
-	engine->iconv_cd = NULL;
 	engine->title = NULL;
 	engine->css = NULL;
 }
@@ -3835,9 +3825,6 @@ html_engine_begin (HTMLEngine *e, const gchar *content_type)
 
 	html_engine_set_content_type (e, content_type);
 
-	xmlInitParser();
-	e->parser = htmlCreatePushParserCtxt (NULL, NULL, NULL, 0/*e->size*/, NULL, 0);
-
 	html_engine_stop_parser (e);
 	e->writing = TRUE;
 	e->begin = TRUE;
@@ -3946,6 +3933,10 @@ html_engine_stream_write (GtkHTMLStream *handle,
 
 	if (buffer == NULL)
 		return;
+	if (!e->parser) {
+		xmlInitParser();
+		e->parser = htmlCreatePushParserCtxt (NULL, NULL, NULL, 0/*e->size*/, NULL, 0);
+	}
 
 	if (e->parser)
 		htmlParseChunk (e->parser, buffer, size == -1 ? strlen (buffer) : size, 0);
@@ -4221,7 +4212,7 @@ getcorrect_text(xmlNode* current, HTMLEngine *e, gboolean need_trim)
 
 	if(tempstr_trim) {
 		if(g_ascii_strcasecmp("",tempstr_trim)) {
-			tempstr_iconv = html_engine_convert_entity (convert_text_encoding (e->iconv_cd, tempstr_trim));
+			tempstr_iconv = html_engine_convert_entity (g_strdup (tempstr_trim));
 			if(tempstr_iconv) {
 				value = g_strdup(tempstr_iconv);
 				g_free(tempstr_iconv);
@@ -4458,7 +4449,7 @@ create_input_from_xml(HTMLEngine *e, HTMLElement *element)
 	if (html_element_get_attr (element, "vspace", &value) && value)
 			imgVSpace = atoi (value);
 
-	value_text = html_engine_convert_entity (convert_text_encoding (e->iconv_cd, strvalue));
+	value_text = html_engine_convert_entity (g_strdup(strvalue));
 
 	switch ( type ) {
 	case CheckBox:

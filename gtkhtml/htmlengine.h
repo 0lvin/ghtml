@@ -87,8 +87,6 @@ struct _HTMLEngine {
 
 	gboolean enableconvert;        /*enable convert encoding*/
 	gchar * content_type;          /*current encoding*/
-	GIConv iconv_cd;               /*current encoding page*/
-
 	gchar * css;                   /* current css */
 
 	gboolean parsing;
