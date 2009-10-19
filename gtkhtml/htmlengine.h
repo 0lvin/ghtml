@@ -160,8 +160,6 @@ struct _HTMLEngine {
 	 */
 	GList *tempStrings;
 
-	HTMLMap *map;
-
 	/* This is TRUE if we cannot insert a paragraph break (which is just an
            extra empty line).  It's set to FALSE as soon as some element is
            added to a flow.  The purpose is to avoid having paragraph breaks to

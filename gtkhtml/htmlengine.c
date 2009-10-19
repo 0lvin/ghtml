@@ -131,7 +131,6 @@ static void      update_embedded           (GtkWidget *widget,
 
 static void      html_engine_map_table_clear (HTMLEngine *e);
 static void      html_engine_id_table_clear (HTMLEngine *e);
-static void      html_engine_add_map (HTMLEngine *e, const gchar *);
 static void      clear_pending_expose (HTMLEngine *e);
 static void      push_clue (HTMLEngine *e, HTMLObject *clue);
 static void      pop_clue (HTMLEngine *e);
@@ -267,13 +266,17 @@ HTMLSelect * create_select_from_xml (HTMLEngine *e, HTMLElement *element);
 gchar * getcorrect_text(xmlNode* current, HTMLEngine *e, gboolean need_trim);
 gchar * get_text_from_children(xmlNode* xmlelement, HTMLEngine *e, gboolean need_trim);
 
+void elementtree_parse_text_innode      (HTMLEngine *e, HTMLObject* clue, HTMLElement *element, const gchar * text,gboolean newclue);
 void elementtree_parse_select           (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element);
 void elementtree_parse_text             (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element);
 void elementtree_parse_textarea         (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element);
 void elementtree_parse_select_in_node   (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLSelect *formSelect);
 void elementtree_parse_option_in_node   (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLSelect *formSelect);
+void elementtree_parse_map              (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLElement *element);
 void elementtree_parse_param_in_node    (xmlNode* xmlelement, gint pos, HTMLEngine *e, GtkHTMLEmbedded *eb);
 void elementtree_parse_object_in_node   (xmlNode* xmlelement, gint pos, HTMLEngine *e, GtkHTMLEmbedded *eb);
+void elementtree_parse_map_in_node      (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLMap *map);
+void elementtree_parse_area_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLMap *map);
 void elementtree_parse_title_in_node    (xmlNode* xmlelement, gint pos, HTMLEngine *e);
 void elementtree_parse_meta_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e);
 void elementtree_parse_head_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e);
@@ -1402,14 +1405,6 @@ block_end_p (HTMLEngine *e, HTMLObject *clue, HTMLElement *elem)
 }
 
 static void
-block_end_map (HTMLEngine *e, HTMLObject *clue, HTMLElement *elem)
-{
-	g_return_if_fail (HTML_IS_ENGINE (e));
-
-	e->map = NULL;
-}
-
-static void
 push_clue_style (HTMLEngine *e)
 {
 	g_return_if_fail (HTML_IS_ENGINE (e));
@@ -1790,57 +1785,6 @@ element_parse_iframe (ELEMENT_PARSE_PARAMS)
 	}
 }
 
-
-static void
-element_parse_area (ELEMENT_PARSE_PARAMS)
-{
-	HTMLShape *shape;
-	gchar *type = NULL;
-	gchar *href = NULL;
-	gchar *coords = NULL;
-	gchar *target = NULL;
-	xmlAttr *currprop;
-
-	g_return_if_fail (HTML_IS_ENGINE (e));
-
-	if (e->map == NULL)
-		return;
-
-	for(currprop = xmlelement->properties; currprop; currprop = currprop->next)
-        {
-		gchar * name = XMLCHAR2GCHAR(currprop->name);
-		gchar * value = XMLCHAR2GCHAR(currprop->children->content);
-		if(name && value) {
-			if (g_ascii_strncasecmp (name, "shape", 5) == 0) {
-				type = g_strdup (value);
-			} else if (g_ascii_strncasecmp (name, "href", 4) == 0) {
-				href = html_engine_convert_entity (g_strdup (value));
-			} else if ( g_ascii_strncasecmp (name, "target", 6) == 0) {
-				target = html_engine_convert_entity (g_strdup (value));
-			} else if ( g_ascii_strncasecmp (name, "coords", 6) == 0) {
-				coords = g_strdup (value);
-			}
-		}
-	}
-
-	if (type || coords) {
-
-		shape = html_shape_new (type, coords, href, target);
-		if (shape != NULL) {
-			html_map_add_shape (e->map, shape);
-		}
-	}
-
-	g_free (type);
-	g_free (href);
-	g_free (coords);
-	g_free (target);
-
-	if (xmlelement && e->parser_clue) {
-		stupid_render (e, clue, xmlelement->children);
-	}
-}
-
 static void
 block_end_anchor (HTMLEngine *e, HTMLObject *clue, HTMLElement *elem)
 {
@@ -1861,8 +1805,6 @@ element_parse_a (ELEMENT_PARSE_PARAMS)
 	HTMLElement *element;
 	gchar *url = NULL;
 	gchar *id = NULL;
-	gchar *type = NULL;
-	gchar *coords = NULL;
 	gchar *target = NULL;
 	gchar *value;
 
@@ -1890,14 +1832,6 @@ element_parse_a (ELEMENT_PARSE_PARAMS)
 
 	if (id == NULL && html_element_get_attr (element, "name", &value))
 		id = g_strdup (value);
-
-	if (e->map && (html_element_get_attr (element, "shape", &type) || html_element_get_attr (element, "coords", &coords))) {
-		HTMLShape *shape;
-
-		shape = html_shape_new (type, coords, url, target);
-		if (shape)
-			html_map_add_shape (e->map, shape);
-	}
 
 	if (id != NULL) {
 		if (e->flow == NULL)
@@ -2544,30 +2478,14 @@ html_engine_get_content_type (HTMLEngine *e)
 static void
 element_parse_map (ELEMENT_PARSE_PARAMS)
 {
-	xmlAttr *currprop;
-
-
-
+	HTMLElement* element;
 	g_return_if_fail (HTML_IS_ENGINE (e));
 
 	pop_element (e, ID_MAP);
 
-	for(currprop = xmlelement->properties; currprop; currprop = currprop->next)
-        {
-		gchar * name = XMLCHAR2GCHAR(currprop->name);
-		gchar * value = XMLCHAR2GCHAR(currprop->children->content);
-		if(name && value) {
-			if (g_ascii_strncasecmp (name, "name", 4) == 0) {
-				html_engine_add_map (e, value);
-			}
-		}
-	}
-	/* FIXME map nesting */
-	push_block (e, ID_MAP, HTMLDISPLAY_NONE, block_end_map, FALSE, FALSE);
+	element = html_element_from_xml (e, xmlelement, NULL);
 
-	if (xmlelement && e->parser_clue) {
-		stupid_render (e, clue, xmlelement->children);
-	}
+	elementtree_parse_map(xmlelement, 0, e, element);
 }
 
 
@@ -3076,7 +2994,6 @@ typedef struct _HTMLDispatchEntry {
 
 static HTMLDispatchEntry basic_table[] = {
 	{ID_A,                element_parse_a},
-	{ID_AREA,             element_parse_area},
 	{ID_ADDRESS,          element_parse_address},
 	{ID_B,                element_parse_inline},
 	{"base",              element_parse_base},
@@ -3571,7 +3488,6 @@ html_engine_init (HTMLEngine *engine)
 
 	engine->draw_queue = html_draw_queue_new (engine);
 
-	engine->map = NULL;
 	engine->formList = NULL;
 
 	engine->avoid_para = FALSE;
@@ -3824,6 +3740,11 @@ html_engine_begin (HTMLEngine *e, const gchar *content_type)
 	html_engine_clear_all_class_data (e);
 
 	html_engine_set_content_type (e, content_type);
+
+	if (e->parser) {
+		htmlFreeParserCtxt(e->parser);
+		e->parser = NULL;
+	}
 
 	html_engine_stop_parser (e);
 	e->writing = TRUE;
@@ -4154,6 +4075,43 @@ elementtree_parse_style_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e)
 }
 
 void
+elementtree_parse_map(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLElement *element)
+{
+	gchar* 	value;
+	HTMLMap *map;
+	if (html_element_get_attr (element, "name", &value) && value) {
+		gpointer old_key = NULL, old_val;
+
+		if (!e->map_table) {
+			e->map_table = g_hash_table_new (g_str_hash, g_str_equal);
+		}
+
+		/* only add a new map if the name is unique */
+		if (!g_hash_table_lookup_extended (e->map_table, value, &old_key, &old_val)) {
+			map = html_map_new (value);
+			/* printf ("added map %s", name); */
+			g_hash_table_insert (e->map_table, map->name, map);
+			elementtree_parse_map_in_node(xmlelement->children, pos+1, e, map);
+		}
+	}
+}
+
+void
+elementtree_parse_map_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLMap *map)
+{
+    xmlNode *current = NULL; /* current node */
+    for (current = xmlelement; current; current = current->next)
+    {
+	if(!g_ascii_strcasecmp(ID_AREA,XMLCHAR2GCHAR(current->name))) {
+		elementtree_parse_area_in_node(current, pos+1, e, map);
+	} else if(!g_ascii_strcasecmp(ID_A,XMLCHAR2GCHAR(current->name))) {
+		elementtree_parse_area_in_node(current, pos+1, e, map);
+	} else
+		g_printerr("unknow tag in area:%s\n", XMLCHAR2GCHAR(current->name));
+    }
+}
+
+void
 elementtree_parse_meta_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e)
 {
 	gint refresh_delay = 0;
@@ -4308,6 +4266,49 @@ elementtree_parse_dumpnode_in_node(xmlNode* current, gint pos)
 		else
 			g_print("->%s=realNull\n", currprop->name);
 	}
+}
+
+void
+elementtree_parse_area_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLMap *map)
+{
+	HTMLShape *shape;
+	gchar *type = NULL;
+	gchar *href = NULL;
+	gchar *value = NULL;
+	gchar *coords = NULL;
+	gchar *target = NULL;
+	HTMLElement *element;
+
+	g_return_if_fail (HTML_IS_ENGINE (e));
+
+	element = html_element_from_xml (e, xmlelement, NULL);
+
+	g_return_if_fail (HTML_IS_ENGINE (e));
+
+	if (map == NULL)
+		return;
+
+	if (html_element_get_attr (element, "shape", &value))
+		type = g_strdup (value);
+	if (html_element_get_attr (element, "href", &value))
+		href = html_engine_convert_entity (g_strdup (value));
+	if (html_element_get_attr (element, "target", &value))
+		target = html_engine_convert_entity (g_strdup (value));
+	if (html_element_get_attr (element, "coords", &value))
+		coords = g_strdup (value);
+
+	if (type || coords) {
+		shape = html_shape_new (type, coords, href, target);
+		if (shape != NULL)
+			html_map_add_shape (map, shape);
+	}
+
+	g_free (type);
+	g_free (href);
+	g_free (coords);
+	g_free (target);
+
+	html_element_free (element);
 }
 
 /*
@@ -5014,14 +5015,16 @@ element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e,
 				HTMLEmbedded *el = create_object_from_xml(e, testElement);
 				if (el)
 					html_clue_append (HTML_CLUE (htmlelement), HTML_OBJECT(el));
-			} else if(!g_ascii_strcasecmp("table",XMLCHAR2GCHAR(current->name))) {
+			} else if(!g_ascii_strcasecmp(ID_MAP,XMLCHAR2GCHAR(current->name))) {
+				elementtree_parse_map(current, pos, e, testElement);
+			} else if(!g_ascii_strcasecmp(ID_TABLE,XMLCHAR2GCHAR(current->name))) {
 				html_object = HTML_OBJECT (create_table_from_xml(e, testElement));
 				html_clue_append (HTML_CLUE (htmlelement), html_object);
 				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
 			} else if(
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_PRE) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "a") ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "b") ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_A) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_B) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_CODE) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_KBD) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_TT) ||
@@ -5103,8 +5106,9 @@ elementtree_parse_param_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e, Gt
 
 	element = html_element_from_xml (e, xmlelement, NULL);
 
-	html_element_get_attr (element, "value", &value);
-	if (html_element_get_attr (element, "name", &name) && name)
+	if (	html_element_get_attr (element, "name", &name) &&
+		html_element_get_attr (element, "value", &value)
+	)
 		gtk_html_embedded_set_parameter(eb, name, value);
 
 	/* no close tag */
@@ -5836,7 +5840,6 @@ html_engine_parse (HTMLEngine *e)
 	g_list_free (e->formList);
 
 	e->focus_object = NULL;
-	e->map = NULL;
 	e->formList = NULL;
 	e->form = NULL;
 
@@ -7250,27 +7253,6 @@ html_engine_saved (HTMLEngine *e)
 	g_return_if_fail (HTML_IS_ENGINE (e));
 
 	e->saved_step_count = html_undo_get_step_count (e->undo);
-}
-
-static void
-html_engine_add_map (HTMLEngine *e, const gchar *name)
-{
-	gpointer old_key = NULL, old_val;
-
-	g_return_if_fail (HTML_IS_ENGINE (e));
-
-	if (!e->map_table) {
-		e->map_table = g_hash_table_new (g_str_hash, g_str_equal);
-	}
-
-	/* only add a new map if the name is unique */
-	if (!g_hash_table_lookup_extended (e->map_table, name, &old_key, &old_val)) {
-		e->map = html_map_new (name);
-
-		/* printf ("added map %s", name); */
-
-		g_hash_table_insert (e->map_table, e->map->name, e->map);
-	}
 }
 
 static gboolean
