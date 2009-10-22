@@ -252,24 +252,26 @@ struct _HTMLElement {
 
 void element_parse_nodedump_htmlobject(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style);
 void set_style_to_text(HTMLText *text, HTMLStyle *style, HTMLEngine *e, gint start_index, gint end_index);
-HTMLText * create_text_from_xml(HTMLEngine *e, HTMLElement *testElement,const gchar* text);
-HTMLTableCell * create_cell_from_xml(HTMLEngine *e, HTMLElement *element);
-HTMLTable * create_table_from_xml(HTMLEngine *e, HTMLElement *element);
-HTMLObject* create_flow_from_xml(HTMLEngine *e, HTMLElement *testElement);
-HTMLObject* create_image_from_xml(HTMLEngine *e, HTMLElement *testElement, gint max_width);
-HTMLObject* create_rule_from_xml(HTMLEngine *e, HTMLElement *element, gint max_width);
-HTMLObject* create_from_xml_fix_align(HTMLObject *object, HTMLElement *element, gint max_width);
-HTMLEmbedded* create_object_from_xml (HTMLEngine *e, HTMLElement *testElement);
-HTMLForm * 	create_form_from_xml(HTMLEngine *e, HTMLElement *element);
-HTMLObject * create_input_from_xml(HTMLEngine *e, HTMLElement *element);
-HTMLSelect * create_select_from_xml (HTMLEngine *e, HTMLElement *element);
+HTMLStyle *    style_from_engine(HTMLEngine *e); /* create style from engine */
+HTMLText *     create_text_from_xml     (HTMLEngine *e, HTMLElement *testElement,const gchar* text);
+HTMLTableCell* create_cell_from_xml     (HTMLEngine *e, HTMLElement *element);
+HTMLTable*     create_table_from_xml    (HTMLEngine *e, HTMLElement *element);
+HTMLObject*    create_flow_from_xml     (HTMLEngine *e, HTMLElement *testElement);
+HTMLTextArea*  create_textarea_from_xml (HTMLEngine *e, HTMLElement *element);
+HTMLObject*    create_image_from_xml    (HTMLEngine *e, HTMLElement *testElement, gint max_width);
+HTMLObject*    create_rule_from_xml     (HTMLEngine *e, HTMLElement *element, gint max_width);
+HTMLObject*    create_from_xml_fix_align(HTMLObject *object, HTMLElement *element, gint max_width);
+HTMLEmbedded*  create_object_from_xml   (HTMLEngine *e, HTMLElement *testElement);
+HTMLForm*      create_form_from_xml     (HTMLEngine *e, HTMLElement *element);
+HTMLObject*    create_input_from_xml    (HTMLEngine *e, HTMLElement *element);
+HTMLSelect*    create_select_from_xml   (HTMLEngine *e, HTMLElement *element);
 gchar * getcorrect_text(xmlNode* current, HTMLEngine *e, gboolean need_trim);
 gchar * get_text_from_children(xmlNode* xmlelement, HTMLEngine *e, gboolean need_trim);
-
 void elementtree_parse_text_innode      (HTMLEngine *e, HTMLObject* clue, HTMLElement *element, const gchar * text,gboolean newclue);
 void elementtree_parse_select           (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element);
 void elementtree_parse_text             (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element);
 void elementtree_parse_textarea         (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element);
+void elementtree_parse_data_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject * flow);
 void elementtree_parse_select_in_node   (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLSelect *formSelect);
 void elementtree_parse_option_in_node   (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLSelect *formSelect);
 void elementtree_parse_map              (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLElement *element);
@@ -281,6 +283,7 @@ void elementtree_parse_title_in_node    (xmlNode* xmlelement, gint pos, HTMLEngi
 void elementtree_parse_meta_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e);
 void elementtree_parse_head_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e);
 void elementtree_parse_style_in_node    (xmlNode* xmlelement, gint pos, HTMLEngine *e);
+void elementtree_parse_base_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e);
 void elementtree_parse_dumpnode         (xmlNode* xmlelement, gint pos);
 void elementtree_parse_dumpnode_in_node (xmlNode* current, gint pos);
 
@@ -2097,68 +2100,20 @@ element_parse_body (ELEMENT_PARSE_PARAMS)
 static void
 element_parse_base (ELEMENT_PARSE_PARAMS)
 {
-	xmlAttr *currprop;
 	g_return_if_fail (HTML_IS_ENGINE (e));
-
-	for(currprop = xmlelement->properties; currprop; currprop = currprop->next)
-        {
-		gchar * name = XMLCHAR2GCHAR(currprop->name);
-		gchar * value = XMLCHAR2GCHAR(currprop->children->content);
-		if(name && value) {
-			if ( g_ascii_strncasecmp( name, "target", 6 ) == 0 ) {
-				gchar* target = html_engine_convert_entity (g_strdup (value));
-				g_signal_emit (e, signals [SET_BASE_TARGET], 0, target);
-				g_free(target);
-			} else if ( g_ascii_strncasecmp( name, "href", 4 ) == 0 ) {
-				gchar* url = html_engine_convert_entity (g_strdup (value));
-				g_signal_emit (e, signals [SET_BASE], 0, url);
-				g_free(url);
-			}
-		}
-	}
+	elementtree_parse_base_in_node(xmlelement, 0, e);
 
 	if (xmlelement && e->parser_clue) {
 		stupid_render (e, clue, xmlelement->children);
 	}
 }
 
-
 static void
 element_parse_data (ELEMENT_PARSE_PARAMS)
 {
-	gchar *key = NULL;
-	gchar *class_name = NULL;
-	xmlAttr *currprop;
-
 	g_return_if_fail (HTML_IS_ENGINE (e));
-
-
-
-	for(currprop = xmlelement->properties; currprop; currprop = currprop->next)
-        {
-		gchar * name = XMLCHAR2GCHAR(currprop->name);
-		gchar * value = XMLCHAR2GCHAR(currprop->children->content);
-		if(name && value) {
-			if (g_ascii_strncasecmp (name, "class", 5 ) == 0) {
-				g_free (class_name);
-				class_name = g_strdup (value);
-			} else if (g_ascii_strncasecmp (name, "key", 3 ) == 0) {
-				g_free (key);
-				key = g_strdup (value);
-			} else if (class_name && key && g_ascii_strncasecmp (name, "value", 5) == 0) {
-				if (class_name) {
-					html_engine_set_class_data (e, class_name, key, value);
-					if (!strcmp (class_name, "ClueFlow") && e->flow)
-						html_engine_set_object_data (e, e->flow);
-				}
-			} else if (g_ascii_strncasecmp (name, "clear", 5) == 0)
-				if (class_name)
-					html_engine_clear_class_data (e, class_name, value);
-			/* TODO clear flow data */
-		}
-	}
-	g_free (class_name);
-	g_free (key);
+	
+	elementtree_parse_data_in_node(xmlelement, 0, e, e->flow);
 
 	if (xmlelement && e->parser_clue) {
 		stupid_render (e, clue, xmlelement->children);
@@ -4097,6 +4052,29 @@ elementtree_parse_map(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLElement 
 }
 
 void
+elementtree_parse_base_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e)
+{
+	xmlAttr *currprop;
+	for(currprop = xmlelement->properties; currprop; currprop = currprop->next)
+        {
+		gchar * name = XMLCHAR2GCHAR(currprop->name);
+		gchar * value = XMLCHAR2GCHAR(currprop->children->content);
+		if(name && value) {
+			if ( g_ascii_strncasecmp( name, "target", 6 ) == 0 ) {
+				gchar* target = html_engine_convert_entity (g_strdup (value));
+				g_signal_emit (e, signals [SET_BASE_TARGET], 0, target);
+				g_free(target);
+			} else if ( g_ascii_strncasecmp( name, "href", 4 ) == 0 ) {
+				gchar* url = html_engine_convert_entity (g_strdup (value));
+				g_signal_emit (e, signals [SET_BASE], 0, url);
+				g_free(url);
+			}
+		}
+	}
+		
+}
+
+void
 elementtree_parse_map_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLMap *map)
 {
     xmlNode *current = NULL; /* current node */
@@ -4222,6 +4200,39 @@ get_normal_name_typexml(xmlElementType type) {
 		case XML_DOCB_DOCUMENT_NODE: break;
 	};
 	return typeName;
+}
+
+void
+elementtree_parse_data_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject * flow)
+{
+	gchar *key = NULL;
+	gchar *class_name = NULL;
+	xmlAttr *currprop;
+	for(currprop = xmlelement->properties; currprop; currprop = currprop->next)
+        {
+		gchar * name = XMLCHAR2GCHAR(currprop->name);
+		gchar * value = XMLCHAR2GCHAR(currprop->children->content);
+		if(name && value) {
+			if (g_ascii_strncasecmp (name, "class", 5 ) == 0) {
+				g_free (class_name);
+				class_name = g_strdup (value);
+			} else if (g_ascii_strncasecmp (name, "key", 3 ) == 0) {
+				g_free (key);
+				key = g_strdup (value);
+			} else if (class_name && key && g_ascii_strncasecmp (name, "value", 5) == 0) {
+				if (class_name) {
+					html_engine_set_class_data (e, class_name, key, value);
+					if (!strcmp (class_name, "ClueFlow") && flow)
+						html_engine_set_object_data (e, flow);
+				}
+			} else if (g_ascii_strncasecmp (name, "clear", 5) == 0)
+				if (class_name)
+					html_engine_clear_class_data (e, class_name, value);
+			/* TODO clear flow data */
+		}
+	}
+	g_free (class_name);
+	g_free (key);
 }
 
 void
@@ -4560,9 +4571,9 @@ create_cell_from_xml(HTMLEngine *e, HTMLElement *element)
 	cell->heading = heading;
 	cell->dir = element->style->dir;
 
-	html_object_set_bg_color (HTML_OBJECT (cell), element->style->bg_color ? &element->style->bg_color->color : &current_row_bg_color (e)->color);
+	html_object_set_bg_color (HTML_OBJECT (cell), element->style->bg_color ? &element->style->bg_color->color : NULL);
 
-	image_url = element->style->bg_image ? element->style->bg_image : current_row_bg_image (e);
+	image_url = element->style->bg_image ;
 	if (image_url) {
 		HTMLImagePointer *ip;
 
@@ -4570,8 +4581,8 @@ create_cell_from_xml(HTMLEngine *e, HTMLElement *element)
 		html_table_cell_set_bg_pixmap (cell, ip);
 	}
 
-	HTML_CLUE (cell)->valign = element->style->text_valign != HTML_VALIGN_NONE ? element->style->text_valign : current_row_valign (e);
-	HTML_CLUE (cell)->halign = element->style->text_align != HTML_HALIGN_NONE ? element->style->text_align : current_row_align (e);
+	HTML_CLUE (cell)->valign = element->style->text_valign;
+	HTML_CLUE (cell)->halign = element->style->text_align;
 
 	len = element->style->width;
 	if (len && len->type != HTML_LENGTH_TYPE_FRACTION)
@@ -4719,6 +4730,7 @@ create_text_from_xml(HTMLEngine *e, HTMLElement *testElement,const gchar* text)
 	if (!testElement->style->color)
 		testElement->style->color = html_colorset_get_color (e->settings->color_set, HTMLTextColor);
 	html_object = HTML_TEXT (text_new (e, text, testElement->style->settings, testElement->style->color));
+	html_engine_set_object_data (e, HTML_OBJECT (html_object));
 	set_style_to_text (html_object, testElement->style, e, 0, /*strlen(text)*/html_object->text_bytes);
 	if (testElement->style)
 		if (testElement->style->href || testElement->style->target) {
@@ -4726,7 +4738,7 @@ create_text_from_xml(HTMLEngine *e, HTMLElement *testElement,const gchar* text)
 			gchar *target = testElement->style->target?html_engine_convert_entity (g_strdup (testElement->style->target)):NULL;
 			html_text_append_link (html_object, url, target, 0, html_object->text_len);
 		}
-	html_text_set_font_face (html_object, current_font_face (e));
+	html_text_set_font_face (html_object, NULL);
 	return html_object;
 }
 
@@ -4765,7 +4777,7 @@ create_image_from_xml(HTMLEngine *e, HTMLElement *element, gint max_width)
 	HTMLObject 	*image;
 	gchar 		*value;
 	gboolean ismap = FALSE;
-        gint width     = -1;
+    gint width     = -1;
 	gint height    = -1;
 	gint hspace = 0;
 	gint vspace = 0;
@@ -4877,6 +4889,29 @@ create_textarea_from_xml(HTMLEngine *e, HTMLElement *element)
 	return formTextArea;
 }
 
+HTMLStyle *
+style_from_engine(HTMLEngine *e)
+{
+	HTMLStyle *style = NULL;
+	
+	style = html_style_add_color(style, current_color (e));
+	if (current_bg_color (e))
+	{		
+			HTMLColor *hc = html_color_new_from_gdk_color (current_bg_color (e));
+			style = html_style_add_background_color (style, hc);
+			html_color_unref (hc);
+	}
+	style = html_style_set_flow_style(style, current_clueflow_style (e));
+	style = html_style_add_font_face (style, current_font_face (e));
+	style = html_style_set_decoration(style, current_font_style (e));
+	style = html_style_add_background_image(style, current_row_bg_image (e));
+	style = html_style_add_text_align(style, current_alignment (e));
+	style = html_style_add_text_valign(style, current_row_valign (e));
+	
+	return style;
+	
+}
+
 HTMLObject*
 create_flow_from_xml(HTMLEngine *e, HTMLElement *testElement)
 {
@@ -4885,21 +4920,19 @@ create_flow_from_xml(HTMLEngine *e, HTMLElement *testElement)
 	HTMLClearType  clear = HTML_CLEAR_NONE;
 	HTMLListType   listtype = HTML_LIST_TYPE_BLOCKQUOTE;
 	gint listnumber = 0;
-	if(testElement->style) {
-		clear = testElement->style->clear;
-		fstyle = testElement->style->fstyle;
-		listtype = testElement->style->listtype;
-		listnumber = testElement->style->listnumber;
-	} else {
-		fstyle = current_clueflow_style (e);
-	}
-	flow = html_clueflow_new (fstyle, g_byte_array_new (), listtype, listnumber, clear);
+	if (!testElement->style) 
+		return NULL;
+		
+	clear = testElement->style->clear;
+	fstyle = testElement->style->fstyle;
+	listtype = testElement->style->listtype;
+	listnumber = testElement->style->listnumber;
 
-	if(testElement->style) {
-		HTML_CLUEFLOW (flow)->dir = testElement->style->dir;
-		HTML_CLUE (flow)->halign = testElement->style->text_align;
-	} else
-		HTML_CLUE (flow)->halign = current_alignment (e);
+	flow = html_clueflow_new (fstyle, g_byte_array_new (), listtype, listnumber, clear);
+	html_engine_set_object_data (e, flow);
+	
+	HTML_CLUEFLOW (flow)->dir = testElement->style->dir;
+	HTML_CLUE (flow)->halign = testElement->style->text_align;
 
 	return flow;
 }
@@ -4956,6 +4989,8 @@ element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e,
 		HTMLObject* html_object = NULL;
 		if(!g_ascii_strcasecmp(ID_TEXT,XMLCHAR2GCHAR(current->name))) {
 			elementtree_parse_text(current, pos+1, e, htmlelement, testElement);
+		} else if(!g_ascii_strcasecmp("base",XMLCHAR2GCHAR(current->name))) {
+			elementtree_parse_base_in_node(current, pos+1, e);
 		} else if(!g_ascii_strcasecmp(ID_HEAD,XMLCHAR2GCHAR(current->name))) {
 			elementtree_parse_head_in_node(current->children, pos+1, e);
 		} else if (html_object_is_clue(htmlelement)) {
@@ -5499,7 +5534,7 @@ html_engine_stream_end (GtkHTMLStream *stream,
 		e->eat_space = FALSE;
 		/*elementtree_parse_dumpnode(root, 0);*/
 #ifndef USEOLDRENDER
-		element_parse_nodedump_htmlobject(root, 0, e, e->parser_clue, NULL);
+		element_parse_nodedump_htmlobject(root, 0, e, e->parser_clue, style_from_engine(e));
 #else
 		stupid_render(e, e->parser_clue, root);
 #endif
@@ -5507,7 +5542,7 @@ html_engine_stream_end (GtkHTMLStream *stream,
 			html_engine_parse (e);
 			process_node(root, e->css);
 #ifndef USEOLDRENDER
-			element_parse_nodedump_htmlobject(root, 0, e, e->parser_clue, NULL);
+			element_parse_nodedump_htmlobject(root, 0, e, e->parser_clue, style_from_engine(e));
 #else
 			stupid_render(e, e->parser_clue, root);
 #endif
