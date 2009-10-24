@@ -3353,6 +3353,8 @@ html_text_add_link_full (HTMLText *text, HTMLEngine *e, gchar *url, gchar *targe
 		if (new_link && prev)
 			prev->next = g_slist_prepend (NULL, new_link);
 	}
+
+	HTML_OBJECT (text)->change |= HTML_CHANGE_RECALC_PI;
 }
 
 void

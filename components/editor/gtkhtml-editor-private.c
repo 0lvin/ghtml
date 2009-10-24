@@ -153,6 +153,166 @@ editor_replace_all_cb (GtkhtmlEditor *editor,
 
 /************************* End Spell Dialog Callbacks ************************/
 
+/************************ Begin URI Request Callbacks ************************/
+
+static GtkhtmlEditorRequest *
+editor_request_new (GtkhtmlEditor *editor,
+                    const gchar *uri,
+                    GtkHTMLStream *stream,
+                    GCancellable *cancellable,
+                    GAsyncReadyCallback callback,
+                    gpointer user_data)
+{
+	GSimpleAsyncResult *simple;
+	GtkhtmlEditorRequest *request;
+	GList *list;
+
+	request = g_slice_new (GtkhtmlEditorRequest);
+
+	simple = g_simple_async_result_new (
+		G_OBJECT (editor), callback,
+		user_data, gtkhtml_editor_request_async);
+
+	if (cancellable != NULL)
+		g_object_ref (cancellable);
+
+	/* Try to detect file paths posing as URIs. */
+	if (*uri == '/')
+		request->file = g_file_new_for_path (uri);
+	else
+		request->file = g_file_new_for_uri (uri);
+
+	request->editor = g_object_ref (editor);
+	request->cancellable = cancellable;
+	request->simple = simple;
+	request->input_stream = NULL;
+	request->output_stream = stream;
+
+	list = request->editor->priv->requests;
+	list = g_list_prepend (list, request);
+	request->editor->priv->requests = list;
+
+	return request;
+}
+
+static void
+editor_request_free (GtkhtmlEditorRequest *request)
+{
+	GList *list;
+
+	/* Do not free the GSimpleAsyncResult. */
+
+	list = request->editor->priv->requests;
+	list = g_list_remove (list, request);
+	request->editor->priv->requests = list;
+
+	g_object_unref (request->file);
+	g_object_unref (request->editor);
+
+	if (request->cancellable != NULL)
+		g_object_unref (request->cancellable);
+
+	if (request->input_stream != NULL)
+		g_object_unref (request->input_stream);
+
+	g_slice_free (GtkhtmlEditorRequest, request);
+}
+
+static gboolean
+editor_request_check_for_error (GtkhtmlEditorRequest *request,
+                                GError *error)
+{
+	GtkHTML *html;
+	GtkHTMLStream *stream;
+	GSimpleAsyncResult *simple;
+
+	if (error == NULL)
+		return FALSE;
+
+	stream = request->output_stream;
+	html = gtkhtml_editor_get_html (request->editor);
+	gtk_html_end (html, stream, GTK_HTML_STREAM_ERROR);
+
+	/* Steal the result. */
+	simple = request->simple;
+	request->simple = NULL;
+
+	g_simple_async_result_set_from_error (simple, error);
+	g_simple_async_result_complete (simple);
+	g_error_free (error);
+
+	editor_request_free (request);
+
+	return TRUE;
+}
+
+static void
+editor_request_stream_read_cb (GInputStream *input_stream,
+                               GAsyncResult *result,
+                               GtkhtmlEditorRequest *request)
+{
+	GtkHTML *html;
+	GtkHTMLStream *stream;
+	gssize bytes_read;
+	GError *error = NULL;
+
+	stream = request->output_stream;
+	html = gtkhtml_editor_get_html (request->editor);
+
+	bytes_read = g_input_stream_read_finish (input_stream, result, &error);
+
+	if (editor_request_check_for_error (request, error))
+		return;
+
+	if (bytes_read == 0) {
+		GSimpleAsyncResult *simple;
+
+		/* Steal the result. */
+		simple = request->simple;
+		request->simple = NULL;
+
+		gtk_html_end (html, stream, GTK_HTML_STREAM_OK);
+
+		g_simple_async_result_set_op_res_gboolean (simple, TRUE);
+		g_simple_async_result_complete (simple);
+		editor_request_free (request);
+
+		return;
+	}
+
+	gtk_html_write (html, stream, request->buffer, bytes_read);
+
+	g_input_stream_read_async (
+		request->input_stream, request->buffer,
+		sizeof (request->buffer), G_PRIORITY_DEFAULT,
+		request->cancellable, (GAsyncReadyCallback)
+		editor_request_stream_read_cb, request);
+}
+
+static void
+editor_request_read_cb (GFile *file,
+                        GAsyncResult *result,
+                        GtkhtmlEditorRequest *request)
+{
+	GFileInputStream *input_stream;
+	GError *error = NULL;
+
+	/* Input stream might be NULL, so don't use cast macro. */
+	input_stream = g_file_read_finish (file, result, &error);
+	request->input_stream = (GInputStream *) input_stream;
+
+	if (editor_request_check_for_error (request, error))
+		return;
+
+	g_input_stream_read_async (
+		request->input_stream, request->buffer,
+		sizeof (request->buffer), G_PRIORITY_DEFAULT,
+		request->cancellable, (GAsyncReadyCallback)
+		editor_request_stream_read_cb, request);
+}
+
+/************************* End URI Request Callbacks *************************/
+
 void
 gtkhtml_editor_private_init (GtkhtmlEditor *editor)
 {
@@ -412,6 +572,10 @@ gtkhtml_editor_private_finalize (GtkhtmlEditor *editor)
 {
 	GtkhtmlEditorPrivate *priv = editor->priv;
 
+	/* All URI requests should be complete or cancelled by now. */
+	if (priv->requests != NULL)
+		g_warning ("Finalizing GtkhtmlEditor with active URI requests");
+
 	g_hash_table_destroy (priv->available_spell_checkers);
 	g_hash_table_destroy (priv->spell_suggestion_menus);
 
@@ -561,8 +725,8 @@ gtkhtml_editor_insert_file (GtkhtmlEditor *editor,
 		GTK_STOCK_OPEN, GTK_RESPONSE_OK,
 		NULL);
 
-	gtk_dialog_set_default_response (
-		GTK_DIALOG (dialog), GTK_RESPONSE_OK);
+	gtk_file_chooser_set_local_only (GTK_FILE_CHOOSER (dialog), FALSE);
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_OK);
 
 	g_signal_connect (dialog, "response", response_cb, editor);
 
@@ -571,6 +735,52 @@ gtkhtml_editor_insert_file (GtkhtmlEditor *editor,
 	gtk_widget_destroy (dialog);
 
 	return response;
+}
+
+void
+gtkhtml_editor_request_async (GtkhtmlEditor *editor,
+                              const gchar *uri,
+                              GtkHTMLStream *stream,
+                              GCancellable *cancellable,
+                              GAsyncReadyCallback callback,
+                              gpointer user_data)
+{
+	GtkhtmlEditorRequest *request;
+
+	g_return_if_fail (GTKHTML_IS_EDITOR (editor));
+	g_return_if_fail (uri != NULL);
+	g_return_if_fail (stream != NULL);
+	g_return_if_fail (callback != NULL);
+
+	if (cancellable != NULL)
+		g_return_if_fail (G_IS_CANCELLABLE (cancellable));
+
+	request = editor_request_new (
+		editor, uri, stream, cancellable, callback, user_data);
+
+	g_file_read_async (
+		request->file, G_PRIORITY_DEFAULT,
+		request->cancellable, (GAsyncReadyCallback)
+		editor_request_read_cb, request);
+}
+
+gboolean
+gtkhtml_editor_request_finish (GtkhtmlEditor *editor,
+                               GAsyncResult *result,
+                               GError **error)
+{
+	GSimpleAsyncResult *simple;
+	gboolean success;
+
+	g_return_val_if_fail (GTKHTML_IS_EDITOR (editor), FALSE);
+	g_return_val_if_fail (G_IS_SIMPLE_ASYNC_RESULT (result), FALSE);
+
+	simple = G_SIMPLE_ASYNC_RESULT (result);
+	success = g_simple_async_result_get_op_res_gboolean (simple);
+	g_simple_async_result_propagate_error (simple, error);
+	g_object_unref (simple);
+
+	return success;
 }
 
 void

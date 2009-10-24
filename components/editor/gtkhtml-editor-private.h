@@ -84,6 +84,8 @@
 
 G_BEGIN_DECLS
 
+typedef struct _GtkhtmlEditorRequest GtkhtmlEditorRequest;
+
 typedef enum {
 	EDITOR_MODE_HTML,
 	EDITOR_MODE_TEXT
@@ -161,6 +163,10 @@ struct _GtkhtmlEditorPrivate {
 
 	HTMLObject *table_object;
 
+	/* Active URI Requests */
+
+	GList *requests;
+
 	/*** Miscellaneous ***/
 
 	/* Note, 'filename' is not used by GtkhtmlEditor itself but is here
@@ -173,6 +179,17 @@ struct _GtkhtmlEditorPrivate {
 	GtkhtmlColorState *text_color;
 	guint ignore_style_change;
 	gboolean changed;
+};
+
+struct _GtkhtmlEditorRequest {
+	GtkhtmlEditor *editor;
+	GCancellable *cancellable;
+	GSimpleAsyncResult *simple;
+
+	GFile *file;
+	GInputStream *input_stream;
+	GtkHTMLStream *output_stream;
+	gchar buffer[4096];
 };
 
 void		gtkhtml_editor_private_init	 (GtkhtmlEditor *editor);
@@ -192,6 +209,15 @@ gboolean	gtkhtml_editor_get_file_contents (const gchar *filename,
 gint		gtkhtml_editor_insert_file	 (GtkhtmlEditor *editor,
 						  const gchar *title,
 						  GCallback response_cb);
+void		gtkhtml_editor_request_async	 (GtkhtmlEditor *editor,
+						  const gchar *uri,
+						  GtkHTMLStream *stream,
+						  GCancellable *cancellable,
+						  GAsyncReadyCallback callback,
+						  gpointer user_data);
+gboolean	gtkhtml_editor_request_finish	 (GtkhtmlEditor *editor,
+						  GAsyncResult *result,
+						  GError **error);
 void		gtkhtml_editor_show_uri		 (GtkWindow *parent,
 						  const gchar *uri);
 void		gtkhtml_editor_spell_check	 (GtkhtmlEditor *editor,

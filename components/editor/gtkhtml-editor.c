@@ -473,30 +473,6 @@ static GtkHTMLEditorAPI editor_api = {
 	editor_method_set_language
 };
 
-static void
-editor_cut_clipboard (GtkhtmlEditor *editor)
-{
-	gtk_html_command (gtkhtml_editor_get_html (editor), "cut");
-}
-
-static void
-editor_copy_clipboard (GtkhtmlEditor *editor)
-{
-	gtk_html_command (gtkhtml_editor_get_html (editor), "copy");
-}
-
-static void
-editor_paste_clipboard (GtkhtmlEditor *editor)
-{
-	gtk_html_command (gtkhtml_editor_get_html (editor), "paste");
-}
-
-static void
-editor_select_all (GtkhtmlEditor *editor)
-{
-	gtk_html_command (gtkhtml_editor_get_html (editor), "select-all");
-}
-
 static GObject *
 editor_constructor (GType type,
                     guint n_construct_properties,
@@ -727,6 +703,49 @@ editor_finalize (GObject *object)
 }
 
 static void
+editor_cut_clipboard (GtkhtmlEditor *editor)
+{
+	gtk_html_command (gtkhtml_editor_get_html (editor), "cut");
+}
+
+static void
+editor_copy_clipboard (GtkhtmlEditor *editor)
+{
+	gtk_html_command (gtkhtml_editor_get_html (editor), "copy");
+}
+
+static void
+editor_paste_clipboard (GtkhtmlEditor *editor)
+{
+	gtk_html_command (gtkhtml_editor_get_html (editor), "paste");
+}
+
+static void
+editor_select_all (GtkhtmlEditor *editor)
+{
+	gtk_html_command (gtkhtml_editor_get_html (editor), "select-all");
+}
+
+static void
+editor_uri_requested_ready_cb (GtkhtmlEditor *editor,
+                               GAsyncResult *result)
+{
+	/* XXX Do something in the event of an error? */
+	gtkhtml_editor_request_finish (editor, result, NULL);
+}
+
+static void
+editor_uri_requested (GtkhtmlEditor *editor,
+                      const gchar *uri,
+                      GtkHTMLStream *stream)
+{
+	/* XXX Currently no way to cancel this. */
+	gtkhtml_editor_request_async (
+		editor, uri, stream, NULL, (GAsyncReadyCallback)
+		editor_uri_requested_ready_cb, NULL);
+}
+
+static void
 editor_class_init (GtkhtmlEditorClass *class)
 {
 	GObjectClass *object_class;
@@ -745,6 +764,7 @@ editor_class_init (GtkhtmlEditorClass *class)
 	class->copy_clipboard = editor_copy_clipboard;
 	class->paste_clipboard = editor_paste_clipboard;
 	class->select_all = editor_select_all;
+	class->uri_requested = editor_uri_requested;
 
 	g_object_class_install_property (
 		object_class,
@@ -1608,26 +1628,23 @@ gtkhtml_editor_insert_html (GtkhtmlEditor *editor,
 	gtk_html_insert_html (html, html_text);
 }
 
-/* inserts local files only, as inlined */
 void
-gtkhtml_editor_insert_image	(GtkhtmlEditor *editor,
-				 const gchar *filename_uri)
+gtkhtml_editor_insert_image (GtkhtmlEditor *editor,
+                             const gchar *image_uri)
 {
 	GtkHTML *html;
+	HTMLObject *image;
 
 	g_return_if_fail (GTKHTML_IS_EDITOR (editor));
-	g_return_if_fail (filename_uri != NULL);
+	g_return_if_fail (image_uri != NULL);
 
 	html = gtkhtml_editor_get_html (editor);
 
-	if (html) {
-		HTMLObject *image;
+	image = html_image_new (
+		html_engine_get_image_factory (html->engine), image_uri,
+		NULL, NULL, 0, 0, 0, 0, 0, NULL, HTML_VALIGN_NONE, FALSE);
 
-		image = html_image_new (
-			html_engine_get_image_factory (html->engine), filename_uri,
-			NULL, NULL, 0, 0, 0, 0, 0, NULL, HTML_VALIGN_NONE, FALSE);
-		html_engine_paste_object (html->engine, image, 1);
-	}
+	html_engine_paste_object (html->engine, image, 1);
 }
 
 gboolean

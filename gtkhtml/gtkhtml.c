@@ -4599,8 +4599,7 @@ clipboard_paste_received_cb (GtkClipboard     *clipboard,
 			}
 
 			if (HTML_IS_TEXT (e->cursor->object))
-				html_text_magic_link (HTML_TEXT (e->cursor->object), e,
-						html_object_get_length (e->cursor->object));
+				html_text_magic_link (HTML_TEXT (e->cursor->object), e, 1);
 		}
 
 		if (utf8)
@@ -6132,6 +6131,9 @@ gtk_html_command (GtkHTML *html, const gchar *command_name)
 {
 	GEnumClass *class;
 	GEnumValue *val;
+
+	g_return_val_if_fail (GTK_IS_HTML (html), FALSE);
+	g_return_val_if_fail (command_name != NULL, FALSE);
 
 	class = G_ENUM_CLASS (g_type_class_ref (GTK_TYPE_HTML_COMMAND));
 	val = g_enum_get_value_by_nick (class, command_name);

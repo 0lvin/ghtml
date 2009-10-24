@@ -83,7 +83,7 @@ struct _GtkhtmlEditorClass {
 	void		(*object_deleted)	(GtkhtmlEditor *editor);
 	void		(*uri_requested)	(GtkhtmlEditor *editor,
 						 const gchar *uri,
-						 GtkHTMLStream *output);
+						 GtkHTMLStream *stream);
 };
 
 GType		gtkhtml_editor_get_type		(void);
@@ -165,7 +165,7 @@ gboolean	gtkhtml_editor_is_previous_paragraph_empty
 void		gtkhtml_editor_insert_html	(GtkhtmlEditor *editor,
 						 const gchar *html_text);
 void		gtkhtml_editor_insert_image	(GtkhtmlEditor *editor,
-						 const gchar *filename_uri);
+						 const gchar *image_uri);
 gboolean	gtkhtml_editor_search_by_data	(GtkhtmlEditor *editor,
 						 glong level,
 						 const gchar *klass,

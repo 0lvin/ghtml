@@ -784,12 +784,8 @@ gtkhtml_editor_image_properties_show_window_cb (GtkWidget *window))
 		|| html_object_get_data (parent, "template_image") == NULL)
 		&& image->image_ptr->url != NULL) {
 
-		gchar *filename;
-
-		filename = gtk_html_filename_from_uri (image->image_ptr->url);
-		gtk_file_chooser_set_filename (
-			GTK_FILE_CHOOSER (widget), filename);
-		g_free (filename);
+		gtk_file_chooser_set_uri (
+			GTK_FILE_CHOOSER (widget), image->image_ptr->url);
 	} else
 		gtk_file_chooser_unselect_all (GTK_FILE_CHOOSER (widget));
 

@@ -3094,6 +3094,7 @@
                       <object class="GtkFileChooserButton" id="image-properties-source-file-chooser">
                         <property name="visible">True</property>
                         <property name="events">GDK_POINTER_MOTION_MASK | GDK_POINTER_MOTION_HINT_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK</property>
+                        <property name="local_only">False</property>
                         <signal handler="gtkhtml_editor_image_properties_source_file_set_cb" name="file_set" object="image-properties-window"/>
                       </object>
                       <packing>

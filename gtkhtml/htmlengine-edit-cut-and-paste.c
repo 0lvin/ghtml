@@ -1175,7 +1175,7 @@ check_magic_link (HTMLEngine *e, const gchar *text, guint len)
 	    && gtk_html_get_magic_links (e->widget)
 	    && len == 1
 	    && (*text == ' ' || text [0] == '\n' || text [0] == '>' || text [0] == ')'))
-		html_text_magic_link (HTML_TEXT (e->cursor->object), e, html_object_get_length (e->cursor->object));
+		html_text_magic_link (HTML_TEXT (e->cursor->object), e, 1);
 }
 
 static void
