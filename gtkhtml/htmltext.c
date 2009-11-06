@@ -3154,14 +3154,12 @@ static HTMLMagicInsertMatch mim [] = {
 	{ "[-_a-z0-9.'\\+]+@[-_a-z0-9.%=?]+", NULL, "mailto:" }
 };
 
-#define MIM_N (sizeof (mim) / sizeof (mim [0]))
-
 void
 html_engine_init_magic_links (void)
 {
 	gint i;
 
-	for (i=0; i<MIM_N; i++) {
+	for (i = 0; i < G_N_ELEMENTS (mim); i++) {
 		mim [i].preg = g_new0 (regex_t, 1);
 		if (regcomp (mim [i].preg, mim [i].regex, REG_EXTENDED | REG_ICASE)) {
 			/* error */
@@ -3237,7 +3235,7 @@ html_text_magic_link (HTMLText *text, HTMLEngine *engine, guint offset)
 	}
 
 	if (exec) {
-		for (i=0; i<MIM_N; i++) {
+		for (i = 0; i < G_N_ELEMENTS (mim); i++) {
 			if (mim [i].preg && !regexec (mim [i].preg, str, 2, pmatch, 0)) {
 				paste_link (engine, text,
 					    g_utf8_pointer_to_offset (text->text, str + pmatch [0].rm_so),

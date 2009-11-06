@@ -182,6 +182,13 @@ op_copy (HTMLObject *self, HTMLObject *parent, HTMLEngine *e, GList *from, GList
 
 	start = HTML_TABLE_CELL ((from && from->next) ? from->data : html_object_head (self));
 	end   = HTML_TABLE_CELL ((to && to->next)     ? to->data   : html_object_tail (self));
+
+	if (!start || !end) {
+		copy_sized (self, HTML_OBJECT (nt), 0, 0);
+		(*len) ++;
+		return HTML_OBJECT (nt);
+	}
+
 	rows  = end->row - start->row + 1;
 	cols  = end->row == start->row ? end->col - start->col + 1 : t->totalCols;
 

@@ -1,3 +1,45 @@
+GtkHTML-3.29.1 2009-10-26
+--------------------------
+
+Bug Fixes:
+	#598635 - Not all hyperlinks are ctrl-clickable in mail composer (Milan Crha)
+	#598567 - Can only insert local image files (Matthew Barnes)
+	#580142 - Email with PRE HTML Tags Should Wrap When Printed (Milan Crha)
+	#598159 - Context popup clears a selection (Milan Crha)
+	#344008 - Broken context-sensitive spell check (Matthew Barnes)
+	#593570 - Text entry not focused when find dialog shown (Matthew Barnes)
+
+Translations:
+	Ivar Smolin (et)
+	Amitakhya Phukan (as)
+	A S Alam (pa)
+	Gil Forcada (ca)
+	Marek Černocký (cs)
+	Takayuki KUSANO (ja)
+	Petr Kovar (cs)
+	Christian Kirbach (de)
+	Milo Casagrande (it)
+	Matej Urbančič (sl)
+	Ask H. Larsen (da)
+	Philip Withnall (en_GB)
+	Miloš Popović (sr)
+	Gabor Kelemen (hu)
+	Sweta Kothari (gu)
+	Piotr Drąg (pl)
+	Jamil Ahmed (bn)
+	Duarte Loreto (pt)
+	krishnababu k (te)
+	Inaki Larranaga (eu)
+	Mario Blättermann (de)
+	Tommi Vainikainen (fi)
+	Daniel S. Koda (pt_BR)
+	Claude Paroz (fr)
+	Alexander Shopov (bg)
+	Seán de Búrca (ga)
+	Sandeep Shedmake (mr)
+	Sweta Kothari (gu)
+
+
 GtkHTML-3.27.90 2009-08-10
 --------------------------
 
