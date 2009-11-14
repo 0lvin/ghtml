@@ -1087,11 +1087,37 @@ gtkhtml_editor_link_properties_url_changed_cb (GtkWidget *window))
 
 	gtk_action_set_sensitive (ACTION (TEST_URL), *text != '\0');
 
-	if (html_engine_is_selection_active (html->engine))
+	if (html_engine_is_selection_active (html->engine)) {
 		html_engine_set_link (html->engine, text);
-	else if (!editor->priv->link_custom_description) {
+	} else if (!editor->priv->link_custom_description) {
 		gtk_entry_set_text (GTK_ENTRY (dsc_entry), text);
 		editor->priv->link_custom_description = FALSE;
+	} else {
+		gint start_offset;
+		gint end_offset;
+		glong length;
+		const gchar *descr = gtk_entry_get_text (GTK_ENTRY (dsc_entry));
+
+		start_offset = editor->priv->link_start_offset;
+		end_offset = editor->priv->link_end_offset;
+		length = g_utf8_strlen (descr, -1);
+
+		if (start_offset != end_offset) {
+			html_cursor_jump_to (
+				html->engine->cursor, html->engine,
+				editor->priv->link_object, start_offset);
+			html_engine_set_mark (html->engine);
+			html_cursor_jump_to (
+				html->engine->cursor, html->engine,
+				editor->priv->link_object, end_offset);
+			html_engine_delete (html->engine);
+		}
+
+		html_engine_paste_link (
+			html->engine, descr, length, text);
+
+		editor->priv->link_object = html->engine->cursor->object;
+		editor->priv->link_end_offset = start_offset + length;
 	}
 
 	g_free (text);
@@ -1106,8 +1132,11 @@ gtkhtml_editor_link_properties_show_window_cb (GtkWidget *window))
 	GtkWidget *dsc_entry;
 	GtkWidget *url_entry;
 	GtkHTML *html;
-	gchar *url = NULL;
+	gchar *url = NULL, *dsc = NULL;
 	gboolean sensitive;
+	HTMLCursor *cursor;
+	gint start_offset = 0;
+	gint end_offset = 0;
 
 	editor = extract_gtkhtml_editor (window);
 	html = gtkhtml_editor_get_html (editor);
@@ -1115,57 +1144,58 @@ gtkhtml_editor_link_properties_show_window_cb (GtkWidget *window))
 	dsc_entry = WIDGET (LINK_PROPERTIES_DESCRIPTION_ENTRY);
 	url_entry = WIDGET (LINK_PROPERTIES_URL_ENTRY);
 
-	if (html_engine_is_selection_active (html->engine)) {
-		sensitive = FALSE;
-		editor->priv->link_object = NULL;
-	} else {
-		HTMLCursor *cursor;
-		gint start_offset = 0;
-		gint end_offset = 0;
+	editor->priv->link_custom_description = FALSE;
 
-		cursor = html->engine->cursor;
-		editor->priv->link_object = cursor->object;
+	cursor = html->engine->cursor;
 
-		if (HTML_IS_TEXT (cursor->object))
-			url = html_object_get_complete_url (
-				cursor->object, cursor->offset);
+	if (HTML_IS_TEXT (cursor->object))
+		url = html_object_get_complete_url (
+			cursor->object, cursor->offset);
 
-		if (url != NULL) {
-			if (HTML_IS_IMAGE (cursor->object)) {
-				start_offset = 0;
-				end_offset = 1;
-			} else {
-				Link *link;
+	if (url != NULL) {
+		if (HTML_IS_IMAGE (cursor->object)) {
+			start_offset = 0;
+			end_offset = 1;
+		} else {
+			Link *link;
 
-				link = html_text_get_link_at_offset (
-					HTML_TEXT (cursor->object),
-					cursor->offset);
-				if (link != NULL) {
-					start_offset = link->start_offset;
-					end_offset = link->end_offset;
-				}
+			link = html_text_get_link_at_offset (
+				HTML_TEXT (cursor->object),
+				cursor->offset);
+			if (link != NULL) {
+				start_offset = link->start_offset;
+				end_offset = link->end_offset;
+				dsc = html_text_get_link_text (HTML_TEXT (cursor->object), cursor->offset);
+				editor->priv->link_custom_description = dsc && !g_str_equal (dsc, url);
 			}
-		} else if (HTML_IS_TEXT (cursor->object)) {
-			start_offset = cursor->offset;
-			end_offset = start_offset;
 		}
-
-		sensitive = (url == NULL);
-
-		editor->priv->link_object = cursor->object;
-		editor->priv->link_start_offset = start_offset;
-		editor->priv->link_end_offset = end_offset;
-
-		gtk_entry_set_text (
-			GTK_ENTRY (url_entry),
-			(url != NULL) ? url : "http://");
+	} else if (HTML_IS_TEXT (cursor->object)) {
+		start_offset = cursor->offset;
+		end_offset = start_offset;
 	}
 
-	gtk_entry_set_text (GTK_ENTRY (dsc_entry), "");
+	sensitive = (url == NULL);
+
+	if (html_engine_is_selection_active (html->engine)) {
+		if (sensitive && !dsc)
+			dsc = html_engine_get_selection_string (html->engine);
+		sensitive = FALSE;
+	}
+
+	editor->priv->link_object = cursor->object;
+	editor->priv->link_start_offset = start_offset;
+	editor->priv->link_end_offset = end_offset;
+
 	gtk_widget_set_sensitive (dsc_entry, sensitive);
+	gtk_entry_set_text (
+		GTK_ENTRY (url_entry),
+		(url != NULL) ? url : "http://");
+
+	gtk_entry_set_text (GTK_ENTRY (dsc_entry), dsc ? dsc : "");
 	gtk_widget_grab_focus (url_entry);
 
 	g_free (url);
+	g_free (dsc);
 
 	g_object_unref (editor);
 }

@@ -154,6 +154,7 @@ void                       gtk_html_select_line                   (GtkHTML      
 void                       gtk_html_select_paragraph              (GtkHTML                   *html);
 void                       gtk_html_select_paragraph_extended     (GtkHTML                   *html);
 void                       gtk_html_select_all                    (GtkHTML                   *html);
+void                       gtk_html_unselect_all                  (GtkHTML                   *html);
 /* Loading.  */
 GtkHTMLStream             *gtk_html_begin                         (GtkHTML                   *html);
 GtkHTMLStream             *gtk_html_begin_full                    (GtkHTML                   *html,

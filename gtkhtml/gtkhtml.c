@@ -5281,6 +5281,9 @@ command (GtkHTML *html, GtkHTMLCommandType com_type)
 			rv = move_selection (html, com_type);
 		}
 		break;
+	case GTK_HTML_COMMAND_SELECT_ALL:
+		gtk_html_select_all (html);
+		break;
 	case GTK_HTML_COMMAND_EDITABLE_ON:
 		gtk_html_set_editable (html, TRUE);
 		break;
@@ -5293,9 +5296,11 @@ command (GtkHTML *html, GtkHTMLCommandType com_type)
 	case GTK_HTML_COMMAND_UNBLOCK_SELECTION:
 		html_engine_unblock_selection (html->engine);
 		break;
-
 	case GTK_HTML_COMMAND_IS_SELECTION_ACTIVE:
 		rv = html_engine_is_selection_active (html->engine);
+		break;
+	case GTK_HTML_COMMAND_UNSELECT_ALL:
+		gtk_html_unselect_all (html);
 		break;
 
 	default:
@@ -5560,9 +5565,6 @@ command (GtkHTML *html, GtkHTMLCommandType com_type)
 		break;
 	case GTK_HTML_COMMAND_SELECT_PARAGRAPH_EXTENDED:
 		gtk_html_select_paragraph_extended (html);
-		break;
-	case GTK_HTML_COMMAND_SELECT_ALL:
-		gtk_html_select_all (html);
 		break;
 	case GTK_HTML_COMMAND_CURSOR_POSITION_SAVE:
 		html_engine_edit_cursor_position_save (html->engine);
@@ -6055,6 +6057,19 @@ gtk_html_select_all (GtkHTML *html)
 	else {
 		html_engine_select_all (e);
 	}
+
+	html_engine_update_selection_active_state (html->engine, html->priv->event_time);
+	update_primary_selection (html);
+}
+
+void
+gtk_html_unselect_all (GtkHTML *html)
+{
+	HTMLEngine *e;
+
+	e = html->engine;
+
+	html_engine_unselect_all (e);
 
 	html_engine_update_selection_active_state (html->engine, html->priv->event_time);
 	update_primary_selection (html);
