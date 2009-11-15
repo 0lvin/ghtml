@@ -164,13 +164,16 @@ static guint signals [LAST_SIGNAL] = { 0 };
 #define ID_ADDRESS "address"
 #define ID_AREA "area"
 #define ID_B "b"
+#define ID_BR "br"
 #define ID_BIG "big"
 #define ID_BLOCKQUOTE "blockquote"
+#define ID_BASE "base"
 #define ID_BODY "body"
 #define ID_CAPTION "caption"
 #define ID_CENTER "center"
 #define ID_CITE "cite"
 #define ID_CODE "code"
+#define ID_DATA "data"
 #define ID_DIR "dir"
 #define ID_DIV "div"
 #define ID_DL "dl"
@@ -181,11 +184,14 @@ static guint signals [LAST_SIGNAL] = { 0 };
 #define ID_EM "em"
 #define ID_FONT "font"
 #define ID_FORM "form"
+#define ID_NOBR "nobr"
 #define ID_MAP "map"
 #define ID_MENU "menu"
 #define ID_META "meta"
 #define ID_HEAD "head"
 #define ID_HEADING "h"
+#define ID_HTML "html"
+#define ID_HR "hr"
 #define ID_I "i"
 #define ID_IMG "img"
 #define ID_INPUT "input"
@@ -212,11 +218,12 @@ static guint signals [LAST_SIGNAL] = { 0 };
 #define ID_SUP "sup"
 #define ID_STRIKE "strike"
 #define ID_STYLE "style"
-#define ID_HTML "html"
 #define ID_DOCUMENT "Document"
 #define ID_OPTION "option"
 #define ID_SELECT "select"
 #define ID_TEST "test"
+#define ID_SCRIPT "script"
+#define ID_NOSCRIPT "noscript"
 #define ID_TITLE "title"
 
 #define ID_EQ(x,y) (x == g_quark_from_string (y))
@@ -281,6 +288,7 @@ void elementtree_parse_map_in_node      (xmlNode* xmlelement, gint pos, HTMLEngi
 void elementtree_parse_area_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLMap *map);
 void elementtree_parse_title_in_node    (xmlNode* xmlelement, gint pos, HTMLEngine *e);
 void elementtree_parse_meta_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e);
+void elementtree_parse_script_in_node   (xmlNode* xmlelement, gint pos, HTMLEngine *e);
 void elementtree_parse_head_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e);
 void elementtree_parse_style_in_node    (xmlNode* xmlelement, gint pos, HTMLEngine *e);
 void elementtree_parse_base_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e);
@@ -440,7 +448,7 @@ gen_style_for_element(const gchar *name, HTMLStyle *style)
 	} else if (	!g_ascii_strcasecmp(name, ID_SPAN)){
 		style = html_style_set_display (style, HTMLDISPLAY_INLINE);
 	} else if (	!g_ascii_strcasecmp(name, ID_DIV) ||
-			!g_ascii_strcasecmp(name, "nobr")){
+			!g_ascii_strcasecmp(name, ID_NOBR)){
 		style = html_style_set_display (style, HTMLDISPLAY_BLOCK);
 	} else if (!g_ascii_strcasecmp(name, "h1") ||
 		!g_ascii_strcasecmp(name, "h2") ||
@@ -672,6 +680,7 @@ current_bg_color (HTMLEngine *e) {
  * FIXME these are 100% wrong (bg color doesn't inheirit, but it is how the current table code works
  * and I don't want to regress yet
  */
+/* MUST DELETE
 static HTMLColor *
 current_row_bg_color (HTMLEngine *e)
 {
@@ -691,6 +700,7 @@ current_row_bg_color (HTMLEngine *e)
 
 	return NULL;
 }
+*/
 
 static gchar *
 current_row_bg_image (HTMLEngine *e)
@@ -750,6 +760,7 @@ current_row_valign (HTMLEngine *e)
 	return rv;
 }
 
+/* MUST DELETE
 static HTMLHAlignType
 current_row_align (HTMLEngine *e)
 {
@@ -787,6 +798,7 @@ current_row_align (HTMLEngine *e)
 	);
 	return rv;
 }
+*/
 /* end of these table hacks */
 
 static HTMLFontFace *
@@ -1555,6 +1567,15 @@ element_parse_hide (ELEMENT_PARSE_PARAMS)
 }
 
 static void
+element_parse_script(ELEMENT_PARSE_PARAMS)
+{
+	g_return_if_fail (HTML_IS_ENGINE (e));
+	if (xmlelement) {
+		elementtree_parse_script_in_node(xmlelement->children, 0,  e);
+	}
+}
+
+static void
 element_parse_head(ELEMENT_PARSE_PARAMS)
 {
 	g_return_if_fail (HTML_IS_ENGINE (e));
@@ -2112,7 +2133,7 @@ static void
 element_parse_data (ELEMENT_PARSE_PARAMS)
 {
 	g_return_if_fail (HTML_IS_ENGINE (e));
-	
+
 	elementtree_parse_data_in_node(xmlelement, 0, e, e->flow);
 
 	if (xmlelement && e->parser_clue) {
@@ -2951,7 +2972,7 @@ static HTMLDispatchEntry basic_table[] = {
 	{ID_A,                element_parse_a},
 	{ID_ADDRESS,          element_parse_address},
 	{ID_B,                element_parse_inline},
-	{"base",              element_parse_base},
+	{ID_BASE,              element_parse_base},
 	{ID_BIG,              element_parse_inline},
 	{ID_BLOCKQUOTE,       element_parse_list},
 	{ID_BODY,             element_parse_body},
@@ -2962,8 +2983,8 @@ static HTMLDispatchEntry basic_table[] = {
 	{ID_CODE,             element_parse_inline},
 	{ID_DIR,              element_parse_list},
 	{ID_DIV,              element_parse_inline},
-	{"nobr",              element_parse_inline},
-	{"data",              element_parse_data},
+	{ID_NOBR,              element_parse_inline},
+	{ID_DATA,              element_parse_data},
 	{ID_DL,               element_parse_dl},
 	{ID_DT,               element_parse_dt},
 	{ID_DD,               element_parse_dd},
@@ -3001,14 +3022,15 @@ static HTMLDispatchEntry basic_table[] = {
 	{ID_TH,               element_parse_cell},
 	{ID_TR,               element_parse_tr},
 	{ID_TT,               element_parse_inline},
-	{"script",            element_parse_hide},
+	{ID_SCRIPT,           element_parse_script},
+	{ID_NOSCRIPT,         element_parse_script},
 	{ID_HEAD,             element_parse_head},
 	{ID_VAR,              element_parse_inline},
 	/*
 	 * the following elements have special behaviors for the close tags
 	 * so we dispatch on the close element as well
 	 */
-	{"hr",                element_parse_hr},
+	{ID_HR,               element_parse_hr},
 	{"h1",                element_parse_heading},
 	{"h2",                element_parse_heading},
 	{"h3",                element_parse_heading},
@@ -3017,11 +3039,10 @@ static HTMLDispatchEntry basic_table[] = {
 	{"h6",                element_parse_heading},
 	/* p and br check the close marker themselves */
 	{ID_P,                element_parse_p},
-	{"br",                element_parse_br},
+	{ID_BR,               element_parse_br},
 	/*
 	 * not realized yet
 	 */
-	{"noscript",          element_parse_hide},
 	{"link",              element_parse_hide},
 	{NULL,                NULL}
 };
@@ -3381,7 +3402,7 @@ html_engine_class_init (HTMLEngineClass *klass)
 	object_class->finalize = html_engine_finalize;
 	object_class->set_property = html_engine_set_property;
 
-	pspec = g_param_spec_object ("html", NULL, NULL, GTK_TYPE_HTML, G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY);
+	pspec = g_param_spec_object (ID_HTML, NULL, NULL, GTK_TYPE_HTML, G_PARAM_WRITABLE | G_PARAM_CONSTRUCT_ONLY);
 	g_object_class_install_property (object_class, 1, pspec);
 
 	html_engine_init_magic_links ();
@@ -3500,7 +3521,7 @@ html_engine_new (GtkWidget *w)
 {
 	HTMLEngine *engine;
 
-	engine = g_object_new (HTML_TYPE_ENGINE, "html", w, NULL);
+	engine = g_object_new (HTML_TYPE_ENGINE, ID_HTML, w, NULL);
 
 	return engine;
 }
@@ -4071,7 +4092,7 @@ elementtree_parse_base_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e)
 			}
 		}
 	}
-		
+
 }
 
 void
@@ -4233,6 +4254,12 @@ elementtree_parse_data_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTM
 	}
 	g_free (class_name);
 	g_free (key);
+}
+
+void
+elementtree_parse_script_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e)
+{
+	/*Sory but now it's not needed*/
 }
 
 void
@@ -4647,7 +4674,7 @@ create_object_from_xml (HTMLEngine *e, HTMLElement *element)
 	if (html_element_get_attr (element, "type", &value))
 		type = g_strdup (value);
 
-	if (html_element_get_attr (element, "data", &value))
+	if (html_element_get_attr (element, ID_DATA, &value))
 		data = g_strdup (value);
 
 	if (element->style->width)
@@ -4893,10 +4920,10 @@ HTMLStyle *
 style_from_engine(HTMLEngine *e)
 {
 	HTMLStyle *style = NULL;
-	
+
 	style = html_style_add_color(style, current_color (e));
 	if (current_bg_color (e))
-	{		
+	{
 			HTMLColor *hc = html_color_new_from_gdk_color (current_bg_color (e));
 			style = html_style_add_background_color (style, hc);
 			html_color_unref (hc);
@@ -4907,9 +4934,9 @@ style_from_engine(HTMLEngine *e)
 	style = html_style_add_background_image(style, current_row_bg_image (e));
 	style = html_style_add_text_align(style, current_alignment (e));
 	style = html_style_add_text_valign(style, current_row_valign (e));
-	
+
 	return style;
-	
+
 }
 
 HTMLObject*
@@ -4920,9 +4947,9 @@ create_flow_from_xml(HTMLEngine *e, HTMLElement *testElement)
 	HTMLClearType  clear = HTML_CLEAR_NONE;
 	HTMLListType   listtype = HTML_LIST_TYPE_BLOCKQUOTE;
 	gint listnumber = 0;
-	if (!testElement->style) 
+	if (!testElement->style)
 		return NULL;
-		
+
 	clear = testElement->style->clear;
 	fstyle = testElement->style->fstyle;
 	listtype = testElement->style->listtype;
@@ -4930,7 +4957,7 @@ create_flow_from_xml(HTMLEngine *e, HTMLElement *testElement)
 
 	flow = html_clueflow_new (fstyle, g_byte_array_new (), listtype, listnumber, clear);
 	html_engine_set_object_data (e, flow);
-	
+
 	HTML_CLUEFLOW (flow)->dir = testElement->style->dir;
 	HTML_CLUE (flow)->halign = testElement->style->text_align;
 
@@ -4985,16 +5012,26 @@ elementtree_parse_text (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject
 void
 element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style, gint *count)
 {
-		HTMLElement *testElement = html_element_from_xml(e, current, parent_style);
-		HTMLObject* html_object = NULL;
+	HTMLElement *testElement;
+	HTMLObject* html_object = NULL;
+	g_return_if_fail (HTML_IS_ENGINE (e));
+	g_return_if_fail (htmlelement != NULL);
+	g_return_if_fail (current != NULL);
+
+		testElement = html_element_from_xml(e, current, parent_style);
 		if(!g_ascii_strcasecmp(ID_TEXT,XMLCHAR2GCHAR(current->name))) {
 			elementtree_parse_text(current, pos+1, e, htmlelement, testElement);
-		} else if(!g_ascii_strcasecmp("base",XMLCHAR2GCHAR(current->name))) {
+		} else if(!g_ascii_strcasecmp(ID_BASE,XMLCHAR2GCHAR(current->name))) {
 			elementtree_parse_base_in_node(current, pos+1, e);
+		} else if(
+			!g_ascii_strcasecmp(ID_SCRIPT,XMLCHAR2GCHAR(current->name)) ||
+			!g_ascii_strcasecmp(ID_NOSCRIPT,XMLCHAR2GCHAR(current->name))
+			) {
+			elementtree_parse_script_in_node(current->children, pos+1, e);
 		} else if(!g_ascii_strcasecmp(ID_HEAD,XMLCHAR2GCHAR(current->name))) {
 			elementtree_parse_head_in_node(current->children, pos+1, e);
 		} else if (html_object_is_clue(htmlelement)) {
-			if(	!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "hr") ) {
+			if(	!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_HR) ) {
 					html_object = create_rule_from_xml(e, testElement, htmlelement->max_width);
 					html_clue_append (HTML_CLUE (htmlelement), html_object);
 					if (current->children)
@@ -5025,12 +5062,12 @@ element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e,
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_DT) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_DD) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_BLOCKQUOTE) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "html")
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_HTML)
 			) {
 				html_object = create_flow_from_xml(e, testElement);
 				html_clue_append (HTML_CLUE (htmlelement), html_object);
 				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
-			} else if(!g_ascii_strcasecmp("br",XMLCHAR2GCHAR(current->name))) {
+			} else if(!g_ascii_strcasecmp(ID_BR,XMLCHAR2GCHAR(current->name))) {
 				elementtree_parse_text_innode(e, htmlelement, testElement, "", TRUE);
 			} else if(!g_ascii_strcasecmp(ID_FONT,XMLCHAR2GCHAR(current->name))) {
 				if (testElement->style->height) {
@@ -5075,14 +5112,14 @@ element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e,
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_I) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_LABEL) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_EM) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "nobr") ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_NOBR) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_SPAN)
 			) {
 				/*html_object = create_flow_from_xml(e, testElement);
 				html_clue_append (HTML_CLUE (htmlelement), html_object);
 				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);*/
 				element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
-			} else if(	!g_ascii_strcasecmp("img",	XMLCHAR2GCHAR(current->name))) {
+			} else if(	!g_ascii_strcasecmp(ID_IMG,	XMLCHAR2GCHAR(current->name))) {
 				html_object = HTML_OBJECT (create_image_from_xml(e, testElement, htmlelement->max_width));
 				if(!html_object)
 					return; /*FIXME*/
@@ -5108,7 +5145,7 @@ element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e,
 				elementtree_parse_dumpnode_in_node(current, pos + 1);
 			}
 		} else if (HTML_IS_TABLE(htmlelement)) {
-			if(!g_ascii_strcasecmp("tr",XMLCHAR2GCHAR(current->name))) {
+			if(!g_ascii_strcasecmp(ID_TR,XMLCHAR2GCHAR(current->name))) {
 				html_table_start_row (HTML_TABLE(htmlelement));
 				element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
 				html_table_end_row (HTML_TABLE(htmlelement));
@@ -5124,9 +5161,9 @@ element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e,
 				elementtree_parse_dumpnode_in_node(current, pos + 1);
 			}
 		} else {
-			g_printerr("object not created\n");
-			//It's must call after all operarion
+			/*It's must call after all operarion*/
 			html_element_free(testElement);
+			g_printerr("object not created\n");
 			element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parent_style);
 		}
 }
