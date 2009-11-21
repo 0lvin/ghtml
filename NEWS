@@ -1,3 +1,15 @@
+GtkHTML-3.29.2 2009-11-16
+-------------------------
+
+Bug Fixes:
+	#471687 - Crash selecting mail content (Simon Brys)
+	#600042 - Hyperlink dialog doesn't allow more hyperlinks (Milan Crha)
+
+Other Changes:
+	Allow "select-all" command in read-only mode. (Matthew Barnes)
+	Add gtk_html_unselect_all() for clearing selections. (Matthew Barnes)
+
+
 GtkHTML-3.29.1 2009-10-26
 --------------------------
 
