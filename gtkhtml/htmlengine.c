@@ -35,6 +35,7 @@
 #include <ctype.h>
 #include <time.h>
 #include <libxml/parser.h>
+#include <libxml/parserInternals.h>
 #include <libxml/HTMLparser.h>
 #include <libcroco/libcroco.h>
 
@@ -103,6 +104,10 @@
 //#define USEOLDRENDER
 /* #define CHECK_CURSOR */
 
+/* Know error's not inherit list type
+ * broken support frame
+ * broken check content encoding
+ */
 static void      html_engine_class_init       (HTMLEngineClass     *klass);
 static void      html_engine_init             (HTMLEngine          *engine);
 static gboolean  html_engine_timer_event      (HTMLEngine          *e);
@@ -486,7 +491,20 @@ gen_style_for_element(const gchar *name, HTMLStyle *style)
 	} else if (	!g_ascii_strcasecmp(name, ID_PRE)){
 		style = html_style_set_flow_style (style, HTML_CLUEFLOW_STYLE_PRE);
 	} else if (	!g_ascii_strcasecmp(name, ID_LI)){
-		style = html_style_set_list_type (style, HTML_LIST_TYPE_UNORDERED);
+
+		if (style)
+		/*	if(
+				style->fstyle != HTML_LIST_TYPE_CIRCLE &&
+				style->fstyle != HTML_LIST_TYPE_DISC &&
+				style->fstyle != HTML_LIST_TYPE_SQUARE &&
+				style->fstyle != HTML_LIST_TYPE_UNORDERED &&
+				style->fstyle != HTML_LIST_TYPE_ORDERED_ARABIC &&
+				style->fstyle != HTML_LIST_TYPE_ORDERED_LOWER_ALPHA &&
+				style->fstyle != HTML_LIST_TYPE_ORDERED_UPPER_ALPHA &&
+				style->fstyle != HTML_LIST_TYPE_ORDERED_LOWER_ROMAN &&
+				style->fstyle != HTML_LIST_TYPE_ORDERED_UPPER_ROMAN
+			)*/
+				style = html_style_set_list_type (style, HTML_LIST_TYPE_UNORDERED);
 		style = html_style_set_flow_style (style, HTML_CLUEFLOW_STYLE_LIST_ITEM);
 		if(style)
 			style->listnumber = 1;
@@ -3786,12 +3804,24 @@ html_engine_stream_types (GtkHTMLStream *handle,
 	return engine_content_types;
 }
 
+void
+html_engine_parser_create(HTMLEngine *e)
+{
+	g_return_if_fail (HTML_IS_ENGINE (e));
+	if (!e->parser) {
+		xmlInitParser();
+		e->parser = htmlCreatePushParserCtxt (NULL, NULL, NULL, 0/*e->size*/, NULL, 0);
+	}
+
+}
+
 static void
 html_engine_stream_mime (GtkHTMLStream *handle,
 			  const gchar *mime_type,
 			  gpointer data)
 {
 	HTMLEngine *e;
+	gboolean need_convert = FALSE;
 
 	e = HTML_ENGINE (data);
 
@@ -3799,7 +3829,38 @@ html_engine_stream_mime (GtkHTMLStream *handle,
 		return;
 
 	html_engine_set_content_type (e, mime_type);
+	/* change real content type only in set to stream */
 
+	html_engine_parser_create(e);
+
+	g_print("encoding_b(%s)=%s\n",mime_type, e->parser->input->encoding);
+
+	if (e->parser->input) {
+		if(!e->parser->input->encoding)
+			need_convert = TRUE;
+		else
+			need_convert = !g_ascii_strcasecmp (
+				e->parser->input->encoding,
+				get_encoding_from_content_type(e->content_type)
+			);
+		if ( need_convert ){
+			const char *encoding = get_encoding_from_content_type(e->content_type);
+			if (encoding != NULL) {
+			    xmlCharEncodingHandlerPtr handler;
+
+			    handler = xmlFindCharEncodingHandler(encoding);
+			    if (handler != NULL) {
+				xmlSwitchInputEncoding(e->parser, e->parser->input, handler);
+			    } else {
+				    g_printerr("Unknown encoding %s",
+						 BAD_CAST encoding);
+			    }
+			    if (e->parser->input->encoding == NULL)
+				e->parser->input->encoding = xmlStrdup(BAD_CAST encoding);
+			}
+		}
+	}
+	g_print("encoding_a=%s\n",e->parser->input->encoding);
 }
 
 static void
@@ -3825,19 +3886,15 @@ html_engine_stream_write (GtkHTMLStream *handle,
 			  gpointer data)
 {
 	HTMLEngine *e;
-
 	e = HTML_ENGINE (data);
 
 	if (buffer == NULL)
 		return;
-	if (!e->parser) {
-		xmlInitParser();
-		e->parser = htmlCreatePushParserCtxt (NULL, NULL, NULL, 0/*e->size*/, NULL, 0);
-	}
+
+	html_engine_parser_create(e);
 
 	if (e->parser)
 		htmlParseChunk (e->parser, buffer, size == -1 ? strlen (buffer) : size, 0);
-
 }
 
 static void
@@ -5568,6 +5625,7 @@ html_engine_stream_end (GtkHTMLStream *stream,
 		if (e->parser->myDoc)
 			root = xmlDocGetRootElement(e->parser->myDoc);
 	if(root) {
+		g_print("detected=%s\n",e->parser->input->encoding);
 		e->eat_space = FALSE;
 		/*elementtree_parse_dumpnode(root, 0);*/
 #ifndef USEOLDRENDER
