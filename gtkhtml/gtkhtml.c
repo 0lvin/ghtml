@@ -2572,8 +2572,14 @@ drag_begin (GtkWidget *widget, GdkDragContext *context)
 static void
 drag_end (GtkWidget *widget, GdkDragContext *context)
 {
+	GtkHTML *html;
+
 	/* printf ("drag_end\n"); */
-	GTK_HTML (widget)->priv->dnd_in_progress = FALSE;
+	g_return_if_fail (GTK_IS_HTML (widget));
+
+	html = GTK_HTML (widget);
+	if (html->priv)
+		html->priv->dnd_in_progress = FALSE;
 }
 
 static void
@@ -3321,9 +3327,14 @@ gtk_html_im_preedit_changed_cb (GtkIMContext *context, GtkHTML *html)
 		      html->engine->cursor ? html->engine->cursor->position : 0, html->engine->cursor,
 		      html->engine->mark ? html->engine->mark->position : 0, html->engine->mark,
 		      html_engine_is_selection_active (html->engine));)
+
+	if (!html->engine->cursor) {
+		return;
+	}
+
 	html->priv->im_block_reset = TRUE;
 
-	if (html_engine_is_selection_active (html->engine)) {
+	if (html->engine->mark && html_engine_is_selection_active (html->engine)) {
 		D_IM (printf ("IM push selection\n");)
 		html_engine_selection_push (html->engine);
 		html_engine_disable_selection (html->engine);

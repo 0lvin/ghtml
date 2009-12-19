@@ -633,80 +633,6 @@ gtkhtml_editor_find_data_file (const gchar *basename)
 	return NULL;  /* never gets here */
 }
 
-gchar *
-gtkhtml_editor_get_file_charset (const gchar *filename)
-{
-	GRegex *regex;
-	GMatchInfo *match_info;
-	gchar *charset = NULL;
-	gchar *contents;
-	GError *error = NULL;
-
-	g_return_val_if_fail (filename != NULL, NULL);
-
-	if (!g_file_get_contents (filename, &contents, NULL, &error))
-		goto exit;
-
-	/* Search for "charset = token" as defined in RFC 2616. */
-	regex = g_regex_new (
-		"charset[ \t]*=[ \t]*(" TOKEN ")",
-		G_REGEX_CASELESS, 0, &error);
-	if (regex == NULL)
-		goto exit;
-
-	/* Extract "token", which should be the charset name. */
-	g_regex_match (regex, contents, 0, &match_info);
-	if (g_match_info_matches (match_info))
-		charset = g_match_info_fetch (match_info, 1);
-
-	g_match_info_free (match_info);
-	g_regex_unref (regex);
-
-exit:
-	if (error != NULL) {
-		g_warning ("%s", error->message);
-		g_error_free (error);
-	}
-
-	g_free (contents);
-
-	return charset;
-}
-
-gboolean
-gtkhtml_editor_get_file_contents (const gchar *filename,
-                                  const gchar *encoding,
-                                  gchar **contents,
-                                  gsize *length,
-                                  GError **error)
-{
-	GIOChannel *channel;
-	GIOStatus status;
-
-	g_return_val_if_fail (filename != NULL, FALSE);
-	g_return_val_if_fail (contents != NULL, FALSE);
-
-	channel = g_io_channel_new_file (filename, "r", error);
-	if (channel == NULL)
-		return FALSE;
-
-	status = g_io_channel_set_encoding (channel, encoding, error);
-	if (status == G_IO_STATUS_ERROR) {
-		g_io_channel_unref (channel);
-		return FALSE;
-	}
-
-	status = g_io_channel_read_to_end (channel, contents, length, error);
-	if (status == G_IO_STATUS_ERROR) {
-		g_io_channel_unref (channel);
-		return FALSE;
-	}
-
-	g_io_channel_unref (channel);
-
-	return TRUE;
-}
-
 gint
 gtkhtml_editor_insert_file (GtkhtmlEditor *editor,
                             const gchar *title,
@@ -781,6 +707,57 @@ gtkhtml_editor_request_finish (GtkhtmlEditor *editor,
 	g_object_unref (simple);
 
 	return success;
+}
+
+GFile *
+gtkhtml_editor_run_open_dialog (GtkhtmlEditor *editor,
+                                const gchar *title,
+                                GtkCallback customize_func,
+                                gpointer customize_data)
+{
+	GtkFileChooser *file_chooser;
+	GFile *chosen_file = NULL;
+	GtkWidget *dialog;
+	gchar *uri;
+
+	g_return_val_if_fail (GTKHTML_IS_EDITOR (editor), NULL);
+
+	dialog = gtk_file_chooser_dialog_new (
+		title, GTK_WINDOW (editor),
+		GTK_FILE_CHOOSER_ACTION_OPEN,
+		GTK_STOCK_CANCEL, GTK_RESPONSE_CANCEL,
+		GTK_STOCK_OPEN, GTK_RESPONSE_ACCEPT, NULL);
+
+	file_chooser = GTK_FILE_CHOOSER (dialog);
+
+	gtk_dialog_set_default_response (
+		GTK_DIALOG (dialog), GTK_RESPONSE_ACCEPT);
+
+	gtk_file_chooser_set_local_only (file_chooser, FALSE);
+
+	/* Restore the current folder from the previous file chooser. */
+	uri = (gchar *) gtkhtml_editor_get_current_folder (editor);
+	if (uri != NULL)
+		gtk_file_chooser_set_current_folder_uri (file_chooser, uri);
+
+	/* Allow further customizations before running the dialog. */
+	if (customize_func != NULL)
+		customize_func (dialog, customize_data);
+
+	if (gtk_dialog_run (GTK_DIALOG (dialog)) != GTK_RESPONSE_ACCEPT)
+		goto exit;
+
+	chosen_file = gtk_file_chooser_get_file (file_chooser);
+
+	/* Save the current folder for subsequent file choosers. */
+	uri = gtk_file_chooser_get_current_folder_uri (file_chooser);
+	gtkhtml_editor_set_current_folder (editor, uri);
+	g_free (uri);
+
+exit:
+	gtk_widget_destroy (dialog);
+
+	return chosen_file;
 }
 
 void

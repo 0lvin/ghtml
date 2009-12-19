@@ -150,107 +150,88 @@ insert_image_response_cb (GtkFileChooser *file_chooser,
 }
 
 static void
-insert_html_file_response_cb (GtkFileChooser *file_chooser,
-                              gint response,
-                              GtkhtmlEditor *editor)
+insert_html_file_ready_cb (GFile *file,
+                           GAsyncResult *result,
+                           GtkhtmlEditor *editor)
 {
-	gchar *filename;
+	GtkHTML *html;
+	GtkHTML *new_html;
+	GtkHTMLStream *stream;
+	GtkWidget *dialog;
 	gchar *contents;
 	gsize length;
 	GError *error = NULL;
 
-	if (response != GTK_RESPONSE_OK)
-		return;
+	g_file_load_contents_finish (
+		file, result, &contents, &length, NULL, &error);
+	if (error != NULL)
+		goto fail;
 
-	filename = gtk_file_chooser_get_filename (file_chooser);
+	html = gtkhtml_editor_get_html (editor);
+	new_html = GTK_HTML (gtk_html_new ());
 
-	/* Assume the file encoding is UTF-8. */
-	gtkhtml_editor_get_file_contents (
-		filename, NULL, &contents, &length, &error);
+	stream = gtk_html_begin (new_html);
+	gtk_html_write (html, stream, contents, length);
+	gtk_html_end (html, stream, GTK_HTML_STREAM_OK);
+	g_object_unref (stream);
 
-	/* If we get a conversion error, look for a charset and try again. */
-	if (error != NULL && g_error_matches (error, G_CONVERT_ERROR,
-		G_CONVERT_ERROR_ILLEGAL_SEQUENCE)) {
+	g_free (contents);
 
-		gchar *charset;
+	html = gtkhtml_editor_get_html (editor);
+	gtk_html_insert_gtk_html (html, new_html);
 
-		charset = gtkhtml_editor_get_file_charset (filename);
-		if (charset != NULL) {
-			g_clear_error (&error);
-			gtkhtml_editor_get_file_contents (
-				filename, charset, &contents, &length, &error);
-			g_free (charset);
-		}
-	}
+	g_object_unref (new_html);
 
-	if (error == NULL) {
-		GtkHTML *html;
-		GtkHTMLStream *stream;
+	goto exit;
 
-		html = GTK_HTML (gtk_html_new ());
-		stream = gtk_html_begin_content (
-			html, "text/html; charset=utf-8");
-		gtk_html_write (html, stream, contents, length);
-		gtk_html_end (html, stream, GTK_HTML_STREAM_OK);
-		gtk_html_insert_gtk_html (
-			gtkhtml_editor_get_html (editor), html);
-		g_free (contents);
-	} else {
-		/* XXX Show an error dialog. */
-		g_warning ("%s", error->message);
-		g_error_free (error);
-	}
+fail:
+	dialog = gtk_message_dialog_new (
+		GTK_WINDOW (editor), 0, GTK_MESSAGE_ERROR,
+		GTK_BUTTONS_CLOSE, _("Failed to insert HTML file."));
+	gtk_message_dialog_format_secondary_text (
+		GTK_MESSAGE_DIALOG (dialog), "%s.", error->message);
+	gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_widget_destroy (dialog);
 
-	g_free (filename);
+	g_error_free (error);
+
+exit:
+	g_object_unref (editor);
 }
 
 static void
-insert_text_file_response_cb (GtkFileChooser *file_chooser,
-                              gint response,
-                              GtkhtmlEditor *editor)
+insert_text_file_ready_cb (GFile *file,
+                           GAsyncResult *result,
+                           GtkhtmlEditor *editor)
 {
+	GtkHTML *html;
+	GtkWidget *dialog;
 	gchar *contents;
-	gchar *filename;
 	gsize length;
 	GError *error = NULL;
 
-	if (response != GTK_RESPONSE_OK)
-		return;
+	g_file_load_contents_finish (
+		file, result, &contents, &length, NULL, &error);
+	if (error != NULL)
+		goto fail;
 
-	filename = gtk_file_chooser_get_filename (file_chooser);
+	html = gtkhtml_editor_get_html (editor);
+	html_engine_paste_text (html->engine, contents, length);
+	g_free (contents);
 
-	/* Assume the file encoding is UTF-8. */
-	gtkhtml_editor_get_file_contents (
-		filename, NULL, &contents, &length, &error);
+	goto exit;
 
-	/* If we get a conversion error, look for a charset and try again. */
-	if (error != NULL && g_error_matches (error, G_CONVERT_ERROR,
-		G_CONVERT_ERROR_ILLEGAL_SEQUENCE)) {
+fail:
+	dialog = gtk_message_dialog_new (
+		GTK_WINDOW (editor), 0, GTK_MESSAGE_ERROR,
+		GTK_BUTTONS_CLOSE, _("Failed to insert text file."));
+	gtk_message_dialog_format_secondary_text (
+		GTK_MESSAGE_DIALOG (dialog), "%s.", error->message);
+	gtk_dialog_run (GTK_DIALOG (dialog));
+	gtk_widget_destroy (dialog);
 
-		gchar *charset;
-
-		charset = gtkhtml_editor_get_file_charset (filename);
-		if (charset != NULL) {
-			g_clear_error (&error);
-			gtkhtml_editor_get_file_contents (
-				filename, charset, &contents, &length, &error);
-			g_free (charset);
-		}
-	}
-
-	if (error == NULL) {
-		GtkHTML *html;
-
-		html = gtkhtml_editor_get_html (editor);
-		html_engine_paste_text (html->engine, contents, length);
-		g_free (contents);
-	} else {
-		/* XXX Show an error dialog. */
-		g_warning ("%s", error->message);
-		g_error_free (error);
-	}
-
-	g_free (filename);
+exit:
+	g_object_unref (editor);
 }
 
 static void
@@ -628,9 +609,18 @@ static void
 action_insert_html_file_cb (GtkToggleAction *action,
                             GtkhtmlEditor *editor)
 {
-	gtkhtml_editor_insert_file (
-		editor, _("Insert HTML File"),
-		G_CALLBACK (insert_html_file_response_cb));
+	GFile *file;
+
+	file = gtkhtml_editor_run_open_dialog (
+		editor, _("Insert HTML File"), NULL, NULL);
+
+	/* XXX Need a way to cancel this. */
+	g_file_load_contents_async (
+		file, NULL, (GAsyncReadyCallback)
+		insert_html_file_ready_cb,
+		g_object_ref (editor));
+
+	g_object_unref (file);
 }
 
 static void
@@ -684,9 +674,18 @@ static void
 action_insert_text_file_cb (GtkAction *action,
                             GtkhtmlEditor *editor)
 {
-	gtkhtml_editor_insert_file (
-		editor, _("Insert Text File"),
-		G_CALLBACK (insert_text_file_response_cb));
+	GFile *file;
+
+	file = gtkhtml_editor_run_open_dialog (
+		editor, _("Insert Text File"), NULL, NULL);
+
+	/* XXX Need a way to cancel this. */
+	g_file_load_contents_async (
+		file, NULL, (GAsyncReadyCallback)
+		insert_text_file_ready_cb,
+		g_object_ref (editor));
+
+	g_object_unref (file);
 }
 
 static void

@@ -1351,7 +1351,7 @@ gtkhtml_editor_file_chooser_dialog_run (GtkhtmlEditor *editor,
 	g_return_val_if_fail (GTKHTML_IS_EDITOR (editor), response);
 	g_return_val_if_fail (GTK_IS_FILE_CHOOSER_DIALOG (dialog), response);
 
-	gtk_file_chooser_set_current_folder (
+	gtk_file_chooser_set_current_folder_uri (
 		GTK_FILE_CHOOSER (dialog),
 		gtkhtml_editor_get_current_folder (editor));
 
@@ -1366,7 +1366,7 @@ gtkhtml_editor_file_chooser_dialog_run (GtkhtmlEditor *editor,
 	if (save_folder) {
 		gchar *folder;
 
-		folder = gtk_file_chooser_get_current_folder (
+		folder = gtk_file_chooser_get_current_folder_uri (
 			GTK_FILE_CHOOSER (dialog));
 		gtkhtml_editor_set_current_folder (editor, folder);
 		g_free (folder);

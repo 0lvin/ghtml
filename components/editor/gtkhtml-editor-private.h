@@ -200,12 +200,6 @@ void		gtkhtml_editor_private_finalize	 (GtkhtmlEditor *editor);
 
 void		gtkhtml_editor_actions_init	 (GtkhtmlEditor *editor);
 gchar *		gtkhtml_editor_find_data_file	 (const gchar *basename);
-gchar *		gtkhtml_editor_get_file_charset	 (const gchar *filename);
-gboolean	gtkhtml_editor_get_file_contents (const gchar *filename,
-						  const gchar *encoding,
-						  gchar **contents,
-						  gsize *length,
-						  GError **error);
 gint		gtkhtml_editor_insert_file	 (GtkhtmlEditor *editor,
 						  const gchar *title,
 						  GCallback response_cb);
@@ -218,6 +212,10 @@ void		gtkhtml_editor_request_async	 (GtkhtmlEditor *editor,
 gboolean	gtkhtml_editor_request_finish	 (GtkhtmlEditor *editor,
 						  GAsyncResult *result,
 						  GError **error);
+GFile *		gtkhtml_editor_run_open_dialog	 (GtkhtmlEditor *editor,
+						  const gchar *title,
+						  GtkCallback customize_func,
+						  gpointer customize_data);
 void		gtkhtml_editor_show_uri		 (GtkWindow *parent,
 						  const gchar *uri);
 void		gtkhtml_editor_spell_check	 (GtkhtmlEditor *editor,
