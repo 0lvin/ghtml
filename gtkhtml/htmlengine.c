@@ -262,6 +262,7 @@ struct _HTMLElement {
 	BlockFunc exitFunc;
 };
 
+void element_parse_nodedump_htmlobject_one(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style, gint *count);
 void element_parse_nodedump_htmlobject(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style);
 void set_style_to_text(HTMLText *text, HTMLStyle *style, HTMLEngine *e, gint start_index, gint end_index);
 HTMLStyle *    style_from_engine(HTMLEngine *e); /* create style from engine */
@@ -3804,7 +3805,7 @@ html_engine_stream_types (GtkHTMLStream *handle,
 	return engine_content_types;
 }
 
-void
+static void
 html_engine_parser_create(HTMLEngine *e)
 {
 	g_return_if_fail (HTML_IS_ENGINE (e));
@@ -3840,7 +3841,7 @@ html_engine_stream_mime (GtkHTMLStream *handle,
 			need_convert = TRUE;
 		else
 			need_convert = !g_ascii_strcasecmp (
-				e->parser->input->encoding,
+				XMLCHAR2GCHAR(e->parser->input->encoding),
 				get_encoding_from_content_type(e->content_type)
 			);
 		if ( need_convert ){
@@ -4080,6 +4081,8 @@ html_engine_get_object_base (HTMLEngine *e, HTMLObject *o)
 HTMLParseFunc get_callback_node(const gchar* tag);
 HTMLParseFunc get_callback_text_node(const gchar* tag);
 
+const gchar * get_normal_name_typexml(xmlElementType type);
+
 void
 elementtree_parse_style_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e)
 {
@@ -4254,7 +4257,7 @@ elementtree_parse_title_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e)
 const gchar *
 get_normal_name_typexml(xmlElementType type) {
 	const gchar *typeName = "unknow";
-    switch (type) {
+	switch (type) {
 		case XML_ELEMENT_NODE: typeName = "XML_ELEMENT_NODE"; break;
 		case XML_ATTRIBUTE_NODE: break;
 		case XML_TEXT_NODE: typeName = "XML_TEXT_NODE"; break;
