@@ -263,9 +263,9 @@ struct _HTMLElement {
 };
 
 void element_parse_nodedump_htmlobject_one(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style, gint *count);
-void element_parse_nodedump_htmlobject(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style);
-void set_style_to_text(HTMLText *text, HTMLStyle *style, HTMLEngine *e, gint start_index, gint end_index);
-HTMLStyle *    style_from_engine(HTMLEngine *e); /* create style from engine */
+void element_parse_nodedump_htmlobject  (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style);
+void           set_style_to_text        (HTMLText *text, HTMLStyle *style, HTMLEngine *e, gint start_index, gint end_index);
+HTMLStyle *    style_from_engine        (HTMLEngine *e); /* create style from engine */
 HTMLText *     create_text_from_xml     (HTMLEngine *e, HTMLElement *testElement,const gchar* text);
 HTMLTableCell* create_cell_from_xml     (HTMLEngine *e, HTMLElement *element);
 HTMLTable*     create_table_from_xml    (HTMLEngine *e, HTMLElement *element);
@@ -278,8 +278,8 @@ HTMLEmbedded*  create_object_from_xml   (HTMLEngine *e, HTMLElement *testElement
 HTMLForm*      create_form_from_xml     (HTMLEngine *e, HTMLElement *element);
 HTMLObject*    create_input_from_xml    (HTMLEngine *e, HTMLElement *element);
 HTMLSelect*    create_select_from_xml   (HTMLEngine *e, HTMLElement *element);
-gchar * getcorrect_text(xmlNode* current, HTMLEngine *e, gboolean need_trim);
-gchar * get_text_from_children(xmlNode* xmlelement, HTMLEngine *e, gboolean need_trim);
+gchar *        getcorrect_text          (xmlNode* current, HTMLEngine *e, gboolean need_trim);
+gchar *        get_text_from_children   (xmlNode* xmlelement, HTMLEngine *e, gboolean need_trim);
 void elementtree_parse_text_innode      (HTMLEngine *e, HTMLObject* clue, HTMLElement *element, const gchar * text,gboolean newclue);
 void elementtree_parse_select           (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element);
 void elementtree_parse_text             (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* clue, HTMLElement *element);
@@ -5628,9 +5628,8 @@ html_engine_stream_end (GtkHTMLStream *stream,
 		if (e->parser->myDoc)
 			root = xmlDocGetRootElement(e->parser->myDoc);
 	if(root) {
-		g_print("detected=%s\n",e->parser->input->encoding);
 		e->eat_space = FALSE;
-		/*elementtree_parse_dumpnode(root, 0);*/
+		elementtree_parse_dumpnode(root, 0);
 #ifndef USEOLDRENDER
 		element_parse_nodedump_htmlobject(root, 0, e, e->parser_clue, style_from_engine(e));
 #else
