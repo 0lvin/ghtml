@@ -3281,11 +3281,6 @@ html_engine_finalize (GObject *object)
 		engine->search_info = NULL;
 	}
 
-	if (engine->formText) {
-		g_string_free (engine->formText, TRUE);
-		engine->formText = NULL;
-	}
-
 	clear_selection (engine);
 	html_engine_map_table_clear (engine);
 	html_engine_id_table_clear (engine);
@@ -5973,11 +5968,6 @@ html_engine_parse (HTMLEngine *e)
 	g_list_foreach (e->formList, destroy_form, NULL);
 
 	g_list_free (e->formList);
-
-	if (e->formText) {
-		g_string_free (e->formText, TRUE);
-		e->formText = NULL;
-	}
 
 	e->focus_object = NULL;
 	e->formList = NULL;

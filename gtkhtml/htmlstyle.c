@@ -251,18 +251,18 @@ html_style_set_list_type (HTMLStyle *style, HTMLListType value)
 HTMLStyle *
 parse_list_type (HTMLStyle *style, const gchar* value)
 {
-	if (!g_ascii_strcasecmp (value, "A"))
-		style = html_style_set_list_type (style, HTML_LIST_TYPE_ORDERED_UPPER_ALPHA);
-	else if (!g_ascii_strcasecmp (value, "a"))
-		style = html_style_set_list_type (style, HTML_LIST_TYPE_ORDERED_LOWER_ALPHA);
-	else if (!g_ascii_strcasecmp (value, "I"))
-		style = html_style_set_list_type (style, HTML_LIST_TYPE_ORDERED_UPPER_ROMAN);
-	else if (!g_ascii_strcasecmp (value, "i"))
+	if (!value)
+		return style;
+	else if (*value =='i')
 		style = html_style_set_list_type (style, HTML_LIST_TYPE_ORDERED_LOWER_ROMAN);
-	else if (!g_ascii_strcasecmp (value, "1"))
+	else if (*value =='I')
+		style = html_style_set_list_type (style, HTML_LIST_TYPE_ORDERED_UPPER_ROMAN);
+	else if (*value =='a')
+		style = html_style_set_list_type (style, HTML_LIST_TYPE_ORDERED_LOWER_ALPHA);
+	else if (*value =='A')
+		style = html_style_set_list_type (style, HTML_LIST_TYPE_ORDERED_UPPER_ALPHA);
+	else if (*value =='1')
 		style = html_style_set_list_type (style, HTML_LIST_TYPE_ORDERED_ARABIC);
-	else if (!g_ascii_strcasecmp (value, "cite"))
-		style = html_style_set_list_type (style, HTML_LIST_TYPE_BLOCKQUOTE_CITE);
 	else if (!g_ascii_strcasecmp (value, "circle"))
 		style = html_style_set_list_type (style, HTML_LIST_TYPE_CIRCLE);
 	else if (!g_ascii_strcasecmp (value, "disc"))
