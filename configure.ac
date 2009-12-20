@@ -136,7 +136,7 @@ PKG_CHECK_MODULES(GTHREAD, $GTHREAD_MODULES)
 AC_SUBST(GTHREAD_CFLAGS)
 AC_SUBST(GTHREAD_LIBS)
 
-GTKHTML_MODULES="gtk+-2.0 >= gtk_minimum_version enchant gconf-2.0 iso-codes libxml-2.0 libcroco-0.6"
+GTKHTML_MODULES="gtk+-2.0 >= gtk_minimum_version enchant iso-codes libxml-2.0 libcroco-0.6"
 PKG_CHECK_MODULES(GTKHTML, $GTKHTML_MODULES)
 AC_SUBST(GTKHTML_CFLAGS)
 AC_SUBST(GTKHTML_LIBS)
@@ -176,6 +176,17 @@ PKG_CHECK_MODULES(SOUP, libsoup-2.4  >= 2.26.0,
 AC_SUBST(HAVE_NEWSOUP)
 AM_CONDITIONAL(HAVE_SOUP, test x$have_soup != xno)
 AM_CONDITIONAL(HAVE_NEWSOUP, test x$HAVE_NEWSOUP != xno)
+
+dnl **********************************
+dnl gconf for default settings
+dnl **********************************
+
+PKG_CHECK_MODULES(GCONF,  gconf-2.0,
+    HAVE_GCONF="yes",
+    HAVE_GCONF="no")
+
+AC_SUBST(HAVE_GCONF)
+AM_CONDITIONAL(HAVE_GCONF, test x$HAVE_GCONF != xno)
 
 dnl **************************************************
 dnl * Gnome Icon Theme
@@ -285,5 +296,6 @@ echo "
 Configuration:
 
 	Cookies support in soup :		${HAVE_NEWSOUP}
+	Support gconf           :		${HAVE_GCONF}
 	Editor component type   :		${GNOME_GTKHTML_EDITOR_TYPE}
 "

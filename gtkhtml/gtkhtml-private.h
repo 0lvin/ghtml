@@ -43,7 +43,9 @@ struct _GtkHTMLPrivate {
 
 	GtkWidget *search_input_line;
 
+#ifdef HAVE_GCONF
 	guint notify_monospace_font_id;
+#endif
 
 	GtkIMContext *im_context;
 	gboolean need_im_reset;

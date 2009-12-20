@@ -8,6 +8,10 @@ NULL=
 
 gtkhtml_data = $(datadir)/gtkhtml-@GTKHTML_API_VERSION@
 
+if HAVE_GCONF
+have_gconf = -DHAVE_GCONF
+endif
+
 if HAVE_NEWSOUP
 have_new_soup = -DHAVE_NEWSOUP
 endif
@@ -19,9 +23,11 @@ AM_CPPFLAGS = 				\
 	$(SOUP_CFLAGS)			\
 	$(I18N_LIB_CFLAGS)		\
 	-DG_LOG_DOMAIN=\"gtkhtml\"	\
-	${have_new_soup}
+	${have_new_soup}		\
+	${have_gconf}
 
 AM_CFLAGS = 						\
+	$(GCONF_CFLAGS) \
 	-DPREFIX=\""$(prefix)"\"			\
 	-DLIBDIR=\""$(datadir)"\"			\
 	-DDATADIR=\""$(datadir)"\"			\
@@ -200,7 +206,7 @@ libgtkhtml_3_14_la_SOURCES =			\
 	$(NULL)
 
 libgtkhtml_3_14_la_LDFLAGS = -version-info $(GTKHTML_CURRENT):$(GTKHTML_REVISION):$(GTKHTML_AGE) -no-undefined
-libgtkhtml_3_14_la_LIBADD = $(GTKHTML_LIBS) ../a11y/libgtkhtml-a11y.la $(GAIL_LIBS) $(REGEX_LIBS)
+libgtkhtml_3_14_la_LIBADD = $(GTKHTML_LIBS) $(GCONF_LIBS) ../a11y/libgtkhtml-a11y.la $(GAIL_LIBS) $(REGEX_LIBS)
 
 dist-hook:
 	mkdir $(distdir)/tests

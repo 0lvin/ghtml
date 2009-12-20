@@ -27,7 +27,9 @@
 #define GTK_HTML_GNOME_CONFIG_PREFIX "/gtkhtml/Settings/"
 
 #include <gtk/gtk.h>
+#ifdef HAVE_GCONF
 #include <gconf/gconf-client.h>
+#endif
 
 #include "gtkhtml-types.h"
 #include "gtkhtml.h"
@@ -51,11 +53,13 @@ GtkHTMLClassProperties * gtk_html_class_properties_new       (GtkWidget *widget)
 void                     gtk_html_class_properties_destroy   (GtkHTMLClassProperties *p);
 void                     gtk_html_class_properties_copy      (GtkHTMLClassProperties *p1,
 							      GtkHTMLClassProperties *p2);
+#ifdef HAVE_GCONF
 void                     gtk_html_class_properties_load      (GtkHTMLClassProperties *p,
 							      GConfClient *client);
 void                     gtk_html_class_properties_update    (GtkHTMLClassProperties *p,
 							      GConfClient *client,
 							      GtkHTMLClassProperties *old);
+#endif
 
 /* enum types */
 

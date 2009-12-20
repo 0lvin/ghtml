@@ -1377,6 +1377,9 @@ main (gint argc, gchar *argv[])
 #endif
 
 	gtk_init(&argc, &argv);
+	
+	if (!g_thread_supported ())
+		g_thread_init (NULL);
 
 	app = gtk_window_new (GTK_WINDOW_TOPLEVEL);
 

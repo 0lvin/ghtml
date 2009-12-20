@@ -104,8 +104,10 @@ struct _GtkHTMLClass {
 
 	/* properties */
 	GtkHTMLClassProperties *properties;
+#ifdef HAVE_GCONF
 	GtkBindingSet *emacs_bindings;
 	gboolean use_emacs_bindings;
+#endif
 };
 
 struct _GtkHTMLEditorAPI

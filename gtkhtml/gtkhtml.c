@@ -129,8 +129,10 @@ struct _ClipboardContents {
 
 static GtkLayoutClass *parent_class = NULL;
 
+#ifdef HAVE_GCONF
 static GConfClient *gconf_client = NULL;
 static GError      *gconf_error  = NULL;
+#endif
 
 enum {
 	TITLE_CHANGED,
@@ -806,10 +808,12 @@ destroy (GtkObject *object)
 			html->priv->scroll_timeout_id = 0;
 		}
 
+#ifdef HAVE_GCONF
 		if (html->priv->notify_monospace_font_id) {
 			gconf_client_notify_remove (gconf_client, html->priv->notify_monospace_font_id);
 			html->priv->notify_monospace_font_id = 0;
 		}
+#endif
 
 		if (html->priv->resize_cursor) {
 			gdk_cursor_unref (html->priv->resize_cursor);
@@ -847,15 +851,20 @@ gtk_html_get_top_html (GtkHTML *html)
 static cairo_font_options_t *
 get_font_options (void)
 {
+#ifdef HAVE_GCONF
 	gchar *antialiasing, *hinting, *subpixel_order;
 	GConfClient *gconf = gconf_client_get_default ();
+#endif
 	cairo_font_options_t *font_options = cairo_font_options_create ();
+#ifdef HAVE_GCONF
 
 	/* Antialiasing */
 	antialiasing = gconf_client_get_string (gconf,
 			"/desktop/gnome/font_rendering/antialiasing", NULL);
 	if (antialiasing == NULL) {
+#endif
 		cairo_font_options_set_antialias (font_options, CAIRO_ANTIALIAS_DEFAULT);
+#ifdef HAVE_GCONF
 	} else {
 		if (strcmp (antialiasing, "grayscale") == 0)
 			cairo_font_options_set_antialias (font_options, CAIRO_ANTIALIAS_GRAY);
@@ -869,7 +878,9 @@ get_font_options (void)
 	hinting = gconf_client_get_string (gconf,
 			"/desktop/gnome/font_rendering/hinting", NULL);
 	if (hinting == NULL) {
+#endif
 		cairo_font_options_set_hint_style (font_options, CAIRO_HINT_STYLE_DEFAULT);
+#ifdef HAVE_GCONF
 	} else {
 		if (strcmp (hinting, "full") == 0)
 			cairo_font_options_set_hint_style (font_options, CAIRO_HINT_STYLE_FULL);
@@ -885,7 +896,9 @@ get_font_options (void)
 	subpixel_order = gconf_client_get_string (gconf,
 			"/desktop/gnome/font_rendering/rgba_order", NULL);
 	if (subpixel_order == NULL) {
+#endif
 		cairo_font_options_set_subpixel_order (font_options, CAIRO_SUBPIXEL_ORDER_DEFAULT);
+#ifdef HAVE_GCONF
 	} else {
 		if (strcmp (subpixel_order, "rgb") == 0)
 			cairo_font_options_set_subpixel_order (font_options, CAIRO_SUBPIXEL_ORDER_RGB);
@@ -902,6 +915,7 @@ get_font_options (void)
 	g_free (hinting);
 	g_free (subpixel_order);
 	g_object_unref (gconf);
+#endif
 	return font_options;
 }
 
@@ -940,6 +954,7 @@ gtk_html_set_fonts (GtkHTML *html, HTMLPainter *painter)
 		}
 	}
 
+#ifdef HAVE_GCONF
 	if (!fixed_name) {
 		GConfClient *gconf;
 
@@ -958,6 +973,7 @@ gtk_html_set_fonts (GtkHTML *html, HTMLPainter *painter)
 		}
 		g_object_unref (gconf);
 	}
+#endif
 
 	if (!fixed_name) {
 		fixed_family = "Monospace";
@@ -1059,7 +1075,9 @@ static gint
 key_press_event (GtkWidget *widget, GdkEventKey *event)
 {
 	GtkHTML *html = GTK_HTML (widget);
+#ifdef HAVE_GCONF
 	GtkHTMLClass *html_class = GTK_HTML_CLASS (GTK_WIDGET_GET_CLASS (html));
+#endif
 	gboolean retval = FALSE, update = TRUE;
 	HTMLObject *focus_object;
 	gint focus_object_offset;
@@ -1087,9 +1105,11 @@ key_press_event (GtkWidget *widget, GdkEventKey *event)
 			return TRUE;
 		}
 	}
-
+	
+#ifdef HAVE_GCONF
 	if (html_class->use_emacs_bindings && html_class->emacs_bindings && !html->binding_handled)
 		gtk_binding_set_activate (html_class->emacs_bindings, event->keyval, event->state, GTK_OBJECT (widget));
+#endif
 
 	if (!html->binding_handled) {
 		html->priv->in_key_binding = TRUE;
@@ -2418,6 +2438,7 @@ setup_class_properties (GtkHTML *html)
 	if (!klass->properties) {
 		klass->properties = gtk_html_class_properties_new (GTK_WIDGET (html));
 
+#ifdef HAVE_GCONF
 		if (!gconf_is_initialized ()) {
 			gchar *argv[] = { (gchar *) "gtkhtml", NULL };
 
@@ -2434,6 +2455,7 @@ setup_class_properties (GtkHTML *html)
 		gconf_client_add_dir (gconf_client, GTK_HTML_GCONF_DIR, GCONF_CLIENT_PRELOAD_ONELEVEL, &gconf_error);
 		if (gconf_error)
 			g_error ("gconf error: %s\n", gconf_error->message);
+#endif
 	}
 }
 
@@ -2807,6 +2829,7 @@ drag_motion (GtkWidget *widget, GdkDragContext *context, gint x, gint y, guint t
 
 /* dnd end */
 
+#ifdef HAVE_GCONF
 static void
 read_key_theme (GtkHTMLClass *html_class)
 {
@@ -2842,6 +2865,7 @@ client_notify_cursor_blink (GConfClient* client, guint cnxn_id, GConfEntry* entr
 	else
 		html_engine_set_cursor_blink_timeout (0);
 }
+#endif
 
 static void
 gtk_html_direction_changed (GtkWidget *widget, GtkTextDirection previous_dir)
@@ -2881,8 +2905,10 @@ gtk_html_class_init (GtkHTMLClass *klass)
 	GtkObjectClass    *object_class;
 	GtkLayoutClass    *layout_class;
 	GtkContainerClass *container_class;
+#ifdef HAVE_GCONF
 	gchar *filename;
 	GConfClient *client;
+#endif
 
 	html_class = (GtkHTMLClass *) klass;
 #ifdef USE_PROPS
@@ -3231,12 +3257,13 @@ gtk_html_class_init (GtkHTMLClass *klass)
 	add_bindings (klass);
 	gtk_html_accessibility_init ();
 
+#ifdef HAVE_GCONF
 	filename = g_build_filename (PREFIX, "share", GTKHTML_RELEASE_STRING, "keybindingsrc.emacs", NULL);
 	gtk_rc_parse (filename);
 	g_free (filename);
 	html_class->emacs_bindings = gtk_binding_set_find ("gtkhtml-bindings-emacs");
 	read_key_theme (html_class);
-
+	
 	client = gconf_client_get_default ();
 
 	gconf_client_notify_add (client, "/desktop/gnome/interface/gtk_key_theme",
@@ -3247,6 +3274,7 @@ gtk_html_class_init (GtkHTMLClass *klass)
 	client_notify_cursor_blink (client, 0, NULL, NULL);
 
 	g_object_unref (client);
+#endif
 }
 
 static void
@@ -3254,9 +3282,10 @@ init_properties_widget (GtkHTML *html)
 {
 	setup_class_properties (html);
 
+#ifdef HAVE_GCONF
 	if (!gconf_client)
 		gconf_client = gconf_client_get_default ();
-
+#endif
 }
 
 void
@@ -3542,9 +3571,11 @@ gtk_html_init (GtkHTML* html)
 	g_signal_connect (G_OBJECT (html->priv->im_context), "delete_surrounding",
 			  G_CALLBACK (gtk_html_im_delete_surrounding_cb), html);
 
+#ifdef HAVE_GCONF
 	html->priv->notify_monospace_font_id =
 		gconf_client_notify_add (gconf_client_get_default (), "/desktop/gnome/interface/monospace_font_name",
 					 client_notify_monospace_font, html, NULL, &gconf_error);
+#endif
 
 	gtk_html_construct (html);
 }

@@ -102,6 +102,7 @@ gtk_html_class_properties_destroy (GtkHTMLClassProperties *p)
 	g_free (p);
 }
 
+#ifdef HAVE_GCONF
 void
 gtk_html_class_properties_load (GtkHTMLClassProperties *p, GConfClient *client)
 {
@@ -116,6 +117,7 @@ void
 gtk_html_class_properties_update (GtkHTMLClassProperties *p, GConfClient *client, GtkHTMLClassProperties *old)
 {
 }
+#endif
 
 /* enums */
 
