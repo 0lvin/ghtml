@@ -192,37 +192,30 @@ struct _GtkhtmlEditorRequest {
 	gchar buffer[4096];
 };
 
-void		gtkhtml_editor_private_init	 (GtkhtmlEditor *editor);
-void		gtkhtml_editor_private_dispose	 (GtkhtmlEditor *editor);
-void		gtkhtml_editor_private_finalize	 (GtkhtmlEditor *editor);
+void		gtkhtml_editor_private_init	(GtkhtmlEditor *editor);
+void		gtkhtml_editor_private_constructed
+						(GtkhtmlEditor *editor);
+void		gtkhtml_editor_private_dispose	(GtkhtmlEditor *editor);
+void		gtkhtml_editor_private_finalize	(GtkhtmlEditor *editor);
 
 /* Private Utilities */
 
-void		gtkhtml_editor_actions_init	 (GtkhtmlEditor *editor);
-gchar *		gtkhtml_editor_find_data_file	 (const gchar *basename);
-gint		gtkhtml_editor_insert_file	 (GtkhtmlEditor *editor,
-						  const gchar *title,
-						  GCallback response_cb);
-void		gtkhtml_editor_request_async	 (GtkhtmlEditor *editor,
-						  const gchar *uri,
-						  GtkHTMLStream *stream,
-						  GCancellable *cancellable,
-						  GAsyncReadyCallback callback,
-						  gpointer user_data);
-gboolean	gtkhtml_editor_request_finish	 (GtkhtmlEditor *editor,
-						  GAsyncResult *result,
-						  GError **error);
-GFile *		gtkhtml_editor_run_open_dialog	 (GtkhtmlEditor *editor,
-						  const gchar *title,
-						  GtkCallback customize_func,
-						  gpointer customize_data);
-void		gtkhtml_editor_show_uri		 (GtkWindow *parent,
-						  const gchar *uri);
-void		gtkhtml_editor_spell_check	 (GtkhtmlEditor *editor,
-						  gboolean whole_document);
-gboolean	gtkhtml_editor_next_spell_error	 (GtkhtmlEditor *editor);
-gboolean	gtkhtml_editor_prev_spell_error	 (GtkhtmlEditor *editor);
-void		gtkhtml_editor_update_context	 (GtkhtmlEditor *editor);
+void		gtkhtml_editor_actions_init	(GtkhtmlEditor *editor);
+gchar *		gtkhtml_editor_find_data_file	(const gchar *basename);
+gint		gtkhtml_editor_insert_file	(GtkhtmlEditor *editor,
+						 const gchar *title,
+						 GCallback response_cb);
+GFile *		gtkhtml_editor_run_open_dialog	(GtkhtmlEditor *editor,
+						 const gchar *title,
+						 GtkCallback customize_func,
+						 gpointer customize_data);
+void		gtkhtml_editor_show_uri		(GtkWindow *parent,
+						 const gchar *uri);
+void		gtkhtml_editor_spell_check	(GtkhtmlEditor *editor,
+						 gboolean whole_document);
+gboolean	gtkhtml_editor_next_spell_error	(GtkhtmlEditor *editor);
+gboolean	gtkhtml_editor_prev_spell_error	(GtkhtmlEditor *editor);
+void		gtkhtml_editor_update_context	(GtkhtmlEditor *editor);
 
 G_END_DECLS
 

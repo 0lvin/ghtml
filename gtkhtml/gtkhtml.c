@@ -130,7 +130,6 @@ struct _ClipboardContents {
 static GtkLayoutClass *parent_class = NULL;
 
 #ifdef HAVE_GCONF
-static GConfClient *gconf_client = NULL;
 static GError      *gconf_error  = NULL;
 #endif
 
@@ -810,7 +809,9 @@ destroy (GtkObject *object)
 
 #ifdef HAVE_GCONF
 		if (html->priv->notify_monospace_font_id) {
-			gconf_client_notify_remove (gconf_client, html->priv->notify_monospace_font_id);
+			gconf_client_notify_remove (
+				gconf_client_get_default (),
+				html->priv->notify_monospace_font_id);
 			html->priv->notify_monospace_font_id = 0;
 		}
 #endif
@@ -2430,36 +2431,6 @@ set_adjustments (GtkLayout     *layout,
 
 /* Initialization.  */
 static void
-setup_class_properties (GtkHTML *html)
-{
-	GtkHTMLClass *klass;
-
-	klass = GTK_HTML_CLASS (GTK_WIDGET_GET_CLASS (html));
-	if (!klass->properties) {
-		klass->properties = gtk_html_class_properties_new (GTK_WIDGET (html));
-
-#ifdef HAVE_GCONF
-		if (!gconf_is_initialized ()) {
-			gchar *argv[] = { (gchar *) "gtkhtml", NULL };
-
-			g_warning ("gconf is not initialized, please call gconf_init before using GtkHTML library. "
-				   "Meanwhile it's initialized by gtkhtml itself.");
-			gconf_init (1, argv, &gconf_error);
-			if (gconf_error)
-				g_error ("gconf error: %s\n", gconf_error->message);
-		}
-
-		gconf_client = gconf_client_get_default ();
-		if (!gconf_client)
-			g_error ("cannot create gconf_client\n");
-		gconf_client_add_dir (gconf_client, GTK_HTML_GCONF_DIR, GCONF_CLIENT_PRELOAD_ONELEVEL, &gconf_error);
-		if (gconf_error)
-			g_error ("gconf error: %s\n", gconf_error->message);
-#endif
-	}
-}
-
-static void
 set_focus_child (GtkContainer *containter, GtkWidget *w)
 {
 	HTMLObject *o = NULL;
@@ -3253,6 +3224,7 @@ gtk_html_class_init (GtkHTMLClass *klass)
 	html_class->scroll            = scroll;
 	html_class->cursor_move       = cursor_move;
 	html_class->command           = command;
+	html_class->properties        = gtk_html_class_properties_new ();
 
 	add_bindings (klass);
 	gtk_html_accessibility_init ();
@@ -3274,17 +3246,6 @@ gtk_html_class_init (GtkHTMLClass *klass)
 	client_notify_cursor_blink (client, 0, NULL, NULL);
 
 	g_object_unref (client);
-#endif
-}
-
-static void
-init_properties_widget (GtkHTML *html)
-{
-	setup_class_properties (html);
-
-#ifdef HAVE_GCONF
-	if (!gconf_client)
-		gconf_client = gconf_client_get_default ();
 #endif
 }
 
@@ -3673,8 +3634,6 @@ gtk_html_construct (GtkHTML *html)
 			  G_CALLBACK (html_engine_submit_cb), html);
 	g_signal_connect (G_OBJECT (html->engine), "object_requested",
 			  G_CALLBACK (html_engine_object_requested_cb), html);
-
-	init_properties_widget (html);
 }
 
 

@@ -86,7 +86,7 @@ get_locale_language (void)
 }
 
 GtkHTMLClassProperties *
-gtk_html_class_properties_new (GtkWidget *widget)
+gtk_html_class_properties_new (void)
 {
 	GtkHTMLClassProperties *p = g_new0 (GtkHTMLClassProperties, 1);
 

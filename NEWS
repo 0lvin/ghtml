@@ -1,3 +1,17 @@
+GtkHTML-3.29.4 2009-12-21
+-------------------------
+
+Bug Fixes:
+	#366035 - Header expander image drag drop crash (Milan Crha) 
+	#603342 - Memory leak fix (Milan Crha) i
+Misc:
+	Support remote locations when inserting files into editor. (Matthew Barnes)
+
+Translations:
+	Jorge González (es)
+	Ivar Smolin (et)
+	Kjartan Maraas (nb)	
+
 GtkHTML-3.29.3 2009-11-30
 -------------------------
 

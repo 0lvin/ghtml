@@ -28,6 +28,7 @@ enum {
 	PROP_0,
 	PROP_CURRENT_FOLDER,
 	PROP_FILENAME,
+	PROP_HTML,
 	PROP_HTML_MODE,
 	PROP_INLINE_SPELLING,
 	PROP_MAGIC_LINKS,
@@ -113,7 +114,7 @@ editor_button_press_event_cb (GtkhtmlEditor *editor,
 
 	editor_show_popup_menu (editor, event, object, offset);
 
-	return FALSE;
+	return TRUE;
 }
 
 static void
@@ -212,51 +213,7 @@ editor_url_requested_cb (GtkhtmlEditor *editor,
                          const gchar *url,
                          GtkHTMLStream *stream)
 {
-	GtkHTML *html;
-	GMappedFile *mapped_file;
-	GtkHTMLStreamStatus status;
-	gchar *filename = NULL;
-	GError *error = NULL;
-
-	html = gtkhtml_editor_get_html (editor);
-
-	/* We can only handle local URLs here. */
-	if (g_ascii_strncasecmp (url, "file:/", 6) != 0) {
-		g_signal_emit (editor, signals[URI_REQUESTED], 0, url, stream);
-		return;
-	}
-
-	filename = g_filename_from_uri (url, NULL, &error);
-	if (filename == NULL)
-		goto exit;
-
-	mapped_file = g_mapped_file_new (filename, FALSE, &error);
-	if (mapped_file == NULL)
-		goto exit;
-
-	gtk_html_write (
-		html, stream,
-		g_mapped_file_get_contents (mapped_file),
-		g_mapped_file_get_length (mapped_file));
-
-#if GLIB_CHECK_VERSION(2,21,3)
-	g_mapped_file_unref (mapped_file);
-#else
-	g_mapped_file_free (mapped_file);
-#endif
-
-exit:
-	if (error == NULL)
-		status = GTK_HTML_STREAM_OK;
-	else {
-		status = GTK_HTML_STREAM_ERROR;
-		g_warning ("%s", error->message);
-		g_error_free (error);
-	}
-
-	gtk_html_end (html, stream, status);
-
-	g_free (filename);
+	g_signal_emit (editor, signals[URI_REQUESTED], 0, url, stream);
 }
 
 static void
@@ -473,11 +430,29 @@ static GtkHTMLEditorAPI editor_api = {
 	editor_method_set_language
 };
 
+static void
+editor_set_html (GtkhtmlEditor *editor,
+                 GtkHTML *html)
+{
+	g_return_if_fail (editor->priv->edit_area == NULL);
+
+	if (html == NULL)
+		html = (GtkHTML *) gtk_html_new ();
+	else
+		g_return_if_fail (GTK_IS_HTML (html));
+
+	gtk_html_load_empty (html);
+	gtk_html_set_editable (html, TRUE);
+
+	editor->priv->edit_area = g_object_ref_sink (html);
+}
+
 static GObject *
 editor_constructor (GType type,
                     guint n_construct_properties,
                     GObjectConstructParam *construct_properties)
 {
+	GtkHTML *html;
 	GtkhtmlEditor *editor;
 	GObject *object;
 
@@ -487,8 +462,45 @@ editor_constructor (GType type,
 
 	editor = GTKHTML_EDITOR (object);
 
+	gtkhtml_editor_private_constructed (editor);
+
+	html = gtkhtml_editor_get_html (editor);
+	gtk_html_set_editor_api (html, &editor_api, editor);
+
 	gtk_container_add (GTK_CONTAINER (object), editor->vbox);
 	gtk_window_set_default_size (GTK_WINDOW (object), 600, 440);
+
+	/* Listen for events from core and update the UI accordingly. */
+
+	g_signal_connect_swapped (
+		html, "button_press_event",
+		G_CALLBACK (editor_button_press_event_cb), editor);
+
+	g_signal_connect_swapped (
+		html, "current_paragraph_alignment_changed",
+		G_CALLBACK (editor_alignment_changed_cb), editor);
+
+	g_signal_connect_swapped (
+		html, "current_paragraph_indentation_changed",
+		G_CALLBACK (editor_indentation_changed_cb), editor);
+
+	g_signal_connect_swapped (
+		html, "current_paragraph_style_changed",
+		G_CALLBACK (editor_paragraph_style_changed_cb), editor);
+
+	g_signal_connect_swapped (
+		html, "insertion_font_style_changed",
+		G_CALLBACK (editor_font_style_changed_cb), editor);
+
+	g_signal_connect_swapped (
+		html, "popup-menu",
+		G_CALLBACK (editor_popup_menu_cb), editor);
+
+	g_signal_connect_swapped (
+		html, "url_requested",
+		G_CALLBACK (editor_url_requested_cb), editor);
+
+	/* Connect property dialog widgets to actions. */
 
 	gtk_activatable_set_related_action (
 		GTK_ACTIVATABLE (WIDGET (TEXT_PROPERTIES_BOLD_BUTTON)),
@@ -603,6 +615,12 @@ editor_set_property (GObject *object,
 				g_value_get_string (value));
 			return;
 
+		case PROP_HTML:
+			editor_set_html (
+				GTKHTML_EDITOR (object),
+				g_value_get_object (value));
+			return;
+
 		case PROP_HTML_MODE:
 			gtkhtml_editor_set_html_mode (
 				GTKHTML_EDITOR (object),
@@ -647,6 +665,12 @@ editor_get_property (GObject *object,
 		case PROP_FILENAME:
 			g_value_set_string (
 				value, gtkhtml_editor_get_filename (
+				GTKHTML_EDITOR (object)));
+			return;
+
+		case PROP_HTML:
+			g_value_set_object (
+				value, gtkhtml_editor_get_html (
 				GTKHTML_EDITOR (object)));
 			return;
 
@@ -727,25 +751,6 @@ editor_select_all (GtkhtmlEditor *editor)
 }
 
 static void
-editor_uri_requested_ready_cb (GtkhtmlEditor *editor,
-                               GAsyncResult *result)
-{
-	/* XXX Do something in the event of an error? */
-	gtkhtml_editor_request_finish (editor, result, NULL);
-}
-
-static void
-editor_uri_requested (GtkhtmlEditor *editor,
-                      const gchar *uri,
-                      GtkHTMLStream *stream)
-{
-	/* XXX Currently no way to cancel this. */
-	gtkhtml_editor_request_async (
-		editor, uri, stream, NULL, (GAsyncReadyCallback)
-		editor_uri_requested_ready_cb, NULL);
-}
-
-static void
 editor_class_init (GtkhtmlEditorClass *class)
 {
 	GObjectClass *object_class;
@@ -764,7 +769,6 @@ editor_class_init (GtkhtmlEditorClass *class)
 	class->copy_clipboard = editor_copy_clipboard;
 	class->paste_clipboard = editor_paste_clipboard;
 	class->select_all = editor_select_all;
-	class->uri_requested = editor_uri_requested;
 
 	g_object_class_install_property (
 		object_class,
@@ -774,8 +778,8 @@ editor_class_init (GtkhtmlEditorClass *class)
 			_("Current Folder"),
 			_("The initial folder for file chooser dialogs"),
 			g_get_home_dir (),
-			G_PARAM_CONSTRUCT |
-			G_PARAM_READWRITE));
+			G_PARAM_READWRITE |
+			G_PARAM_CONSTRUCT));
 
 	g_object_class_install_property (
 		object_class,
@@ -785,8 +789,19 @@ editor_class_init (GtkhtmlEditorClass *class)
 			_("Filename"),
 			_("The filename to use when saving"),
 			NULL,
-			G_PARAM_CONSTRUCT |
-			G_PARAM_READWRITE));
+			G_PARAM_READWRITE |
+			G_PARAM_CONSTRUCT));
+
+	g_object_class_install_property (
+		object_class,
+		PROP_HTML,
+		g_param_spec_object (
+			"html",
+			_("HTML Editing Widget"),
+			_("The main HTML editing widget"),
+			GTK_TYPE_HTML,
+			G_PARAM_READWRITE |
+			G_PARAM_CONSTRUCT_ONLY));
 
 	g_object_class_install_property (
 		object_class,
@@ -796,8 +811,8 @@ editor_class_init (GtkhtmlEditorClass *class)
 			_("HTML Mode"),
 			_("Edit HTML or plain text"),
 			TRUE,
-			G_PARAM_CONSTRUCT |
-			G_PARAM_READWRITE));
+			G_PARAM_READWRITE |
+			G_PARAM_CONSTRUCT));
 
 	g_object_class_install_property (
 		object_class,
@@ -807,8 +822,8 @@ editor_class_init (GtkhtmlEditorClass *class)
 			_("Inline Spelling"),
 			_("Check your spelling as you type"),
 			TRUE,
-			G_PARAM_CONSTRUCT |
-			G_PARAM_READWRITE));
+			G_PARAM_READWRITE |
+			G_PARAM_CONSTRUCT));
 
 	g_object_class_install_property (
 		object_class,
@@ -818,8 +833,8 @@ editor_class_init (GtkhtmlEditorClass *class)
 			_("Magic Links"),
 			_("Make URIs clickable as you type"),
 			TRUE,
-			G_PARAM_CONSTRUCT |
-			G_PARAM_READWRITE));
+			G_PARAM_READWRITE |
+			G_PARAM_CONSTRUCT));
 
 	g_object_class_install_property (
 		object_class,
@@ -829,8 +844,8 @@ editor_class_init (GtkhtmlEditorClass *class)
 			_("Magic Smileys"),
 			_("Convert emoticons to images as you type"),
 			TRUE,
-			G_PARAM_CONSTRUCT |
-			G_PARAM_READWRITE));
+			G_PARAM_READWRITE |
+			G_PARAM_CONSTRUCT));
 
 	signals[COMMAND_AFTER] = g_signal_new (
 		"command-after",
@@ -896,8 +911,6 @@ editor_class_init (GtkhtmlEditorClass *class)
 static void
 editor_init (GtkhtmlEditor *editor)
 {
-	GtkHTML *html;
-
 	editor->priv = GTKHTML_EDITOR_GET_PRIVATE (editor);
 	editor->vbox = g_object_ref_sink (gtk_vbox_new (FALSE, 0));
 	gtk_widget_show (editor->vbox);
@@ -906,39 +919,6 @@ editor_init (GtkhtmlEditor *editor)
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 
 	gtkhtml_editor_private_init (editor);
-
-	html = gtkhtml_editor_get_html (editor);
-	gtk_html_set_editor_api (html, &editor_api, editor);
-
-	/* Listen for events from core and update the UI accordingly. */
-
-	g_signal_connect_swapped (
-		html, "button_press_event",
-		G_CALLBACK (editor_button_press_event_cb), editor);
-
-	g_signal_connect_swapped (
-		html, "current_paragraph_alignment_changed",
-		G_CALLBACK (editor_alignment_changed_cb), editor);
-
-	g_signal_connect_swapped (
-		html, "current_paragraph_indentation_changed",
-		G_CALLBACK (editor_indentation_changed_cb), editor);
-
-	g_signal_connect_swapped (
-		html, "current_paragraph_style_changed",
-		G_CALLBACK (editor_paragraph_style_changed_cb), editor);
-
-	g_signal_connect_swapped (
-		html, "insertion_font_style_changed",
-		G_CALLBACK (editor_font_style_changed_cb), editor);
-
-	g_signal_connect_swapped (
-		html, "popup-menu",
-		G_CALLBACK (editor_popup_menu_cb), editor);
-
-	g_signal_connect_swapped (
-		html, "url_requested",
-		G_CALLBACK (editor_url_requested_cb), editor);
 }
 
 GType

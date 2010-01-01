@@ -49,7 +49,7 @@ struct _GtkHTMLClassProperties {
 	gchar    *language;  /* unused */
 };
 
-GtkHTMLClassProperties * gtk_html_class_properties_new       (GtkWidget *widget);
+GtkHTMLClassProperties * gtk_html_class_properties_new       (void);
 void                     gtk_html_class_properties_destroy   (GtkHTMLClassProperties *p);
 void                     gtk_html_class_properties_copy      (GtkHTMLClassProperties *p1,
 							      GtkHTMLClassProperties *p2);

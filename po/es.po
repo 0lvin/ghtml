@@ -14,8 +14,8 @@ msgstr ""
 "Project-Id-Version: gtkhtml.HEAD\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=gtkhtml&component=general\n"
-"POT-Creation-Date: 2009-12-05 04:52+0000\n"
-"PO-Revision-Date: 2009-12-13 23:31+0100\n"
+"POT-Creation-Date: 2009-12-26 01:30+0000\n"
+"PO-Revision-Date: 2009-12-28 02:13+0100\n"
 "Last-Translator: Jorge González <jorgegonz@svn.gnome.org>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "MIME-Version: 1.0\n"
@@ -435,12 +435,10 @@ msgid "_Monkey"
 msgstr "_Mono"
 
 #: ../components/editor/gtkhtml-editor-actions.c:190
-#| msgid "Insert HTML File"
 msgid "Failed to insert HTML file."
 msgstr "Falló al insertar el archivo HTML."
 
 #: ../components/editor/gtkhtml-editor-actions.c:227
-#| msgid "Insert Text File"
 msgid "Failed to insert text file."
 msgstr "Falló al insertar el archivo de texto."
 
@@ -932,75 +930,85 @@ msgstr "_Regla"
 msgid "_Table"
 msgstr "_Tabla"
 
-#: ../components/editor/gtkhtml-editor-private.c:424
+#: ../components/editor/gtkhtml-editor-private.c:431
 msgid "Paragraph Style"
 msgstr "Estilo de párrafo"
 
-#: ../components/editor/gtkhtml-editor-private.c:438
+#: ../components/editor/gtkhtml-editor-private.c:445
 msgid "Editing Mode"
 msgstr "Modo de edición"
 
-#: ../components/editor/gtkhtml-editor-private.c:450
+#: ../components/editor/gtkhtml-editor-private.c:457
 msgid "Font Color"
 msgstr "Color de la tipografía"
 
-#: ../components/editor/gtkhtml-editor-private.c:460
+#: ../components/editor/gtkhtml-editor-private.c:467
 msgid "Font Size"
 msgstr "Tamaño de la tipografía"
 
-#: ../components/editor/gtkhtml-editor-private.c:487
+#: ../components/editor/gtkhtml-editor-private.c:494
 msgid "Automatic"
 msgstr "Automático"
 
-#: ../components/editor/gtkhtml-editor-private.c:786
+#: ../components/editor/gtkhtml-editor-private.c:793
 msgid "Could not open the link."
 msgstr "No se pudo abrir el enlace."
 
-#: ../components/editor/gtkhtml-editor.c:774
+#: ../components/editor/gtkhtml-editor.c:842
 msgid "Current Folder"
 msgstr "Carpeta actual"
 
-#: ../components/editor/gtkhtml-editor.c:775
+#: ../components/editor/gtkhtml-editor.c:843
 msgid "The initial folder for file chooser dialogs"
 msgstr "La carpeta inicial para los diálogos del selector de archivos"
 
-#: ../components/editor/gtkhtml-editor.c:785
+#: ../components/editor/gtkhtml-editor.c:853
 msgid "Filename"
 msgstr "Nombre de archivo"
 
-#: ../components/editor/gtkhtml-editor.c:786
+#: ../components/editor/gtkhtml-editor.c:854
 msgid "The filename to use when saving"
 msgstr "El nombre de archivo que usar al guardar"
 
-#: ../components/editor/gtkhtml-editor.c:796
+#: ../components/editor/gtkhtml-editor.c:864
+#| msgid "HTML editing mode"
+msgid "HTML Editing Widget"
+msgstr "Widget de edición de HTML"
+
+#: ../components/editor/gtkhtml-editor.c:865
+#| msgid "HTML editing mode"
+msgid "The main HTML editing widget"
+msgstr "El widget principal de edición de HTML"
+
+#: ../components/editor/gtkhtml-editor.c:875
 msgid "HTML Mode"
 msgstr "Modo HTML"
 
-#: ../components/editor/gtkhtml-editor.c:797
+#: ../components/editor/gtkhtml-editor.c:876
 msgid "Edit HTML or plain text"
 msgstr "Editar en HTML o en texto plano"
 
-#: ../components/editor/gtkhtml-editor.c:807
+#: ../components/editor/gtkhtml-editor.c:886
 msgid "Inline Spelling"
 msgstr "Ortografía en línea"
 
-#: ../components/editor/gtkhtml-editor.c:808
+#: ../components/editor/gtkhtml-editor.c:887
 msgid "Check your spelling as you type"
 msgstr "Comprobar la ortografía al escribir"
 
-#: ../components/editor/gtkhtml-editor.c:818
+#: ../components/editor/gtkhtml-editor.c:897
 msgid "Magic Links"
 msgstr "Enlaces mágicos"
 
-#: ../components/editor/gtkhtml-editor.c:819
+#: ../components/editor/gtkhtml-editor.c:898
 msgid "Make URIs clickable as you type"
 msgstr "Hacer los URI pulsables al escribir"
 
-#: ../components/editor/gtkhtml-editor.c:829
+#: ../components/editor/gtkhtml-editor.c:908
 msgid "Magic Smileys"
 msgstr "Emoticonos mágicos"
 
-#: ../components/editor/gtkhtml-editor.c:830
+#: ../components/editor/gtkhtml-editor.c:909
 msgid "Convert emoticons to images as you type"
 msgstr "Convertir los emoticonos en imágenes al escribir"
 
@@ -1467,84 +1475,84 @@ msgstr "Fuente _HTML"
 msgid "_Plain Source"
 msgstr "Fuente _plana"
 
-#: ../gtkhtml/gtkhtml.c:3073
+#: ../gtkhtml/gtkhtml.c:3052
 msgid "Editable"
 msgstr "Editable"
 
-#: ../gtkhtml/gtkhtml.c:3074
+#: ../gtkhtml/gtkhtml.c:3053
 msgid "Whether the html can be edited"
 msgstr "Indica si el html se puede editar"
 
-#: ../gtkhtml/gtkhtml.c:3080
+#: ../gtkhtml/gtkhtml.c:3059
 msgid "Document Title"
 msgstr "Título del documento"
 
-#: ../gtkhtml/gtkhtml.c:3081
+#: ../gtkhtml/gtkhtml.c:3060
 msgid "The title of the current document"
 msgstr "El título del documento actual"
 
-#: ../gtkhtml/gtkhtml.c:3087
+#: ../gtkhtml/gtkhtml.c:3066
 msgid "Document Base"
 msgstr "Base del documento"
 
-#: ../gtkhtml/gtkhtml.c:3088
+#: ../gtkhtml/gtkhtml.c:3067
 msgid "The base URL for relative references"
 msgstr "La URL de base para referencias relativas"
 
-#: ../gtkhtml/gtkhtml.c:3094
+#: ../gtkhtml/gtkhtml.c:3073
 msgid "Target Base"
 msgstr "Base del destino"
 
-#: ../gtkhtml/gtkhtml.c:3095
+#: ../gtkhtml/gtkhtml.c:3074
 msgid "The base URL of the target frame"
 msgstr "La URL base del marco destino"
 
-#: ../gtkhtml/gtkhtml.c:3103
+#: ../gtkhtml/gtkhtml.c:3082
 msgid "Fixed Width Font"
 msgstr "Tipografía de anchura fija"
 
-#: ../gtkhtml/gtkhtml.c:3104
+#: ../gtkhtml/gtkhtml.c:3083
 msgid "The Monospace font to use for typewriter text"
 msgstr ""
 "La tipografía monoespaciada que usar para el texto de máquina de escribir"
 
-#: ../gtkhtml/gtkhtml.c:3110
+#: ../gtkhtml/gtkhtml.c:3089
 msgid "New Link Color"
 msgstr "Color de enlaces nuevos"
 
-#: ../gtkhtml/gtkhtml.c:3111
+#: ../gtkhtml/gtkhtml.c:3090
 msgid "The color of new link elements"
 msgstr "El color de los elementos de enlace nuevos"
 
-#: ../gtkhtml/gtkhtml.c:3116
+#: ../gtkhtml/gtkhtml.c:3095
 msgid "Visited Link Color"
 msgstr "Color de enlaces visitados"
 
-#: ../gtkhtml/gtkhtml.c:3117
+#: ../gtkhtml/gtkhtml.c:3096
 msgid "The color of visited link elements"
 msgstr "El color de los elementos de enlace visitados"
 
-#: ../gtkhtml/gtkhtml.c:3122
+#: ../gtkhtml/gtkhtml.c:3101
 msgid "Active Link Color"
 msgstr "Color del enlace activo"
 
-#: ../gtkhtml/gtkhtml.c:3123
+#: ../gtkhtml/gtkhtml.c:3102
 msgid "The color of active link elements"
 msgstr "El color de los elementos de enlace activos"
 
-#: ../gtkhtml/gtkhtml.c:3128
+#: ../gtkhtml/gtkhtml.c:3107
 msgid "Spelling Error Color"
 msgstr "Color del error ortográfico"
 
-#: ../gtkhtml/gtkhtml.c:3129
+#: ../gtkhtml/gtkhtml.c:3108
 msgid "The color of the spelling error markers"
 msgstr "El color de los marcadores de error ortográfico"
 
-#: ../gtkhtml/gtkhtml.c:3134
+#: ../gtkhtml/gtkhtml.c:3113
 msgid "Cite Quotation Color"
 msgstr "Color de cita literal"
 
-#: ../gtkhtml/gtkhtml.c:3135
+#: ../gtkhtml/gtkhtml.c:3114
 msgid "The color of the cited text"
 msgstr "El color del elemento citado literalmente"
 
