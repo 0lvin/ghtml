@@ -1,17 +1,16 @@
 # Ukrainian translation of gtkhtml.
 # Copyright (C) 2000 Free Software Foundation, Inc.
 # Yuri Syrota <rasta@renome.rovno.ua>, 2000.
-# Maxim Dziumanenko <dziumanenko@gmail.com>, 2004-2008
+# Maxim Dziumanenko <dziumanenko@gmail.com>, 2004-2010
 #
 # wanderlust <wanderlust@ukr.net>, 2009.
 msgid ""
 msgstr ""
 "Project-Id-Version: gtkhtml\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
-"product=gtkhtml&component=general\n"
-"POT-Creation-Date: 2009-06-29 21:16+0000\n"
-"PO-Revision-Date: 2009-07-08 11:21+0300\n"
-"Last-Translator: wanderlust <wanderlust@ukr.net>\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-01-05 12:51+0200\n"
+"PO-Revision-Date: 2010-01-05 11:21+0300\n"
+"Last-Translator: Maxim Dziumanenko <dziumanenko@gmail.com>\n"
 "Language-Team: ukrainian <Ukrainian <uk@li.org>>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -27,11 +26,11 @@ msgstr "URL - %s, альтернативний текст %s"
 msgid "URL is %s"
 msgstr "URL - %s"
 
-#: ../a11y/object.c:52 ../a11y/object.c:61 ../a11y/text.c:126
+#: ../a11y/object.c:51 ../a11y/object.c:60 ../a11y/text.c:125
 msgid "grab focus"
 msgstr "перехопити фокус"
 
-#: ../a11y/object.c:259
+#: ../a11y/object.c:253
 msgid "Panel containing HTML"
 msgstr "Панель містить HTML"
 
@@ -199,55 +198,54 @@ msgstr "білий"
 msgid "Choose Custom Color"
 msgstr "Вибір іншого кольору"
 
-#: ../components/editor/gtkhtml-color-combo.c:712
+#: ../components/editor/gtkhtml-color-combo.c:711
 #: ../components/editor/gtkhtml-color-state.c:205
 msgid "Current color"
 msgstr "Поточний колір"
 
-#: ../components/editor/gtkhtml-color-combo.c:713
+#: ../components/editor/gtkhtml-color-combo.c:712
 msgid "The currently selected color"
 msgstr "Поточний вибраний колір"
 
-#: ../components/editor/gtkhtml-color-combo.c:722
+#: ../components/editor/gtkhtml-color-combo.c:721
 #: ../components/editor/gtkhtml-color-state.c:215
 msgid "Default color"
 msgstr "Типовий колір"
 
-#: ../components/editor/gtkhtml-color-combo.c:723
+#: ../components/editor/gtkhtml-color-combo.c:722
 msgid "The color associated with the default button"
 msgstr "Колір, пов'язаний з типовою кнопкою'"
 
-#: ../components/editor/gtkhtml-color-combo.c:733
+#: ../components/editor/gtkhtml-color-combo.c:732
 #: ../components/editor/gtkhtml-color-state.c:226
 msgid "Default label"
 msgstr "Типова позначка"
 
-#: ../components/editor/gtkhtml-color-combo.c:734
+#: ../components/editor/gtkhtml-color-combo.c:733
 msgid "The label for the default button"
 msgstr "Позначка для типової кнопки"
 
-#: ../components/editor/gtkhtml-color-combo.c:735
+#: ../components/editor/gtkhtml-color-combo.c:734
 #: ../components/editor/gtkhtml-color-state.c:228
 msgid "Default"
 msgstr "Типово"
 
-#: ../components/editor/gtkhtml-color-combo.c:744
+#: ../components/editor/gtkhtml-color-combo.c:743
 #: ../components/editor/gtkhtml-color-state.c:237
-#| msgid "Transparent"
 msgid "Default is transparent"
 msgstr "Прозорість первинна"
 
-#: ../components/editor/gtkhtml-color-combo.c:745
+#: ../components/editor/gtkhtml-color-combo.c:744
 #: ../components/editor/gtkhtml-color-state.c:238
 msgid "Whether the default color is transparent"
 msgstr "Чи є прозорість первинним кольором"
 
-#: ../components/editor/gtkhtml-color-combo.c:755
+#: ../components/editor/gtkhtml-color-combo.c:754
 #: ../components/editor/gtkhtml-color-state.c:248
 msgid "Color palette"
 msgstr "Палітра кольорів"
 
-#: ../components/editor/gtkhtml-color-combo.c:756
+#: ../components/editor/gtkhtml-color-combo.c:755
 #: ../components/editor/gtkhtml-color-state.c:249
 msgid "Custom color palette"
 msgstr "Власна палітра кольорів"
@@ -255,14 +253,14 @@ msgstr "Власна палітра кольорів"
 #. Translators: This is the nickname for a
 #. * GtkhtmlColorCombo property named "popup-shown",
 #. * based on a similar property in GtkComboBox.
-#: ../components/editor/gtkhtml-color-combo.c:768
+#: ../components/editor/gtkhtml-color-combo.c:767
 msgid "Popup shown"
 msgstr "Контекстне вікно"
 
 #. Translators: This is the blurb for a
 #. * GtkhtmlColorCombo property named "popup-shown",
 #. * based on a similar property in GtkComboBox.
-#: ../components/editor/gtkhtml-color-combo.c:772
+#: ../components/editor/gtkhtml-color-combo.c:771
 msgid "Whether the combo's dropdown is shown"
 msgstr "Чи відображається розкривна частина комбінованого списку"
 
@@ -270,7 +268,7 @@ msgstr "Чи відображається розкривна частина ко
 #. GtkHtmlColorCombo property named "state". It holds all
 #. the internal values for a GtkHtml color combination box.
 #.
-#: ../components/editor/gtkhtml-color-combo.c:785
+#: ../components/editor/gtkhtml-color-combo.c:784
 msgid "Color state"
 msgstr "Стан кольору"
 
@@ -278,16 +276,15 @@ msgstr "Стан кольору"
 #. GtkHtmlColorCombo property named "state". It holds all
 #. the internal values for a GtkHtml color combination box.
 #.
-#: ../components/editor/gtkhtml-color-combo.c:790
-#| msgid "State of the color combo"
+#: ../components/editor/gtkhtml-color-combo.c:789
 msgid "The state of a color combo box"
 msgstr "Стан кольорового комбінованого списку"
 
-#: ../components/editor/gtkhtml-color-combo.c:972
+#: ../components/editor/gtkhtml-color-combo.c:971
 msgid "custom"
 msgstr "інший"
 
-#: ../components/editor/gtkhtml-color-combo.c:980
+#: ../components/editor/gtkhtml-color-combo.c:979
 msgid "Custom Color..."
 msgstr "Інший колір..."
 
@@ -331,9 +328,8 @@ msgstr "_Посмішка"
 
 #. Translators: :-(
 #: ../components/editor/gtkhtml-face-chooser.c:36
-#| msgid "S_haded"
 msgid "S_ad"
-msgstr "Сум"
+msgstr "С_ум"
 
 #. Translators: ;-)
 #: ../components/editor/gtkhtml-face-chooser.c:38
@@ -347,13 +343,11 @@ msgstr "_Язик"
 
 #. Translators: :-))
 #: ../components/editor/gtkhtml-face-chooser.c:42
-#| msgid "_Laughing"
 msgid "Laug_h"
 msgstr "_Сміх"
 
 #. Translators: :-|
 #: ../components/editor/gtkhtml-face-chooser.c:44
-#| msgid "_Plain Text"
 msgid "_Plain"
 msgstr "_Звичайний"
 
@@ -369,25 +363,21 @@ msgstr "_Засмучений"
 
 #. Translators: :-D
 #: ../components/editor/gtkhtml-face-chooser.c:50
-#| msgid "_Smile"
 msgid "_Big Smile"
 msgstr "_Широка Посмішка"
 
 #. Translators: :-/
 #: ../components/editor/gtkhtml-face-chooser.c:52
-#| msgid "Underline"
 msgid "Uncer_tain"
-msgstr "Непевність"
+msgstr "_Непевність"
 
 #. Translators: :-O
 #: ../components/editor/gtkhtml-face-chooser.c:54
-#| msgid "Sur_prised"
 msgid "S_urprise"
 msgstr "З_дивований"
 
 #. Translators: :-S
 #: ../components/editor/gtkhtml-face-chooser.c:56
-#| msgid "Su_rprised"
 msgid "W_orried"
 msgstr "С_хвильований"
 
@@ -398,9 +388,8 @@ msgstr "_Поцілунок"
 
 #. Translators: X-(
 #: ../components/editor/gtkhtml-face-chooser.c:60
-#| msgid "gray"
 msgid "A_ngry"
-msgstr "Злий"
+msgstr "З_лий"
 
 #. Translators: B-)
 #: ../components/editor/gtkhtml-face-chooser.c:62
@@ -409,7 +398,6 @@ msgstr "_Круто"
 
 #. Translators: O:-)
 #: ../components/editor/gtkhtml-face-chooser.c:64
-#| msgid "_Angel"
 msgid "Ange_l"
 msgstr "_Янгол"
 
@@ -425,581 +413,592 @@ msgstr "_Хворий"
 
 #. Translators: |-)
 #: ../components/editor/gtkhtml-face-chooser.c:70
-#| msgid "red"
 msgid "Tire_d"
-msgstr "Втомлений"
+msgstr "В_томлений"
 
 #. Translators: >:-)
 #: ../components/editor/gtkhtml-face-chooser.c:72
-#| msgid "_Devilish"
 msgid "De_vilish"
-msgstr "Гаспидський"
+msgstr "_Гаспидський"
 
 #. Translators: :-(|)
 #: ../components/editor/gtkhtml-face-chooser.c:74
 msgid "_Monkey"
 msgstr "_Мавпа"
 
-#: ../components/editor/gtkhtml-editor-actions.c:632
+#: ../components/editor/gtkhtml-editor-actions.c:190
+msgid "Failed to insert HTML file."
+msgstr "Помилка при вставленні файлу HTML."
+
+#: ../components/editor/gtkhtml-editor-actions.c:227
+msgid "Failed to insert text file."
+msgstr "Помилка при вставленні текстового файлу."
+
+#: ../components/editor/gtkhtml-editor-actions.c:615
 msgid "Insert HTML File"
 msgstr "Вставити файл HTML"
 
-#: ../components/editor/gtkhtml-editor-actions.c:641
-#: ../components/editor/gtkhtml-editor-actions.c:1542
+#: ../components/editor/gtkhtml-editor-actions.c:631
+#: ../components/editor/gtkhtml-editor-actions.c:1541
 msgid "Insert Image"
 msgstr "Вставити зображення"
 
-#: ../components/editor/gtkhtml-editor-actions.c:688
+#: ../components/editor/gtkhtml-editor-actions.c:680
 msgid "Insert Text File"
 msgstr "Вставити текстовий файл"
 
 #. Replace Button
-#: ../components/editor/gtkhtml-editor-actions.c:1177
+#: ../components/editor/gtkhtml-editor-actions.c:1176
 #: ../components/editor/gtkhtml-spell-dialog.c:522
 msgid "_Replace"
 msgstr "_Замінити"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1184
+#: ../components/editor/gtkhtml-editor-actions.c:1183
 msgid "Replace _All"
 msgstr "Замінити _все"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1198
+#: ../components/editor/gtkhtml-editor-actions.c:1197
 msgid "_Next"
 msgstr "Да_лі"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1205
+#: ../components/editor/gtkhtml-editor-actions.c:1204
 msgid "_Copy"
 msgstr "_Копіювати"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1212
+#: ../components/editor/gtkhtml-editor-actions.c:1211
 msgid "Cu_t"
 msgstr "_Вирізати"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1226
+#: ../components/editor/gtkhtml-editor-actions.c:1225
 msgid "Find A_gain"
 msgstr "Зна_йти знову"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1240
+#: ../components/editor/gtkhtml-editor-actions.c:1239
 msgid "_Increase Indent"
 msgstr "З_більшити відступ"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1242
+#: ../components/editor/gtkhtml-editor-actions.c:1241
 msgid "Increase Indent"
 msgstr "Збільшити відступ"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1247
+#: ../components/editor/gtkhtml-editor-actions.c:1246
 msgid "_HTML File..."
 msgstr "Файл _HTML..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1254
+#: ../components/editor/gtkhtml-editor-actions.c:1253
 msgid "Te_xt File..."
 msgstr "Т_екстовий файл..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1261
+#: ../components/editor/gtkhtml-editor-actions.c:1260
 msgid "_Paste"
 msgstr "Вст_авити"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1268
+#: ../components/editor/gtkhtml-editor-actions.c:1267
 msgid "Paste _Quotation"
 msgstr "Вставити _цитату"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1275
+#: ../components/editor/gtkhtml-editor-actions.c:1274
 msgid "_Redo"
 msgstr "Повт_орити"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1282
+#: ../components/editor/gtkhtml-editor-actions.c:1281
 msgid "Select _All"
 msgstr "Виді_лити все"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1289
+#: ../components/editor/gtkhtml-editor-actions.c:1288
 msgid "_Find..."
 msgstr "З_найти..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1296
+#: ../components/editor/gtkhtml-editor-actions.c:1295
 msgid "Re_place..."
 msgstr "_Замінити..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1303
+#: ../components/editor/gtkhtml-editor-actions.c:1302
 msgid "Check _Spelling..."
 msgstr "Перевірити ор_фографію..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1310
+#: ../components/editor/gtkhtml-editor-actions.c:1309
 #: ../components/editor/gtkhtml-editor-builder.ui.h:79
 msgid "_Test URL..."
 msgstr "_Тестовий URL..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1317
+#: ../components/editor/gtkhtml-editor-actions.c:1316
 msgid "_Undo"
 msgstr "В_ернути"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1324
+#: ../components/editor/gtkhtml-editor-actions.c:1323
 msgid "_Decrease Indent"
 msgstr "З_меншити відступ"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1326
+#: ../components/editor/gtkhtml-editor-actions.c:1325
 msgid "Decrease Indent"
 msgstr "З_меншити відступ"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1331
+#: ../components/editor/gtkhtml-editor-actions.c:1330
 msgid "_Wrap Lines"
 msgstr "_Перенос"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1340
+#: ../components/editor/gtkhtml-editor-actions.c:1339
 msgid "_Edit"
 msgstr "_Правка"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1347
+#: ../components/editor/gtkhtml-editor-actions.c:1346
 #: ../components/editor/main.c:327
 msgid "_File"
 msgstr "_Файл"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1354
+#: ../components/editor/gtkhtml-editor-actions.c:1353
 msgid "For_mat"
 msgstr "Ф_ормат"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1361
+#: ../components/editor/gtkhtml-editor-actions.c:1360
 msgid "_Paragraph Style"
 msgstr "Стиль _абзацу..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1368
+#: ../components/editor/gtkhtml-editor-actions.c:1367
 msgid "_Insert"
 msgstr "Вст_авка"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1375
+#: ../components/editor/gtkhtml-editor-actions.c:1374
 msgid "_Alignment"
 msgstr "_Вирівнювання"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1382
+#: ../components/editor/gtkhtml-editor-actions.c:1381
 msgid "Current _Languages"
 msgstr "Поточні _мови"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1389
+#: ../components/editor/gtkhtml-editor-actions.c:1388
 #: ../components/editor/main.c:358
 msgid "_View"
 msgstr "_Вигляд"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1399
+#: ../components/editor/gtkhtml-editor-actions.c:1398
 msgid "_Center"
 msgstr "У _центрі"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1401
+#: ../components/editor/gtkhtml-editor-actions.c:1400
 msgid "Center Alignment"
 msgstr "Вирівнювання у центрі"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1406
+#: ../components/editor/gtkhtml-editor-actions.c:1405
 msgid "_Left"
 msgstr "_Ліворуч"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1408
+#: ../components/editor/gtkhtml-editor-actions.c:1407
 msgid "Left Alignment"
 msgstr "Вирівнювання ліворуч"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1413
+#: ../components/editor/gtkhtml-editor-actions.c:1412
 msgid "_Right"
 msgstr "_Праворуч"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1415
+#: ../components/editor/gtkhtml-editor-actions.c:1414
 msgid "Right Alignment"
 msgstr "Вирівнювання праворуч"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1423
+#: ../components/editor/gtkhtml-editor-actions.c:1422
 msgid "_HTML"
 msgstr "_HTML"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1425
+#: ../components/editor/gtkhtml-editor-actions.c:1424
 msgid "HTML editing mode"
 msgstr "Режим редагування HTML"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1430
+#: ../components/editor/gtkhtml-editor-actions.c:1429
 msgid "Plain _Text"
 msgstr "_Звичайний текст"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1432
+#: ../components/editor/gtkhtml-editor-actions.c:1431
 msgid "Plain text editing mode"
 msgstr "Режим редагування звичайного тексту"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1440
+#: ../components/editor/gtkhtml-editor-actions.c:1439
 msgid "_Normal"
 msgstr "_Звичайний"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1447
+#: ../components/editor/gtkhtml-editor-actions.c:1446
 msgid "Header _1"
 msgstr "Заголовок _1"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1454
+#: ../components/editor/gtkhtml-editor-actions.c:1453
 msgid "Header _2"
 msgstr "Заголовок _2"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1461
+#: ../components/editor/gtkhtml-editor-actions.c:1460
 msgid "Header _3"
 msgstr "Заголовок _3"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1468
+#: ../components/editor/gtkhtml-editor-actions.c:1467
 msgid "Header _4"
 msgstr "Заголовок _4"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1475
+#: ../components/editor/gtkhtml-editor-actions.c:1474
 msgid "Header _5"
 msgstr "Заголовок _5"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1482
+#: ../components/editor/gtkhtml-editor-actions.c:1481
 msgid "Header _6"
 msgstr "Заголовок _6"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1489
+#: ../components/editor/gtkhtml-editor-actions.c:1488
 msgid "A_ddress"
 msgstr "_Адреса"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1496
+#: ../components/editor/gtkhtml-editor-actions.c:1495
 msgid "_Preformatted"
 msgstr "_Форматований"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1503
+#: ../components/editor/gtkhtml-editor-actions.c:1502
 msgid "_Bulleted List"
 msgstr "_Маркований список"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1510
+#: ../components/editor/gtkhtml-editor-actions.c:1509
 msgid "_Roman Numeral List"
 msgstr "Нумерований список (_римськ.)"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1517
+#: ../components/editor/gtkhtml-editor-actions.c:1516
 msgid "Numbered _List"
 msgstr "_Нумерований список"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1524
+#: ../components/editor/gtkhtml-editor-actions.c:1523
 msgid "_Alphabetical List"
 msgstr "Ал_фавітний список"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1540
-#: ../components/editor/gtkhtml-editor-actions.c:1575
+#: ../components/editor/gtkhtml-editor-actions.c:1539
+#: ../components/editor/gtkhtml-editor-actions.c:1574
 msgid "_Image..."
 msgstr "_Зображення..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1547
-#: ../components/editor/gtkhtml-editor-actions.c:1582
+#: ../components/editor/gtkhtml-editor-actions.c:1546
+#: ../components/editor/gtkhtml-editor-actions.c:1581
 msgid "_Link..."
 msgstr "_Гіперпосилання..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1549
+#: ../components/editor/gtkhtml-editor-actions.c:1548
 msgid "Insert Link"
 msgstr "Вставити посилання"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1554
-#: ../components/editor/gtkhtml-editor-actions.c:1596
+#: ../components/editor/gtkhtml-editor-actions.c:1553
+#: ../components/editor/gtkhtml-editor-actions.c:1595
 msgid "_Rule..."
 msgstr "_Лінійка..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1556
+#: ../components/editor/gtkhtml-editor-actions.c:1555
 msgid "Insert Rule"
 msgstr "Вставити правило"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1561
-#: ../components/editor/gtkhtml-editor-actions.c:1603
+#: ../components/editor/gtkhtml-editor-actions.c:1560
+#: ../components/editor/gtkhtml-editor-actions.c:1602
 msgid "_Table..."
 msgstr "_Таблиця..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1563
+#: ../components/editor/gtkhtml-editor-actions.c:1562
 msgid "Insert Table"
 msgstr "Вставити таблицю"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1568
+#: ../components/editor/gtkhtml-editor-actions.c:1567
 msgid "_Cell..."
 msgstr "_Комірка..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1589
+#: ../components/editor/gtkhtml-editor-actions.c:1588
 msgid "Pa_ge..."
 msgstr "_Сторінка..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1612
+#: ../components/editor/gtkhtml-editor-actions.c:1611
 msgid "Font _Size"
 msgstr "_Розмір шрифту"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1619
+#: ../components/editor/gtkhtml-editor-actions.c:1618
 msgid "_Font Style"
 msgstr "_Стиль шрифту"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1629
+#: ../components/editor/gtkhtml-editor-actions.c:1628
 #: ../components/editor/gtkhtml-editor-builder.ui.h:60
 msgid "_Bold"
 msgstr "_Жирний"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1631
+#: ../components/editor/gtkhtml-editor-actions.c:1630
 msgid "Bold"
 msgstr "Напівжирний"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1637
+#: ../components/editor/gtkhtml-editor-actions.c:1636
 #: ../components/editor/gtkhtml-editor-builder.ui.h:67
 msgid "_Italic"
 msgstr "_Курсив"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1639
+#: ../components/editor/gtkhtml-editor-actions.c:1638
 msgid "Italic"
 msgstr "Курсив"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1645
+#: ../components/editor/gtkhtml-editor-actions.c:1644
 msgid "_Plain Text"
 msgstr "_Звичайний текст"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1647
+#: ../components/editor/gtkhtml-editor-actions.c:1646
 msgid "Plain Text"
 msgstr "Звичайний текст"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1653
+#: ../components/editor/gtkhtml-editor-actions.c:1652
 #: ../components/editor/gtkhtml-editor-builder.ui.h:76
 msgid "_Strikethrough"
 msgstr "З_акреслений"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1655
+#: ../components/editor/gtkhtml-editor-actions.c:1654
 msgid "Strikethrough"
 msgstr "Закреслений"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1661
+#: ../components/editor/gtkhtml-editor-actions.c:1660
 #: ../components/editor/gtkhtml-editor-builder.ui.h:82
 msgid "_Underline"
 msgstr "_Підкреслений"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1663
+#: ../components/editor/gtkhtml-editor-actions.c:1662
 msgid "Underline"
 msgstr "Підкреслений"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1672
+#: ../components/editor/gtkhtml-editor-actions.c:1671
 msgid "-2"
 msgstr "-2"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1679
+#: ../components/editor/gtkhtml-editor-actions.c:1678
 msgid "-1"
 msgstr "-1"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1686
+#: ../components/editor/gtkhtml-editor-actions.c:1685
 msgid "+0"
 msgstr "+0"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1693
+#: ../components/editor/gtkhtml-editor-actions.c:1692
 msgid "+1"
 msgstr "+1"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1700
+#: ../components/editor/gtkhtml-editor-actions.c:1699
 msgid "+2"
 msgstr "+2"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1707
+#: ../components/editor/gtkhtml-editor-actions.c:1706
 msgid "+3"
 msgstr "+3"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1714
+#: ../components/editor/gtkhtml-editor-actions.c:1713
 msgid "+4"
 msgstr "+4"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1733
+#: ../components/editor/gtkhtml-editor-actions.c:1732
 msgid "Cell Contents"
 msgstr "Вміст комірок"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1740
+#: ../components/editor/gtkhtml-editor-actions.c:1739
 msgid "Column"
 msgstr "Стовпчик"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1747
+#: ../components/editor/gtkhtml-editor-actions.c:1746
 msgid "Row"
 msgstr "Рядок"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1754
-#: ../components/editor/gtkhtml-editor-actions.c:1837
+#: ../components/editor/gtkhtml-editor-actions.c:1753
+#: ../components/editor/gtkhtml-editor-actions.c:1836
 msgid "Table"
 msgstr "Таблиця"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1763
+#: ../components/editor/gtkhtml-editor-actions.c:1762
 msgid "Table Delete"
 msgstr "Видалити таблицю"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1770
+#: ../components/editor/gtkhtml-editor-actions.c:1769
 msgid "Input Methods"
 msgstr "Методи вводу"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1777
+#: ../components/editor/gtkhtml-editor-actions.c:1776
 msgid "Table Insert"
 msgstr "Вставити таблицю"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1784
+#: ../components/editor/gtkhtml-editor-actions.c:1783
 msgid "Properties"
 msgstr "Властивості"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1802
+#: ../components/editor/gtkhtml-editor-actions.c:1801
 msgid "Column After"
 msgstr "Стовпчик після"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1809
+#: ../components/editor/gtkhtml-editor-actions.c:1808
 msgid "Column Before"
 msgstr "Стовпчик до"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1816
+#: ../components/editor/gtkhtml-editor-actions.c:1815
 msgid "Insert _Link"
 msgstr "Вставити _посилання"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1823
+#: ../components/editor/gtkhtml-editor-actions.c:1822
 msgid "Row Above"
 msgstr "Рядок над"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1830
+#: ../components/editor/gtkhtml-editor-actions.c:1829
 msgid "Row Below"
 msgstr "Рядок під"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1844
+#: ../components/editor/gtkhtml-editor-actions.c:1843
 msgid "Cell..."
 msgstr "Комірка..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1851
+#: ../components/editor/gtkhtml-editor-actions.c:1850
 msgid "Image..."
 msgstr "Зображення..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1858
+#: ../components/editor/gtkhtml-editor-actions.c:1857
 msgid "Link..."
 msgstr "Гіперпосилання..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1865
+#: ../components/editor/gtkhtml-editor-actions.c:1864
 msgid "Page..."
 msgstr "Сторінка..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1872
+#: ../components/editor/gtkhtml-editor-actions.c:1871
 msgid "Paragraph..."
 msgstr "Абзац..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1879
+#: ../components/editor/gtkhtml-editor-actions.c:1878
 msgid "Rule..."
 msgstr "Лінійка..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1886
+#: ../components/editor/gtkhtml-editor-actions.c:1885
 msgid "Table..."
 msgstr "Таблиця..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1893
+#: ../components/editor/gtkhtml-editor-actions.c:1892
 msgid "Text..."
 msgstr "Текст..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1900
+#: ../components/editor/gtkhtml-editor-actions.c:1899
 msgid "Remove Link"
 msgstr "Видалити посилання"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1917
+#: ../components/editor/gtkhtml-editor-actions.c:1916
 msgid "Add Word to Dictionary"
 msgstr "Додати слово до словника"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1924
+#: ../components/editor/gtkhtml-editor-actions.c:1923
 msgid "Ignore Misspelled Word"
 msgstr "Ігнорувати некоректне слово"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1931
+#: ../components/editor/gtkhtml-editor-actions.c:1930
 msgid "Add Word To"
 msgstr "Додати слово до"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1940
-#| msgid "Suggestions for \"%s\""
+#: ../components/editor/gtkhtml-editor-actions.c:1939
 msgid "More Suggestions"
 msgstr "Можливі варіанти"
 
-#: ../components/editor/gtkhtml-editor-actions.c:2107
+#: ../components/editor/gtkhtml-editor-actions.c:2106
 msgid "_Emoticon"
 msgstr "_Емоції"
 
-#: ../components/editor/gtkhtml-editor-actions.c:2108
-#| msgid "Insert Link"
+#: ../components/editor/gtkhtml-editor-actions.c:2107
 msgid "Insert Emoticon"
 msgstr "Вставити відчуття"
 
-#: ../components/editor/gtkhtml-editor-actions.c:2169
+#: ../components/editor/gtkhtml-editor-actions.c:2168
 msgid "_Find"
 msgstr "З_найти"
 
-#: ../components/editor/gtkhtml-editor-actions.c:2172
+#: ../components/editor/gtkhtml-editor-actions.c:2171
 msgid "Re_place"
 msgstr "За_мінити"
 
-#: ../components/editor/gtkhtml-editor-actions.c:2175
+#: ../components/editor/gtkhtml-editor-actions.c:2174
 msgid "_Image"
 msgstr "_Зображення:"
 
-#: ../components/editor/gtkhtml-editor-actions.c:2178
+#: ../components/editor/gtkhtml-editor-actions.c:2177
 msgid "_Link"
 msgstr "_Посилання:"
 
-#: ../components/editor/gtkhtml-editor-actions.c:2181
+#: ../components/editor/gtkhtml-editor-actions.c:2180
 msgid "_Rule"
 msgstr "_Лінійка"
 
-#: ../components/editor/gtkhtml-editor-actions.c:2184
+#: ../components/editor/gtkhtml-editor-actions.c:2183
 #: ../components/editor/gtkhtml-editor-builder.ui.h:78
 msgid "_Table"
 msgstr "_Таблиця"
 
-#: ../components/editor/gtkhtml-editor-private.c:264
+#: ../components/editor/gtkhtml-editor-private.c:271
 msgid "Paragraph Style"
 msgstr "Стиль абзацу"
 
-#: ../components/editor/gtkhtml-editor-private.c:278
+#: ../components/editor/gtkhtml-editor-private.c:285
 msgid "Editing Mode"
 msgstr "Режим редагування"
 
-#: ../components/editor/gtkhtml-editor-private.c:290
+#: ../components/editor/gtkhtml-editor-private.c:297
 msgid "Font Color"
 msgstr "Колір шрифту"
 
-#: ../components/editor/gtkhtml-editor-private.c:300
+#: ../components/editor/gtkhtml-editor-private.c:307
 msgid "Font Size"
 msgstr "Розмір шрифту"
 
-#: ../components/editor/gtkhtml-editor-private.c:327
+#: ../components/editor/gtkhtml-editor-private.c:334
 msgid "Automatic"
 msgstr "Автоматично"
 
-#: ../components/editor/gtkhtml-editor-private.c:599
-#| msgid "Could not load glade file."
+#: ../components/editor/gtkhtml-editor-private.c:587
 msgid "Could not open the link."
 msgstr "Не вдається відкрити посилання"
 
-#: ../components/editor/gtkhtml-editor.c:754
+#: ../components/editor/gtkhtml-editor.c:778
 msgid "Current Folder"
 msgstr "Поточна тека"
 
-#: ../components/editor/gtkhtml-editor.c:755
+#: ../components/editor/gtkhtml-editor.c:779
 msgid "The initial folder for file chooser dialogs"
 msgstr "Початкова тека для діалогу вибору файлу"
 
-#: ../components/editor/gtkhtml-editor.c:765
+#: ../components/editor/gtkhtml-editor.c:789
 msgid "Filename"
 msgstr "Назва файлу"
 
-#: ../components/editor/gtkhtml-editor.c:766
+#: ../components/editor/gtkhtml-editor.c:790
 msgid "The filename to use when saving"
 msgstr "Назва файлу для використання при збереженні"
 
-#: ../components/editor/gtkhtml-editor.c:776
+#: ../components/editor/gtkhtml-editor.c:800
+msgid "HTML Editing Widget"
+msgstr "Віджет редагування HTML"
+
+#: ../components/editor/gtkhtml-editor.c:801
+msgid "The main HTML editing widget"
+msgstr "Головний віджет редагування HTML"
+
+#: ../components/editor/gtkhtml-editor.c:811
 msgid "HTML Mode"
 msgstr "Режим HTML"
 
-#: ../components/editor/gtkhtml-editor.c:777
+#: ../components/editor/gtkhtml-editor.c:812
 msgid "Edit HTML or plain text"
 msgstr "Редагування HTML або звичайного тексту"
 
-#: ../components/editor/gtkhtml-editor.c:787
+#: ../components/editor/gtkhtml-editor.c:822
 msgid "Inline Spelling"
 msgstr "Перевіряти орфографію"
 
-#: ../components/editor/gtkhtml-editor.c:788
+#: ../components/editor/gtkhtml-editor.c:823
 msgid "Check your spelling as you type"
 msgstr "Перевіряти орфографію під час вводу тексту"
 
-#: ../components/editor/gtkhtml-editor.c:798
+#: ../components/editor/gtkhtml-editor.c:833
 msgid "Magic Links"
 msgstr "Магічні посилання"
 
-#: ../components/editor/gtkhtml-editor.c:799
+#: ../components/editor/gtkhtml-editor.c:834
 msgid "Make URIs clickable as you type"
 msgstr "Вмикати можливість клацання на URI під час вводу тексту"
 
-#: ../components/editor/gtkhtml-editor.c:809
+#: ../components/editor/gtkhtml-editor.c:844
 msgid "Magic Smileys"
 msgstr "Магічні смайли"
 
-#: ../components/editor/gtkhtml-editor.c:810
+#: ../components/editor/gtkhtml-editor.c:845
 msgid "Convert emoticons to images as you type"
 msgstr "Перетворювати емоції на зображення під час вводу тексту"
 
@@ -1013,12 +1012,10 @@ msgid "Alignment"
 msgstr "Вирівнювання"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:4
-#| msgid "<b>Alignment &amp; Behavior</b>"
 msgid "Alignment & Behavior"
 msgstr "Поведінка та вирівнювання"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:5
-#| msgid "_Background:"
 msgid "Background"
 msgstr "Т_ло"
 
@@ -1027,7 +1024,6 @@ msgid "Background Image"
 msgstr "Зображення на тлі"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:7
-#| msgid "Blue ink"
 msgid "Blue Ink"
 msgstr "Синє чорнило"
 
@@ -1096,7 +1092,6 @@ msgid "General"
 msgstr "Загальне"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:24
-#| msgid "Graph paper"
 msgid "Graph Paper"
 msgstr "Міліметровий папір"
 
@@ -1113,7 +1108,6 @@ msgid "Image Properties"
 msgstr "Властивості зображення"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:28
-#| msgid "<b>Layout</b>"
 msgid "Layout"
 msgstr "Розташування"
 
@@ -1154,7 +1148,6 @@ msgid "Paragraph Properties"
 msgstr "Властивості абзацу"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:38
-#| msgid "Perforated paper"
 msgid "Perforated Paper"
 msgstr "Перфорований папір"
 
@@ -1207,7 +1200,6 @@ msgid "Si_ze:"
 msgstr "_Розмір:"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:51
-#| msgid "Size:"
 msgid "Size"
 msgstr "Розмір"
 
@@ -1336,10 +1328,6 @@ msgid "_Y-Padding:"
 msgstr "_Y-заповнення:"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:89
-#| msgid ""
-#| "px\n"
-#| "%\n"
-#| "follow"
 msgid "follow"
 msgstr "слідувати"
 
@@ -1477,96 +1465,96 @@ msgstr "Д_жерело HTML"
 msgid "_Plain Source"
 msgstr "_Звичайний текст"
 
-#: ../gtkhtml/gtkhtml.c:3079
+#: ../gtkhtml/gtkhtml.c:3052
 msgid "Editable"
 msgstr "Редагується"
 
-#: ../gtkhtml/gtkhtml.c:3080
+#: ../gtkhtml/gtkhtml.c:3053
 msgid "Whether the html can be edited"
 msgstr "Чи може текст редагуватись"
 
-#: ../gtkhtml/gtkhtml.c:3086
+#: ../gtkhtml/gtkhtml.c:3059
 msgid "Document Title"
 msgstr "Заголовок документу"
 
-#: ../gtkhtml/gtkhtml.c:3087
+#: ../gtkhtml/gtkhtml.c:3060
 msgid "The title of the current document"
 msgstr "Заголовок поточного елемента"
 
-#: ../gtkhtml/gtkhtml.c:3093
+#: ../gtkhtml/gtkhtml.c:3066
 msgid "Document Base"
 msgstr "База документа"
 
-#: ../gtkhtml/gtkhtml.c:3094
+#: ../gtkhtml/gtkhtml.c:3067
 msgid "The base URL for relative references"
 msgstr "Базове посилання (URL) для відносних посилань"
 
-#: ../gtkhtml/gtkhtml.c:3100
+#: ../gtkhtml/gtkhtml.c:3073
 msgid "Target Base"
 msgstr "База цілі"
 
-#: ../gtkhtml/gtkhtml.c:3101
+#: ../gtkhtml/gtkhtml.c:3074
 msgid "The base URL of the target frame"
 msgstr "Базове посилання (URL) для цільової рамки"
 
-#: ../gtkhtml/gtkhtml.c:3110
+#: ../gtkhtml/gtkhtml.c:3082
 msgid "Fixed Width Font"
 msgstr "Шрифт фіксованої ширини"
 
-#: ../gtkhtml/gtkhtml.c:3111
+#: ../gtkhtml/gtkhtml.c:3083
 msgid "The Monospace font to use for typewriter text"
 msgstr "Моноширинний шрифт для відображення тексту друкарської машинки"
 
-#: ../gtkhtml/gtkhtml.c:3117
+#: ../gtkhtml/gtkhtml.c:3089
 msgid "New Link Color"
 msgstr "Колір не відвіданого посилання"
 
-#: ../gtkhtml/gtkhtml.c:3118
+#: ../gtkhtml/gtkhtml.c:3090
 msgid "The color of new link elements"
 msgstr "Колір ще не відвіданого посилання"
 
-#: ../gtkhtml/gtkhtml.c:3123
+#: ../gtkhtml/gtkhtml.c:3095
 msgid "Visited Link Color"
 msgstr "Колір відвіданого посилання"
 
-#: ../gtkhtml/gtkhtml.c:3124
+#: ../gtkhtml/gtkhtml.c:3096
 msgid "The color of visited link elements"
 msgstr "Колір вже відвіданого посилання"
 
-#: ../gtkhtml/gtkhtml.c:3129
+#: ../gtkhtml/gtkhtml.c:3101
 msgid "Active Link Color"
 msgstr "Колір активного посилання"
 
-#: ../gtkhtml/gtkhtml.c:3130
+#: ../gtkhtml/gtkhtml.c:3102
 msgid "The color of active link elements"
 msgstr "Колір елементів активного посилання"
 
-#: ../gtkhtml/gtkhtml.c:3135
+#: ../gtkhtml/gtkhtml.c:3107
 msgid "Spelling Error Color"
 msgstr "Колір неправильного посилання"
 
-#: ../gtkhtml/gtkhtml.c:3136
+#: ../gtkhtml/gtkhtml.c:3108
 msgid "The color of the spelling error markers"
 msgstr "Колір, що означає помилки орфографії"
 
-#: ../gtkhtml/gtkhtml.c:3141
+#: ../gtkhtml/gtkhtml.c:3113
 msgid "Cite Quotation Color"
 msgstr "Колір цитування"
 
-#: ../gtkhtml/gtkhtml.c:3142
+#: ../gtkhtml/gtkhtml.c:3114
 msgid "The color of the cited text"
 msgstr "Колір цитованого тексту"
 
-#: ../gtkhtml/htmlbutton.c:139
+#: ../gtkhtml/htmlbutton.c:138
 msgid "Submit Query"
 msgstr "Виконати запит"
 
-#: ../gtkhtml/htmlbutton.c:142
+#: ../gtkhtml/htmlbutton.c:141
 msgid "Reset"
 msgstr "Перезавантажити"
 
 #. TODO2 dialog instead of warning
-#: ../gtkhtml/htmlengine-print.c:231 ../gtkhtml/htmlengine-print.c:310
+#: ../gtkhtml/htmlengine-print.c:231 ../gtkhtml/htmlengine-print.c:309
 msgid "Cannot allocate default font for printing"
 msgstr "Не вдається розподілити типовий шрифт для друку"
 
