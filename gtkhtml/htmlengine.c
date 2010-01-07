@@ -168,68 +168,74 @@ static guint signals [LAST_SIGNAL] = { 0 };
 #define ID_A "a"
 #define ID_ADDRESS "address"
 #define ID_AREA "area"
+#define ID_BASE "base"
 #define ID_B "b"
-#define ID_BR "br"
 #define ID_BIG "big"
 #define ID_BLOCKQUOTE "blockquote"
-#define ID_BASE "base"
 #define ID_BODY "body"
+#define ID_BR "br"
 #define ID_CAPTION "caption"
 #define ID_CENTER "center"
 #define ID_CITE "cite"
 #define ID_CODE "code"
 #define ID_DATA "data"
+#define ID_DD "dd"
 #define ID_DIR "dir"
 #define ID_DIV "div"
 #define ID_DL "dl"
+#define ID_DOCUMENT "Document"
 #define ID_DT "dt"
-#define ID_DD "dd"
-#define ID_LABEL "label"
-#define ID_LI "li"
 #define ID_EM "em"
 #define ID_FONT "font"
 #define ID_FORM "form"
-#define ID_NOBR "nobr"
-#define ID_MAP "map"
-#define ID_MENU "menu"
-#define ID_META "meta"
+#define ID_FRAME "frame"
+#define ID_FRAMESET "frameset"
 #define ID_HEAD "head"
 #define ID_HEADING "h"
-#define ID_HTML "html"
 #define ID_HR "hr"
+#define ID_HTML "html"
+#define ID_IFRAME "iframe"
 #define ID_I "i"
 #define ID_IMG "img"
 #define ID_INPUT "input"
 #define ID_KBD "kbd"
+#define ID_LABEL "label"
+#define ID_LI "li"
+#define ID_LINK "link"
+#define ID_MAP "map"
+#define ID_MENU "menu"
+#define ID_META "meta"
+#define ID_NOBR "nobr"
+#define ID_NOFRAME "noframe"
+#define ID_NOSCRIPT "noscript"
 #define ID_OBJECT "object"
 #define ID_OL "ol"
+#define ID_OPTION "option"
 #define ID_P "p"
 #define ID_PRE "pre"
+#define ID_SCRIPT "script"
+#define ID_SELECT "select"
 #define ID_SMALL "small"
 #define ID_SPAN "span"
-#define ID_STRONG "strong"
-#define ID_U "u"
-#define ID_UL "ul"
-#define ID_TEXT "text"
-#define ID_TEXTAREA "textarea"
-#define ID_TABLE "table"
-#define ID_TD "td"
-#define ID_TH "th"
-#define ID_TR "tr"
-#define ID_TT "tt"
-#define ID_VAR "var"
 #define ID_S "s"
+#define ID_STRIKE "strike"
+#define ID_STRONG "strong"
+#define ID_STYLE "style"
 #define ID_SUB "sub"
 #define ID_SUP "sup"
-#define ID_STRIKE "strike"
-#define ID_STYLE "style"
-#define ID_DOCUMENT "Document"
-#define ID_OPTION "option"
-#define ID_SELECT "select"
+#define ID_TABLE "table"
+#define ID_TBODY "tbody"
+#define ID_TD "td"
 #define ID_TEST "test"
-#define ID_SCRIPT "script"
-#define ID_NOSCRIPT "noscript"
+#define ID_TEXTAREA "textarea"
+#define ID_TEXT "text"
+#define ID_TH "th"
 #define ID_TITLE "title"
+#define ID_TR "tr"
+#define ID_TT "tt"
+#define ID_UL "ul"
+#define ID_U "u"
+#define ID_VAR "var"
 
 #define ID_EQ(x,y) (x == g_quark_from_string (y))
 
@@ -1739,7 +1745,7 @@ element_parse_frameset (ELEMENT_PARSE_PARAMS)
 	}
 
 	html_stack_push (e->frame_stack, frame);
-	push_block (e, "frameset", HTMLDISPLAY_NONE, block_end_frameset, 0, 0);
+	push_block (e, ID_FRAMESET, HTMLDISPLAY_NONE, block_end_frameset, 0, 0);
 
 	if (xmlelement && e->parser_clue) {
 		stupid_render (e, clue, xmlelement->children);
@@ -2099,7 +2105,7 @@ element_parse_body (ELEMENT_PARSE_PARAMS)
 						push_element (e, ID_BODY, NULL,
 							html_style_add_color (NULL, html_colorset_get_color (e->settings->color_set, HTMLTextColor)));
 					}
-			} else if ( g_ascii_strncasecmp( name, "link", 4 ) == 0
+			} else if ( g_ascii_strncasecmp( name, ID_LINK, 4 ) == 0
 				&& !e->defaultSettings->forceDefault ) {
 					html_parse_color (value, &color);
 					html_colorset_set_color (e->settings->color_set, &color, HTMLLinkColor);
@@ -2991,19 +2997,19 @@ static HTMLDispatchEntry basic_table[] = {
 	{ID_A,                element_parse_a},
 	{ID_ADDRESS,          element_parse_address},
 	{ID_B,                element_parse_inline},
-	{ID_BASE,              element_parse_base},
+	{ID_BASE,             element_parse_base},
 	{ID_BIG,              element_parse_inline},
 	{ID_BLOCKQUOTE,       element_parse_list},
 	{ID_BODY,             element_parse_body},
-	{"tbody",             element_parse_body},
+	{ID_TBODY,            element_parse_body},
 	{ID_CAPTION,          element_parse_caption},
 	{ID_CENTER,           element_parse_inline},
 	{ID_CITE,             element_parse_inline},
 	{ID_CODE,             element_parse_inline},
 	{ID_DIR,              element_parse_list},
 	{ID_DIV,              element_parse_inline},
-	{ID_NOBR,              element_parse_inline},
-	{ID_DATA,              element_parse_data},
+	{ID_NOBR,             element_parse_inline},
+	{ID_DATA,             element_parse_data},
 	{ID_DL,               element_parse_dl},
 	{ID_DT,               element_parse_dt},
 	{ID_DD,               element_parse_dd},
@@ -3012,15 +3018,15 @@ static HTMLDispatchEntry basic_table[] = {
 	{ID_EM,               element_parse_inline},
 	{ID_FONT,             element_parse_font},
 	{ID_FORM,             element_parse_form},
-	{"frameset",          element_parse_frameset},
-	{"frame",             element_parse_frame},
+	{ID_FRAMESET,         element_parse_frameset},
+	{ID_FRAME,            element_parse_frame},
 	{ID_HTML,             element_parse_html},
 	{ID_MAP,              element_parse_map},
-	{"noframe",           element_parse_noframe},
+	{ID_NOFRAME,          element_parse_noframe},
 	{ID_I,                element_parse_inline},
 	{ID_IMG,              element_parse_img},
 	{ID_INPUT,            element_parse_input},
-	{"iframe",            element_parse_iframe},
+	{ID_IFRAME,           element_parse_iframe},
 	{ID_KBD,              element_parse_inline},
 	{ID_OL,               element_parse_list},
 	{ID_OBJECT,           element_parse_object},
@@ -3062,7 +3068,7 @@ static HTMLDispatchEntry basic_table[] = {
 	/*
 	 * not realized yet
 	 */
-	{"link",              element_parse_hide},
+	{ID_LINK,              element_parse_hide},
 	{NULL,                NULL}
 };
 
@@ -5629,7 +5635,7 @@ html_engine_stream_end (GtkHTMLStream *stream,
 			root = xmlDocGetRootElement(e->parser->myDoc);
 	if(root) {
 		e->eat_space = FALSE;
-		elementtree_parse_dumpnode(root, 0);
+		/*elementtree_parse_dumpnode(root, 0);*/
 #ifndef USEOLDRENDER
 		element_parse_nodedump_htmlobject(root, 0, e, e->parser_clue, style_from_engine(e));
 #else
