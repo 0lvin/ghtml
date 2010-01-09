@@ -105,8 +105,6 @@
 /* #define CHECK_CURSOR */
 
 /* Know error's not inherit list type
- * broken support frame
- * broken check content encoding
  */
 static void      html_engine_class_init       (HTMLEngineClass     *klass);
 static void      html_engine_init             (HTMLEngine          *engine);
@@ -271,19 +269,22 @@ struct _HTMLElement {
 void element_parse_nodedump_htmlobject_one(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style, gint *count);
 void element_parse_nodedump_htmlobject  (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style);
 void           set_style_to_text        (HTMLText *text, HTMLStyle *style, HTMLEngine *e, gint start_index, gint end_index);
-HTMLStyle *    style_from_engine        (HTMLEngine *e); /* create style from engine */
-HTMLText *     create_text_from_xml     (HTMLEngine *e, HTMLElement *testElement,const gchar* text);
+HTMLObject*    create_from_xml_fix_align(HTMLObject *o, HTMLElement *element, gint max_width);
+HTMLText *     create_text_from_xml     (HTMLEngine *e, HTMLElement *element, const gchar* text);
+HTMLObject*    create_image_from_xml    (HTMLEngine *e, HTMLElement *element, gint max_width);
+HTMLObject*    create_rule_from_xml     (HTMLEngine *e, HTMLElement *element, gint max_width);
+HTMLObject*    create_iframe_from_xml   (HTMLEngine *e, HTMLElement *element, gint max_width);
 HTMLTableCell* create_cell_from_xml     (HTMLEngine *e, HTMLElement *element);
 HTMLTable*     create_table_from_xml    (HTMLEngine *e, HTMLElement *element);
-HTMLObject*    create_flow_from_xml     (HTMLEngine *e, HTMLElement *testElement);
+HTMLObject*    create_flow_from_xml     (HTMLEngine *e, HTMLElement *element);
 HTMLTextArea*  create_textarea_from_xml (HTMLEngine *e, HTMLElement *element);
-HTMLObject*    create_image_from_xml    (HTMLEngine *e, HTMLElement *testElement, gint max_width);
-HTMLObject*    create_rule_from_xml     (HTMLEngine *e, HTMLElement *element, gint max_width);
-HTMLObject*    create_from_xml_fix_align(HTMLObject *object, HTMLElement *element, gint max_width);
-HTMLEmbedded*  create_object_from_xml   (HTMLEngine *e, HTMLElement *testElement);
+HTMLEmbedded*  create_object_from_xml   (HTMLEngine *e, HTMLElement *element);
+HTMLObject *   create_frame_from_xml    (HTMLEngine *e, HTMLElement *element);
+HTMLObject *   create_frameset_from_xml (HTMLEngine *e, HTMLElement *element);
 HTMLForm*      create_form_from_xml     (HTMLEngine *e, HTMLElement *element);
 HTMLObject*    create_input_from_xml    (HTMLEngine *e, HTMLElement *element);
 HTMLSelect*    create_select_from_xml   (HTMLEngine *e, HTMLElement *element);
+HTMLStyle *    style_from_engine        (HTMLEngine *e); /* create style from engine */
 gchar *        getcorrect_text          (xmlNode* current, HTMLEngine *e, gboolean need_trim);
 gchar *        get_text_from_children   (xmlNode* xmlelement, HTMLEngine *e, gboolean need_trim);
 void elementtree_parse_text_innode      (HTMLEngine *e, HTMLObject* clue, HTMLElement *element, const gchar * text,gboolean newclue);
@@ -1706,11 +1707,6 @@ element_parse_frameset (ELEMENT_PARSE_PARAMS)
 {
 	HTMLElement *element;
 	HTMLObject *frame;
-	gchar *value = NULL;
-	gchar *rows  = NULL;
-	gchar *cols  = NULL;
-
-
 
 	g_return_if_fail (HTML_IS_ENGINE (e));
 
@@ -1719,24 +1715,7 @@ element_parse_frameset (ELEMENT_PARSE_PARAMS)
 
 	element = html_element_from_xml (e, xmlelement, NULL);
 
-	if (html_element_get_attr (element, "rows", &value))
-		rows = value;
-
-	if (html_element_get_attr (element, "cols", &value))
-		cols = value;
-
-	/*
-	html_element_get_attr (element, "onload", &value);
-	html_element_get_attr (element, "onunload", &value);
-	*/
-
-	/* clear the borders */
-	e->bottomBorder = 0;
-	e->topBorder = 0;
-	e->leftBorder = 0;
-	e->rightBorder = 0;
-
-	frame = html_frameset_new (e->widget, rows, cols);
+	frame = create_frameset_from_xml (e, element);
 
 	if (html_stack_is_empty (e->frame_stack)) {
 		append_element (e, clue, frame);
@@ -1756,76 +1735,14 @@ static void
 element_parse_iframe (ELEMENT_PARSE_PARAMS)
 {
 	HTMLElement *element;
-	gchar *value = NULL;
-	gchar *src   = NULL;
 	HTMLObject *iframe;
-	gint width           = -1;
-	gint height          = -1;
-	gint border          = TRUE;
-	GtkPolicyType scroll = GTK_POLICY_AUTOMATIC;
-	gint margin_width    = -1;
-	gint margin_height   = -1;
-
-	HTMLHAlignType halign = HTML_HALIGN_NONE;
-	HTMLVAlignType valign = HTML_VALIGN_NONE;
-
-
 
 	element = html_element_from_xml (e, xmlelement, NULL);
 
-	if (element->style)
-		if(element->style->url)
-			src = element->style->url;
-
-	if (html_element_get_attr (element, "scrolling", &value))
-		scroll = parse_scroll (value);
-
-	if (html_element_get_attr (element, "marginwidth", &value))
-		margin_width = atoi (value);
-
-	if (html_element_get_attr (element, "marginheight", &value))
-		margin_height = atoi (value);
-
-	if (html_element_get_attr (element, "frameborder", &value))
-		border = atoi (value);
-
-	if (html_element_get_attr (element, "align", &value)) {
-		valign = parse_valign(value, HTML_HALIGN_NONE);
-		halign = parse_halign(value, HTML_HALIGN_NONE);
-	}
-
-        element->style = html_style_set_display (element->style, HTMLDISPLAY_NONE);
-	/*
-	html_element_get_attr (element, "longdesc", &value);
-	html_element_get_attr (element, "name", &value);
-	*/
-
-	/* FIXME fixup missing url */
-	if (src) {
-		if (element->style->width)
-			width = element->style->width->val;
-
-		if (element->style->height)
-			height = element->style->height->val;
-
-		iframe = html_iframe_new (GTK_WIDGET (e->widget), src, width, height, border);
-		if (margin_height >= 0)
-			html_iframe_set_margin_height (HTML_IFRAME (iframe), margin_height);
-		if (margin_width >= 0)
-			html_iframe_set_margin_width (HTML_IFRAME (iframe), margin_width);
-		if (scroll != GTK_POLICY_AUTOMATIC)
-			html_iframe_set_scrolling (HTML_IFRAME (iframe), scroll);
-
-		if (halign != HTML_HALIGN_NONE || valign != HTML_VALIGN_NONE) {
-			HTMLClueAligned *aligned = HTML_CLUEALIGNED (html_cluealigned_new (NULL, 0, 0, clue->max_width, 100));
-			HTML_CLUE (aligned)->halign = halign;
-			HTML_CLUE (aligned)->valign = valign;
-			html_clue_append (HTML_CLUE (aligned), HTML_OBJECT (iframe));
-			append_element (e, clue, HTML_OBJECT (aligned));
-		} else {
-			append_element (e, clue, iframe);
-		}
-	}
+	iframe = create_iframe_from_xml(e, element, clue->max_width);
+	if (!iframe)
+		return;
+	append_element (e, clue, iframe);
 
 	html_element_free (element);
 
@@ -2234,46 +2151,17 @@ static void
 element_parse_frame (ELEMENT_PARSE_PARAMS)
 {
 	HTMLElement *element;
-	gchar *value = NULL;
-	gchar *src = NULL;
 	HTMLObject *frame = NULL;
-	gint margin_height = -1;
-	gint margin_width = -1;
-	GtkPolicyType scroll = GTK_POLICY_AUTOMATIC;
-
-
 
 	g_return_if_fail (HTML_IS_ENGINE (e));
 
 	if (!e->allow_frameset)
 			return;
 
-	src = NULL;
-
 	element = html_element_from_xml (e, xmlelement, NULL);
 
-	if (element->style)
-		if(element->style->url)
-			src = element->style->url;
+	frame = create_frame_from_xml (e, element);
 
-	if (html_element_get_attr (element, "marginheight", &value))
-		margin_height = atoi (value);
-
-	if (html_element_get_attr (element, "marginwidth", &value))
-		margin_width = atoi (value);
-
-	if (html_element_get_attr (element, "scrolling", &value))
-		scroll = parse_scroll (value);
-
-#if 0
-	if (html_element_has_attr (element, "noresize"))
-		;
-
-	if (html_element_get_attr (element, "frameborder", &value))
-		;
-#endif
-
-	frame = html_frame_new (GTK_WIDGET (e->widget), src, -1 , -1, FALSE);
 	if (html_stack_is_empty (e->frame_stack)) {
 		append_element (e, clue, frame);
 	} else {
@@ -2283,13 +2171,6 @@ element_parse_frame (ELEMENT_PARSE_PARAMS)
 			return;
 		}
 	}
-
-	if (margin_height > 0)
-		html_frame_set_margin_height (HTML_FRAME (frame), margin_height);
-	if (margin_width > 0)
-		html_frame_set_margin_width (HTML_FRAME (frame), margin_width);
-	if (scroll != GTK_POLICY_AUTOMATIC)
-		html_frame_set_scrolling (HTML_FRAME (frame), scroll);
 
 	html_element_free (element);
 
@@ -2304,9 +2185,9 @@ element_parse_hr (ELEMENT_PARSE_PARAMS)
 {
 	HTMLElement *element;
 
-    element = html_element_from_xml (e, xmlelement, NULL);
+	element = html_element_from_xml (e, xmlelement, NULL);
 
-    pop_element (e, ID_P);
+	pop_element (e, ID_P);
 
 	append_element (e, clue, create_rule_from_xml(e, element, clue->max_width));
 
@@ -4716,6 +4597,75 @@ create_select_from_xml (HTMLEngine *e, HTMLElement *element)
 	return formSelect;
 }
 
+HTMLObject *
+create_frame_from_xml (HTMLEngine *e, HTMLElement *element)
+{
+	gchar *value = NULL;
+	gchar *src = NULL;
+	HTMLObject *frame = NULL;
+	gint margin_height = -1;
+	gint margin_width = -1;
+	GtkPolicyType scroll = GTK_POLICY_AUTOMATIC;
+
+	if (element->style)
+		if(element->style->url)
+			src = element->style->url;
+
+	if (html_element_get_attr (element, "marginheight", &value))
+		margin_height = atoi (value);
+
+	if (html_element_get_attr (element, "marginwidth", &value))
+		margin_width = atoi (value);
+
+	if (html_element_get_attr (element, "scrolling", &value))
+		scroll = parse_scroll (value);
+
+#if 0
+	if (html_element_has_attr (element, "noresize"))
+		;
+
+	if (html_element_get_attr (element, "frameborder", &value))
+		;
+#endif
+
+	frame = html_frame_new (GTK_WIDGET (e->widget), src, -1 , -1, FALSE);
+
+	if (margin_height > 0)
+		html_frame_set_margin_height (HTML_FRAME (frame), margin_height);
+	if (margin_width > 0)
+		html_frame_set_margin_width (HTML_FRAME (frame), margin_width);
+	if (scroll != GTK_POLICY_AUTOMATIC)
+		html_frame_set_scrolling (HTML_FRAME (frame), scroll);
+	return frame;
+}
+
+HTMLObject *
+create_frameset_from_xml (HTMLEngine *e, HTMLElement *element)
+{
+	gchar *value = NULL;
+	gchar *rows  = NULL;
+	gchar *cols  = NULL;
+
+	if (html_element_get_attr (element, "rows", &value))
+		rows = value;
+
+	if (html_element_get_attr (element, "cols", &value))
+		cols = value;
+
+	/*
+	html_element_get_attr (element, "onload", &value);
+	html_element_get_attr (element, "onunload", &value);
+	*/
+
+	/* clear the borders */
+	e->bottomBorder = 0;
+	e->topBorder = 0;
+	e->leftBorder = 0;
+	e->rightBorder = 0;
+
+	return html_frameset_new (e->widget, rows, cols);
+}
+
 /*create object and automatic register him in current form*/
 HTMLEmbedded *
 create_object_from_xml (HTMLEngine *e, HTMLElement *element)
@@ -4865,12 +4815,74 @@ create_form_from_xml(HTMLEngine *e, HTMLElement *element)
 }
 
 HTMLObject*
+create_iframe_from_xml(HTMLEngine *e, HTMLElement *element, gint max_width)
+{
+	gchar *value = NULL;
+	gchar *src   = NULL;
+	HTMLObject *iframe;
+	gint width           = -1;
+	gint height          = -1;
+	gint border          = TRUE;
+	GtkPolicyType scroll = GTK_POLICY_AUTOMATIC;
+	gint margin_width    = -1;
+	gint margin_height   = -1;
+
+	if (element->style)
+		if(element->style->url)
+			src = element->style->url;
+
+	if (html_element_get_attr (element, "scrolling", &value))
+		scroll = parse_scroll (value);
+
+	if (html_element_get_attr (element, "marginwidth", &value))
+		margin_width = atoi (value);
+
+	if (html_element_get_attr (element, "marginheight", &value))
+		margin_height = atoi (value);
+
+	if (html_element_get_attr (element, "frameborder", &value))
+		border = atoi (value);
+
+	if (html_element_get_attr (element, "align", &value)) {
+		element->style->text_align = parse_halign(value, HTML_HALIGN_NONE);
+		element->style->text_valign = parse_valign(value, HTML_VALIGN_NONE);
+	}
+
+        element->style = html_style_set_display (element->style, HTMLDISPLAY_NONE);
+	/*
+	html_element_get_attr (element, "longdesc", &value);
+	html_element_get_attr (element, "name", &value);
+	*/
+
+	/* FIXME fixup missing url */
+	if (src) {
+		if (element->style->width)
+			width = element->style->width->val;
+
+		if (element->style->height)
+			height = element->style->height->val;
+
+		iframe = html_iframe_new (GTK_WIDGET (e->widget), src, width, height, border);
+		if (margin_height >= 0)
+			html_iframe_set_margin_height (HTML_IFRAME (iframe), margin_height);
+		if (margin_width >= 0)
+			html_iframe_set_margin_width (HTML_IFRAME (iframe), margin_width);
+		if (scroll != GTK_POLICY_AUTOMATIC)
+			html_iframe_set_scrolling (HTML_IFRAME (iframe), scroll);
+
+		return create_from_xml_fix_align(iframe, element, max_width);
+	}
+
+	return NULL;
+}
+
+HTMLObject*
 create_image_from_xml(HTMLEngine *e, HTMLElement *element, gint max_width)
 {
 	HTMLObject 	*image;
 	gchar 		*value;
 	gboolean ismap = FALSE;
-    gint width     = -1;
+	gint width     = -1;
 	gint height    = -1;
 	gint hspace = 0;
 	gint vspace = 0;
@@ -4944,11 +4956,15 @@ HTMLObject*
 create_from_xml_fix_align(HTMLObject *object, HTMLElement *element, gint max_width)
 {
 	if (element->style) {
-		if (element->style->text_align != HTML_HALIGN_NONE) {
+		if (
+			element->style->text_align != HTML_HALIGN_NONE ||
+			element->style->text_valign != HTML_VALIGN_NONE
+		) {
 			/* We need to put the image in a HTMLClueAligned.  */
 			/* Man, this is *so* gross.  */
 			HTMLClueAligned *aligned = HTML_CLUEALIGNED (html_cluealigned_new (NULL, 0, 0, max_width, 100));
 			HTML_CLUE (aligned)->halign = element->style->text_align;
+			HTML_CLUE (aligned)->valign = element->style->text_valign;
 			html_clue_append (HTML_CLUE (aligned), object);
 			return HTML_OBJECT (aligned);
 		}
@@ -5155,6 +5171,26 @@ element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e,
 					html_clue_append (HTML_CLUE (htmlelement), HTML_OBJECT(el));
 			} else if(!g_ascii_strcasecmp(ID_MAP,XMLCHAR2GCHAR(current->name))) {
 				elementtree_parse_map(current, pos, e, testElement);
+			} else if(!g_ascii_strcasecmp(ID_FRAMESET,XMLCHAR2GCHAR(current->name))) {
+				if (e->allow_frameset) {
+					HTMLObject *frame = create_frameset_from_xml (e, testElement);
+					if (html_stack_is_empty (e->frame_stack)) {
+						html_clue_append (HTML_CLUE (htmlelement), frame);
+					} else {
+						html_frameset_append (html_stack_top (e->frame_stack), frame);
+					}
+					html_stack_push (e->frame_stack, frame);
+					element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
+				}
+			} else if(!g_ascii_strcasecmp(ID_FRAME,XMLCHAR2GCHAR(current->name))) {
+				HTMLObject *frame = create_frame_from_xml (e, testElement);
+				if (html_stack_is_empty (e->frame_stack)) {
+					html_clue_append (HTML_CLUE (htmlelement), frame);
+				} else {
+					if (!html_frameset_append (html_stack_top (e->frame_stack), frame))
+						html_object_destroy (frame);
+				}
+				element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
 			} else if(!g_ascii_strcasecmp(ID_TABLE,XMLCHAR2GCHAR(current->name))) {
 				html_object = HTML_OBJECT (create_table_from_xml(e, testElement));
 				html_clue_append (HTML_CLUE (htmlelement), html_object);
@@ -5179,6 +5215,7 @@ element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e,
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_LABEL) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_EM) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_NOBR) ||
+				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_NOFRAME) ||
 				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_SPAN)
 			) {
 				/*html_object = create_flow_from_xml(e, testElement);
@@ -5187,6 +5224,12 @@ element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e,
 				element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
 			} else if(	!g_ascii_strcasecmp(ID_IMG,	XMLCHAR2GCHAR(current->name))) {
 				html_object = HTML_OBJECT (create_image_from_xml(e, testElement, htmlelement->max_width));
+				if(!html_object)
+					return; /*FIXME*/
+				html_clue_append (HTML_CLUE (htmlelement), html_object);
+				/*sub element in img not exist*/
+			} else if(	!g_ascii_strcasecmp(ID_IFRAME,	XMLCHAR2GCHAR(current->name))) {
+				html_object = HTML_OBJECT (create_iframe_from_xml(e, testElement, htmlelement->max_width));
 				if(!html_object)
 					return; /*FIXME*/
 				html_clue_append (HTML_CLUE (htmlelement), html_object);
