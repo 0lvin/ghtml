@@ -276,7 +276,7 @@ color_combo_custom_clicked_cb (GtkhtmlColorCombo *combo)
 		GTK_COLOR_SELECTION_DIALOG (dialog));
 	toplevel = gtk_widget_get_toplevel (GTK_WIDGET (combo));
 
-	if (GTK_WIDGET_TOPLEVEL (toplevel))
+	if (gtk_widget_is_toplevel (toplevel))
 		gtk_window_set_transient_for (
 			GTK_WINDOW (dialog), GTK_WINDOW (toplevel));
 
@@ -895,7 +895,7 @@ color_combo_init (GtkhtmlColorCombo *combo)
 	gtk_window_set_resizable (GTK_WINDOW (window), FALSE);
 	gtk_window_set_type_hint (
 		GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_COMBO);
-	if (GTK_WIDGET_TOPLEVEL (toplevel)) {
+	if (gtk_widget_is_toplevel (toplevel)) {
 		gtk_window_group_add_window (
 			gtk_window_get_group (GTK_WINDOW (toplevel)),
 			GTK_WINDOW (window));

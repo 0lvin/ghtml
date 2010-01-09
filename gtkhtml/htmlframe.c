@@ -167,7 +167,7 @@ draw (HTMLObject *o,
 	HTMLEngine   *e       = GTK_HTML (frame->html)->engine;
 	GdkRectangle paint;
 
-	if (GTK_OBJECT_TYPE (e->painter) == HTML_TYPE_PRINTER) {
+	if (G_OBJECT_TYPE (e->painter) == HTML_TYPE_PRINTER) {
 		gint pixel_size = html_painter_get_pixel_size (e->painter);
 
 		if (!html_object_intersect (o, &paint, x, y, width, height))
@@ -193,7 +193,7 @@ set_painter (HTMLObject *o, HTMLPainter *painter)
 	}
 
 	html_engine_set_painter (GTK_HTML (frame->html)->engine,
-				 GTK_OBJECT_TYPE (painter) != HTML_TYPE_PRINTER ? frame->gdk_painter : painter);
+				 G_OBJECT_TYPE (painter) != HTML_TYPE_PRINTER ? frame->gdk_painter : painter);
 }
 
 static void

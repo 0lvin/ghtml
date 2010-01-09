@@ -9,7 +9,7 @@ AC_CONFIG_SRCDIR(README)
 PACKAGE=gtkhtml
 
 # Required Package Versions
-m4_define([gtk_minimum_version], [2.16.0])
+m4_define([gtk_minimum_version], [2.18.0])
 m4_define([gail_minimum_version], [1.1.0])
 m4_define([gnome_icon_theme_minimum_version], [2.22.0])
 

@@ -522,7 +522,7 @@ face_tool_button_init (GtkhtmlFaceToolButton *button)
 	gtk_window_set_resizable (GTK_WINDOW (window), FALSE);
 	gtk_window_set_type_hint (
 		GTK_WINDOW (window), GDK_WINDOW_TYPE_HINT_COMBO);
-	if (GTK_WIDGET_TOPLEVEL (toplevel)) {
+	if (gtk_widget_is_toplevel (toplevel)) {
 		gtk_window_group_add_window (
 			gtk_window_get_group (GTK_WINDOW (toplevel)),
 			GTK_WINDOW (window));
