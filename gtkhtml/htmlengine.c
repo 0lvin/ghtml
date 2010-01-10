@@ -101,7 +101,7 @@
 #include "htmlmarshal.h"
 #include "htmlstyle.h"
 
-//#define USEOLDRENDER
+/*#define USEOLDRENDER*/
 /* #define CHECK_CURSOR */
 
 /* Know error's not inherit list type
@@ -135,8 +135,12 @@ static void      update_embedded           (GtkWidget *widget,
 static void      html_engine_map_table_clear (HTMLEngine *e);
 static void      html_engine_id_table_clear (HTMLEngine *e);
 static void      clear_pending_expose (HTMLEngine *e);
+
+#ifdef USEOLDRENDER
 static void      push_clue (HTMLEngine *e, HTMLObject *clue);
 static void      pop_clue (HTMLEngine *e);
+#endif
+
 gchar *          html_engine_convert_entity (gchar *token);
 
 static gboolean  is_need_convert(const gchar * token);
@@ -189,7 +193,13 @@ static guint signals [LAST_SIGNAL] = { 0 };
 #define ID_FRAME "frame"
 #define ID_FRAMESET "frameset"
 #define ID_HEAD "head"
-#define ID_HEADING "h"
+#define ID_HEADING  "h"
+#define ID_HEADING1 "h1"
+#define ID_HEADING2 "h2"
+#define ID_HEADING3 "h3"
+#define ID_HEADING4 "h4"
+#define ID_HEADING5 "h5"
+#define ID_HEADING6 "h6"
 #define ID_HR "hr"
 #define ID_HTML "html"
 #define ID_IFRAME "iframe"
@@ -237,12 +247,14 @@ static guint signals [LAST_SIGNAL] = { 0 };
 
 #define ID_EQ(x,y) (x == g_quark_from_string (y))
 
+#ifdef USEOLDRENDER
 #define ELEMENT_PARSE_PARAMS HTMLEngine *e, HTMLObject *clue, xmlNode* xmlelement
+#else
+#define TAG_FUNC_PARAM xmlNode* current, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLElement *testElement, gint *count
+#endif
 
 #define XMLCHAR2GCHAR(xmlchar)  (gchar*)(xmlchar)
 #define GCHAR2XMLCHAR(x)        (xmlChar *)(x)
-
-void stupid_render(ELEMENT_PARSE_PARAMS);
 
 static gchar default_content_type[] = "html/text; charset=utf-8";
 
@@ -266,8 +278,34 @@ struct _HTMLElement {
 	BlockFunc exitFunc;
 };
 
+#ifndef USEOLDRENDER
+void tag_func_data                (TAG_FUNC_PARAM);
+void tag_func_text                (TAG_FUNC_PARAM);
+void tag_func_base                (TAG_FUNC_PARAM);
+void tag_func_hidden              (TAG_FUNC_PARAM);
+void tag_func_head                (TAG_FUNC_PARAM);
+void tag_func_hr                  (TAG_FUNC_PARAM);
+void tag_func_li                  (TAG_FUNC_PARAM);
+void tag_func_simple_tag          (TAG_FUNC_PARAM);
+void tag_func_br                  (TAG_FUNC_PARAM);
+void tag_func_font                (TAG_FUNC_PARAM);
+void tag_func_input               (TAG_FUNC_PARAM);
+void tag_func_object              (TAG_FUNC_PARAM);
+void tag_func_map                 (TAG_FUNC_PARAM);
+void tag_func_frameset            (TAG_FUNC_PARAM);
+void tag_func_frame               (TAG_FUNC_PARAM);
+void tag_func_table               (TAG_FUNC_PARAM);
+void tag_func_simple_without_flow (TAG_FUNC_PARAM);
+void tag_func_img                 (TAG_FUNC_PARAM);
+void tag_func_iframe              (TAG_FUNC_PARAM);
+void tag_func_textarea            (TAG_FUNC_PARAM);
+void tag_func_select              (TAG_FUNC_PARAM);
+void tag_func_form                (TAG_FUNC_PARAM);
+void tag_func_tr                  (TAG_FUNC_PARAM);
+void tag_func_td                  (TAG_FUNC_PARAM);
 void element_parse_nodedump_htmlobject_one(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style, gint *count);
 void element_parse_nodedump_htmlobject  (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style);
+#endif
 void           set_style_to_text        (HTMLText *text, HTMLStyle *style, HTMLEngine *e, gint start_index, gint end_index);
 HTMLObject*    create_from_xml_fix_align(HTMLObject *o, HTMLElement *element, gint max_width);
 HTMLText *     create_text_from_xml     (HTMLEngine *e, HTMLElement *element, const gchar* text);
@@ -301,12 +339,15 @@ void elementtree_parse_map_in_node      (xmlNode* xmlelement, gint pos, HTMLEngi
 void elementtree_parse_area_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLMap *map);
 void elementtree_parse_title_in_node    (xmlNode* xmlelement, gint pos, HTMLEngine *e);
 void elementtree_parse_meta_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e);
-void elementtree_parse_script_in_node   (xmlNode* xmlelement, gint pos, HTMLEngine *e);
+void elementtree_parse_notrealized_in_node   (xmlNode* xmlelement, gint pos, HTMLEngine *e);
 void elementtree_parse_head_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e);
 void elementtree_parse_style_in_node    (xmlNode* xmlelement, gint pos, HTMLEngine *e);
 void elementtree_parse_base_in_node     (xmlNode* xmlelement, gint pos, HTMLEngine *e);
 void elementtree_parse_dumpnode         (xmlNode* xmlelement, gint pos);
 void elementtree_parse_dumpnode_in_node (xmlNode* current, gint pos);
+
+#ifdef USEOLDRENDER
+void stupid_render(ELEMENT_PARSE_PARAMS);
 
 static gchar *
 parse_element_name (const gchar *str)
@@ -327,6 +368,7 @@ parse_element_name (const gchar *str)
 
 	return g_strndup (str, ep - str);
 }
+#endif
 
 static HTMLElement *
 html_element_new (HTMLEngine *e, const gchar *name)
@@ -463,12 +505,12 @@ gen_style_for_element(const gchar *name, HTMLStyle *style)
 	} else if (	!g_ascii_strcasecmp(name, ID_DIV) ||
 			!g_ascii_strcasecmp(name, ID_NOBR)){
 		style = html_style_set_display (style, HTMLDISPLAY_BLOCK);
-	} else if (!g_ascii_strcasecmp(name, "h1") ||
-		!g_ascii_strcasecmp(name, "h2") ||
-		!g_ascii_strcasecmp(name, "h3") ||
-		!g_ascii_strcasecmp(name, "h4") ||
-		!g_ascii_strcasecmp(name, "h5") ||
-		!g_ascii_strcasecmp(name, "h6")
+	} else if (!g_ascii_strcasecmp(name, ID_HEADING1) ||
+		!g_ascii_strcasecmp(name, ID_HEADING2) ||
+		!g_ascii_strcasecmp(name, ID_HEADING3) ||
+		!g_ascii_strcasecmp(name, ID_HEADING4) ||
+		!g_ascii_strcasecmp(name, ID_HEADING5) ||
+		!g_ascii_strcasecmp(name, ID_HEADING6)
 	) {
 		if (!style)
 			style = html_style_new();
@@ -648,6 +690,7 @@ html_element_free (HTMLElement *element)
 	g_free (element);
 }
 
+#ifdef USEOLDRENDER
 static void
 push_element (HTMLEngine *e, const gchar *name, const gchar *class, HTMLStyle *style)
 {
@@ -659,6 +702,7 @@ push_element (HTMLEngine *e, const gchar *name, const gchar *class, HTMLStyle *s
 	element->style = html_style_set_display (style, HTMLDISPLAY_INLINE);
 	html_stack_push (e->span_stack, element);
 }
+#endif
 
 #define DI(x)
 
@@ -928,6 +972,7 @@ current_clueflow_style (HTMLEngine *e)
 	return style;
 }
 
+#ifdef USEOLDRENDER
 static void
 push_clueflow_style (HTMLEngine *e,
 		     HTMLClueFlowStyle style)
@@ -947,11 +992,11 @@ pop_clueflow_style (HTMLEngine *e)
 
 
 /* Utility functions.  */
-
 static void new_flow (HTMLEngine *e, HTMLObject *clue, HTMLObject *first_object, HTMLClearType clear, HTMLDirection dir);
 static void close_flow (HTMLEngine *e, HTMLObject *clue);
 static void finish_flow (HTMLEngine *e, HTMLObject *clue);
 static void pop_element (HTMLEngine *e, const gchar *name);
+#endif
 
 static HTMLObject *
 text_new (HTMLEngine *e, const gchar *text, GtkHTMLFontStyle style, HTMLColor *color)
@@ -990,6 +1035,7 @@ flow_new (HTMLEngine *e, HTMLClueFlowStyle style, HTMLListType item_type, gint i
 	return o;
 }
 
+#ifdef USEOLDRENDER
 static HTMLObject *
 create_empty_text (HTMLEngine *e)
 {
@@ -1511,6 +1557,7 @@ block_end_cell (HTMLEngine *e, HTMLObject *clue, HTMLElement *elem)
 	close_flow (e, clue);
 	pop_clue (e);
 }
+#endif
 
 
 /*Convert entity values in already converted to right charset token, and free original token*/
@@ -1579,6 +1626,7 @@ html_engine_convert_entity (gchar *token)
 	return resulted;
 }
 
+#ifdef USEOLDRENDER
 /* docment section parsers */
 static void
 element_parse_hide (ELEMENT_PARSE_PARAMS)
@@ -1597,7 +1645,7 @@ element_parse_script(ELEMENT_PARSE_PARAMS)
 {
 	g_return_if_fail (HTML_IS_ENGINE (e));
 	if (xmlelement) {
-		elementtree_parse_script_in_node(xmlelement->children, 0,  e);
+		elementtree_parse_notrealized_in_node(xmlelement->children, 0,  e);
 	}
 }
 
@@ -1609,6 +1657,7 @@ element_parse_head(ELEMENT_PARSE_PARAMS)
 		elementtree_parse_head_in_node(xmlelement->children, 0,  e);
 	}
 }
+#endif
 
 static gchar*
 trim_text(gchar * text) {
@@ -1636,6 +1685,7 @@ trim_text(gchar * text) {
 	return new_text;
 }
 
+#ifdef USEOLDRENDER
 /* before named parse_text*/
 static void
 element_parse_text(ELEMENT_PARSE_PARAMS)
@@ -2213,12 +2263,12 @@ block_end_heading (HTMLEngine *e,
 static void
 element_end_heading (ELEMENT_PARSE_PARAMS)
 {
-	pop_element (e, "h1");
-	pop_element (e, "h2");
-	pop_element (e, "h3");
-	pop_element (e, "h4");
-	pop_element (e, "h5");
-	pop_element (e, "h6");
+	pop_element (e, ID_HEADING1);
+	pop_element (e, ID_HEADING2);
+	pop_element (e, ID_HEADING3);
+	pop_element (e, ID_HEADING4);
+	pop_element (e, ID_HEADING5);
+	pop_element (e, ID_HEADING6);
 }
 
 static void
@@ -2277,6 +2327,7 @@ element_parse_img (ELEMENT_PARSE_PARAMS)
 		stupid_render (e, clue, xmlelement->children);
 	}
 }
+#endif
 
 void
 html_engine_set_engine_type( HTMLEngine *e, gboolean engine_type)
@@ -2357,6 +2408,7 @@ html_engine_get_content_type (HTMLEngine *e)
 	return e->content_type;
 }
 
+#ifdef USEOLDRENDER
 static void
 element_parse_map (ELEMENT_PARSE_PARAMS)
 {
@@ -2864,9 +2916,10 @@ element_parse_font (ELEMENT_PARSE_PARAMS)
 		stupid_render (e, clue, xmlelement->children);
 	}
 }
+#endif
 
 
-
+#ifdef USEOLDRENDER
 /* Parsing dispatch table.  */
 typedef void (*HTMLParseFunc)(ELEMENT_PARSE_PARAMS);
 typedef struct _HTMLDispatchEntry {
@@ -2875,81 +2928,76 @@ typedef struct _HTMLDispatchEntry {
 } HTMLDispatchEntry;
 
 static HTMLDispatchEntry basic_table[] = {
-	{ID_A,                element_parse_a},
+	{ID_HEADING1,         element_parse_heading},
+	{ID_HEADING2,         element_parse_heading},
+	{ID_HEADING3,         element_parse_heading},
+	{ID_HEADING4,         element_parse_heading},
+	{ID_HEADING5,         element_parse_heading},
+	{ID_HEADING6,         element_parse_heading},
 	{ID_ADDRESS,          element_parse_address},
-	{ID_B,                element_parse_inline},
+	{ID_A,                element_parse_a},
 	{ID_BASE,             element_parse_base},
+	{ID_B,                element_parse_inline},
 	{ID_BIG,              element_parse_inline},
 	{ID_BLOCKQUOTE,       element_parse_list},
 	{ID_BODY,             element_parse_body},
-	{ID_TBODY,            element_parse_body},
+	{ID_BR,               element_parse_br},
 	{ID_CAPTION,          element_parse_caption},
 	{ID_CENTER,           element_parse_inline},
 	{ID_CITE,             element_parse_inline},
 	{ID_CODE,             element_parse_inline},
+	{ID_DATA,             element_parse_data},
+	{ID_DD,               element_parse_dd},
 	{ID_DIR,              element_parse_list},
 	{ID_DIV,              element_parse_inline},
-	{ID_NOBR,             element_parse_inline},
-	{ID_DATA,             element_parse_data},
 	{ID_DL,               element_parse_dl},
 	{ID_DT,               element_parse_dt},
-	{ID_DD,               element_parse_dd},
-	{ID_LI,               element_parse_li},
-	{ID_LABEL,            element_parse_inline},
 	{ID_EM,               element_parse_inline},
 	{ID_FONT,             element_parse_font},
 	{ID_FORM,             element_parse_form},
-	{ID_FRAMESET,         element_parse_frameset},
 	{ID_FRAME,            element_parse_frame},
+	{ID_FRAMESET,         element_parse_frameset},
+	{ID_HEAD,             element_parse_head},
+	{ID_HR,               element_parse_hr},
 	{ID_HTML,             element_parse_html},
-	{ID_MAP,              element_parse_map},
-	{ID_NOFRAME,          element_parse_noframe},
 	{ID_I,                element_parse_inline},
+	{ID_IFRAME,           element_parse_iframe},
 	{ID_IMG,              element_parse_img},
 	{ID_INPUT,            element_parse_input},
-	{ID_IFRAME,           element_parse_iframe},
 	{ID_KBD,              element_parse_inline},
-	{ID_OL,               element_parse_list},
+	{ID_LABEL,            element_parse_inline},
+	{ID_LI,               element_parse_li},
+	{ID_MAP,              element_parse_map},
+	{ID_NOBR,             element_parse_inline},
+	{ID_NOFRAME,          element_parse_noframe},
+	{ID_NOSCRIPT,         element_parse_script},
 	{ID_OBJECT,           element_parse_object},
+	{ID_OL,               element_parse_list},
+	{ID_P,                element_parse_p},
 	{ID_PRE,              element_parse_pre},
-	{ID_SMALL,            element_parse_inline},
-	{ID_SPAN,             element_parse_inline},
-	{ID_STRONG,           element_parse_inline},
+	{ID_SCRIPT,           element_parse_script},
 	{ID_SELECT,           element_parse_select},
 	{ID_S,                element_parse_inline},
+	{ID_SMALL,            element_parse_inline},
+	{ID_SPAN,             element_parse_inline},
+	{ID_STRIKE,           element_parse_inline},
+	{ID_STRONG,           element_parse_inline},
 	{ID_SUB,              element_parse_inline},
 	{ID_SUP,              element_parse_inline},
-	{ID_STRIKE,           element_parse_inline},
-	{ID_U,                element_parse_inline},
-	{ID_UL,               element_parse_list},
-	{ID_TEXTAREA,         element_parse_textarea},
 	{ID_TABLE,            element_parse_table},
+	{ID_TBODY,            element_parse_body},
 	{ID_TD,               element_parse_cell},
+	{ID_TEXTAREA,         element_parse_textarea},
 	{ID_TH,               element_parse_cell},
 	{ID_TR,               element_parse_tr},
 	{ID_TT,               element_parse_inline},
-	{ID_SCRIPT,           element_parse_script},
-	{ID_NOSCRIPT,         element_parse_script},
-	{ID_HEAD,             element_parse_head},
+	{ID_U,                element_parse_inline},
+	{ID_UL,               element_parse_list},
 	{ID_VAR,              element_parse_inline},
-	/*
-	 * the following elements have special behaviors for the close tags
-	 * so we dispatch on the close element as well
-	 */
-	{ID_HR,               element_parse_hr},
-	{"h1",                element_parse_heading},
-	{"h2",                element_parse_heading},
-	{"h3",                element_parse_heading},
-	{"h4",                element_parse_heading},
-	{"h5",                element_parse_heading},
-	{"h6",                element_parse_heading},
-	/* p and br check the close marker themselves */
-	{ID_P,                element_parse_p},
-	{ID_BR,               element_parse_br},
 	/*
 	 * not realized yet
 	 */
-	{ID_LINK,              element_parse_hide},
+	{ID_LINK,             element_parse_hide},
 	{NULL,                NULL}
 };
 
@@ -2967,6 +3015,7 @@ dispatch_table_new (HTMLDispatchEntry *entry)
 
 	return table;
 }
+#endif
 
 
 GType
@@ -3120,9 +3169,10 @@ html_engine_finalize (GObject *object)
 	}
 
 	if (engine->body_stack) {
+#ifdef USEOLDRENDER
 		while (!html_stack_is_empty (engine->body_stack))
 			pop_clue (engine);
-
+#endif
 		html_stack_destroy (engine->body_stack);
 		engine->body_stack = NULL;
 	}
@@ -3545,7 +3595,9 @@ html_engine_stop_parser (HTMLEngine *e)
 
 	e->parsing = FALSE;
 
+#ifdef USEOLDRENDER
 	pop_element_by_type (e, HTMLDISPLAY_DOCUMENT);
+#endif
 
 	html_stack_clear (e->span_stack);
 	html_stack_clear (e->clueflow_style_stack);
@@ -3660,7 +3712,9 @@ html_engine_begin (HTMLEngine *e, const gchar *content_type)
 	g_slist_free (e->cursor_position_stack);
 	e->cursor_position_stack = NULL;
 
+#ifdef USEOLDRENDER
 	push_block_element (e, ID_DOCUMENT, NULL, HTMLDISPLAY_DOCUMENT, NULL, 0, 0);
+#endif
 
 	return new_stream;
 }
@@ -3965,8 +4019,16 @@ html_engine_get_object_base (HTMLEngine *e, HTMLObject *o)
 }
 #endif
 
-HTMLParseFunc get_callback_node(const gchar* tag);
-HTMLParseFunc get_callback_text_node(const gchar* tag);
+#ifndef USEOLDRENDER
+typedef void (*HTMLTagsFunc)(TAG_FUNC_PARAM);
+
+typedef struct _HTMLDispatchFuncEntry {
+	const gchar *name;
+	HTMLTagsFunc func;
+} HTMLDispatchFuncEntry;
+
+HTMLTagsFunc  get_callback_func_node(const gchar* tag);
+#endif
 
 const gchar * get_normal_name_typexml(xmlElementType type);
 
@@ -4204,7 +4266,7 @@ elementtree_parse_data_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTM
 }
 
 void
-elementtree_parse_script_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e)
+elementtree_parse_notrealized_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e)
 {
 	/*Sory but now it's not needed*/
 }
@@ -5091,191 +5153,373 @@ elementtree_parse_text (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject
 		g_printerr("I have sub elements in text");
 }
 
+#ifndef USEOLDRENDER
+void
+tag_func_text (TAG_FUNC_PARAM)
+{
+	elementtree_parse_text(current, pos+1, e, htmlelement, testElement);
+}
+
+void
+tag_func_base(TAG_FUNC_PARAM)
+{
+	elementtree_parse_base_in_node(current, pos+1, e);
+}
+
+void
+tag_func_hidden(TAG_FUNC_PARAM)
+{
+	elementtree_parse_notrealized_in_node(current->children, pos+1, e);
+}
+
+
+void
+tag_func_head(TAG_FUNC_PARAM)
+{
+	elementtree_parse_head_in_node(current->children, pos+1, e);
+}
+
+
+void
+tag_func_hr(TAG_FUNC_PARAM)
+{
+	HTMLObject* html_object = NULL;
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	html_object = create_rule_from_xml(e, testElement, htmlelement->max_width);
+	html_clue_append (HTML_CLUE (htmlelement), html_object);
+	if (current->children)
+		g_print("In hr sub elements?");
+}
+void
+tag_func_li(TAG_FUNC_PARAM)
+{
+	HTMLObject* html_object = NULL;
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	if (count &&
+		testElement->style) {
+			gchar *value;
+			if (html_element_get_attr (testElement, "value", &value))
+				*count = atoi (value);
+			testElement->style->listnumber = *count;
+			(*count)++;
+	}
+	html_object = create_flow_from_xml(e, testElement);
+	html_clue_append (HTML_CLUE (htmlelement), html_object);
+	element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
+}
+
+void
+tag_func_br(TAG_FUNC_PARAM)
+{
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	elementtree_parse_text_innode(e, htmlelement, testElement, "", TRUE);
+}
+void
+tag_func_font(TAG_FUNC_PARAM)
+{
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	if (testElement->style->height) {
+		gint size = testElement->style->height->val;
+		size = CLAMP (size, GTK_HTML_FONT_STYLE_SIZE_1, GTK_HTML_FONT_STYLE_SIZE_MAX);
+		testElement->style = html_style_set_font_size (testElement->style, size);
+	}
+	testElement->style = html_style_set_display (testElement->style, HTMLDISPLAY_INLINE);
+	element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
+}
+void
+tag_func_input(TAG_FUNC_PARAM)
+{
+	HTMLObject* html_object = NULL;
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	html_object = create_input_from_xml(e, testElement);
+	if (html_object) {
+		html_clue_append (HTML_CLUE (htmlelement), html_object);
+		element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
+	}
+}
+void
+tag_func_object(TAG_FUNC_PARAM)
+{
+	HTMLEmbedded *html_object;
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	html_object = create_object_from_xml(e, testElement);
+	if (html_object)
+		html_clue_append (HTML_CLUE (htmlelement), HTML_OBJECT(html_object));
+}
+void
+tag_func_map(TAG_FUNC_PARAM)
+{
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	elementtree_parse_map(current, pos, e, testElement);
+}
+
+void
+tag_func_frameset(TAG_FUNC_PARAM)
+{
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	if (e->allow_frameset) {
+		HTMLObject *frame = create_frameset_from_xml (e, testElement);
+		if (html_stack_is_empty (e->frame_stack)) {
+			html_clue_append (HTML_CLUE (htmlelement), frame);
+		} else {
+			html_frameset_append (html_stack_top (e->frame_stack), frame);
+		}
+		html_stack_push (e->frame_stack, frame);
+		element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
+	}
+}
+
+void
+tag_func_frame(TAG_FUNC_PARAM)
+{
+	HTMLObject* html_object = NULL;
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	html_object = create_frame_from_xml (e, testElement);
+	if (html_stack_is_empty (e->frame_stack)) {
+		html_clue_append (HTML_CLUE (htmlelement), html_object);
+	} else {
+		if (!html_frameset_append (html_stack_top (e->frame_stack), html_object))
+			html_object_destroy (html_object);
+	}
+	element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
+}
+
+void
+tag_func_table(TAG_FUNC_PARAM)
+{
+	HTMLObject* html_object = NULL;
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	html_object = HTML_OBJECT (create_table_from_xml(e, testElement));
+	html_clue_append (HTML_CLUE (htmlelement), html_object);
+	element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
+}
+
+void
+tag_func_simple_tag(TAG_FUNC_PARAM)
+{
+	HTMLObject* html_object = NULL;
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	html_object = create_flow_from_xml(e, testElement);
+	html_clue_append (HTML_CLUE (htmlelement), html_object);
+	element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
+}
+
+
+void
+tag_func_simple_without_flow(TAG_FUNC_PARAM)
+{
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	/*html_object = create_flow_from_xml(e, testElement);
+	html_clue_append (HTML_CLUE (htmlelement), html_object);
+	element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);*/
+	element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
+}
+
+void
+tag_func_img(TAG_FUNC_PARAM)
+{
+	HTMLObject* html_object = NULL;
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	html_object = HTML_OBJECT (create_image_from_xml(e, testElement, htmlelement->max_width));
+	if(!html_object)
+		return; /*FIXME*/
+	html_clue_append (HTML_CLUE (htmlelement), html_object);
+	/*sub element in img not exist*/
+}
+void
+tag_func_iframe(TAG_FUNC_PARAM)
+{
+	HTMLObject* html_object = NULL;
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	html_object = HTML_OBJECT (create_iframe_from_xml(e, testElement, htmlelement->max_width));
+	if(!html_object)
+		return; /*FIXME*/
+	html_clue_append (HTML_CLUE (htmlelement), html_object);
+	/*sub element in img not exist*/
+}
+
+void
+tag_func_textarea(TAG_FUNC_PARAM)
+{
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	elementtree_parse_textarea(current, pos+1, e, htmlelement, testElement);
+}
+
+void
+tag_func_data(TAG_FUNC_PARAM)
+{
+	elementtree_parse_data_in_node(current, pos+1, e, htmlelement);
+}
+
+void
+tag_func_select(TAG_FUNC_PARAM)
+{
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	elementtree_parse_select(current, pos+1, e, htmlelement, testElement);
+}
+
+
+void
+tag_func_form(TAG_FUNC_PARAM)
+{
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	/*FIXME its bug becase form must be HTMLObject */
+	create_form_from_xml(e, testElement);
+	element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
+	e->form = NULL;
+}
+
+void
+tag_func_tr(TAG_FUNC_PARAM)
+{
+	g_return_if_fail (HTML_IS_TABLE(htmlelement));
+	html_table_start_row (HTML_TABLE(htmlelement));
+	element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
+	html_table_end_row (HTML_TABLE(htmlelement));
+}
+
+void
+tag_func_td(TAG_FUNC_PARAM)
+{
+	HTMLObject* html_object = NULL;
+	HTMLTableCell *cell = NULL;
+	g_return_if_fail (HTML_IS_TABLE(htmlelement));
+	cell = create_cell_from_xml(e, testElement);
+	html_table_add_cell (HTML_TABLE(htmlelement), cell);
+	html_object = create_flow_from_xml(e, testElement);
+	html_clue_append (HTML_CLUE (cell), html_object);
+	element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
+}
+
+static HTMLDispatchFuncEntry func_callback_table[] = {
+	{ ID_ADDRESS,          tag_func_simple_tag          },
+	{ ID_A,                tag_func_simple_without_flow },
+	{ ID_BASE,             tag_func_base                },
+	{ ID_BIG,              tag_func_simple_without_flow },
+	{ ID_BLOCKQUOTE,       tag_func_simple_tag          },
+	{ ID_CAPTION,          tag_func_hidden              },
+	{ ID_TBODY,            tag_func_simple_tag          },
+	{ ID_BODY,             tag_func_simple_tag          },
+	{ ID_BR,               tag_func_br                  },
+	{ ID_B,                tag_func_simple_without_flow },
+	{ ID_CENTER,           tag_func_simple_tag          },
+	{ ID_CITE,             tag_func_simple_without_flow },
+	{ ID_CODE,             tag_func_simple_without_flow },
+	{ ID_DATA,             tag_func_data                },
+	{ ID_DD,               tag_func_simple_tag          },
+	{ ID_DIR,              tag_func_simple_without_flow },
+	{ ID_DIV,              tag_func_simple_tag          },
+	{ ID_DL,               tag_func_simple_without_flow },
+	{ ID_DT,               tag_func_simple_tag          },
+	{ ID_EM,               tag_func_simple_without_flow },
+	{ ID_FONT,             tag_func_font                },
+	{ ID_FORM,             tag_func_form                },
+	{ ID_FRAMESET,         tag_func_frameset            },
+	{ ID_FRAME,            tag_func_frame               },
+	{ ID_HEADING1,         tag_func_simple_tag          },
+	{ ID_HEADING2,         tag_func_simple_tag          },
+	{ ID_HEADING3,         tag_func_simple_tag          },
+	{ ID_HEADING4,         tag_func_simple_tag          },
+	{ ID_HEADING5,         tag_func_simple_tag          },
+	{ ID_HEADING6,         tag_func_simple_tag          },
+	{ ID_HEAD,             tag_func_head                },
+	{ ID_HR,               tag_func_hr                  },
+	{ ID_HTML,             tag_func_simple_tag          },
+	{ ID_IFRAME,           tag_func_frame               },
+	{ ID_IMG,              tag_func_img                 },
+	{ ID_INPUT,            tag_func_input               },
+	{ ID_I,                tag_func_simple_without_flow },
+	{ ID_KBD,              tag_func_simple_without_flow },
+	{ ID_LABEL,            tag_func_simple_without_flow },
+	{ ID_LI,               tag_func_li                  },
+	{ ID_MAP,              tag_func_map                 },
+	{ ID_MENU,             tag_func_simple_without_flow },
+	{ ID_NOBR,             tag_func_simple_without_flow },
+	{ ID_NOFRAME,          tag_func_simple_without_flow },
+	{ ID_NOSCRIPT,         tag_func_hidden              },
+	{ ID_OBJECT,           tag_func_object              },
+	{ ID_OL,               tag_func_simple_without_flow },
+	{ ID_PRE,              tag_func_simple_without_flow },
+	{ ID_P,                tag_func_simple_tag          },
+	{ ID_SCRIPT,           tag_func_hidden              },
+	{ ID_SELECT,           tag_func_select              },
+	{ ID_SMALL,            tag_func_simple_without_flow },
+	{ ID_SPAN,             tag_func_simple_without_flow },
+	{ ID_S,                tag_func_simple_without_flow },
+	{ ID_STRIKE,           tag_func_simple_without_flow },
+	{ ID_STRONG,           tag_func_simple_without_flow },
+	{ ID_SUB,              tag_func_simple_without_flow },
+	{ ID_TEXTAREA,         tag_func_textarea            },
+	{ ID_SUP,              tag_func_simple_without_flow },
+	{ ID_TABLE,            tag_func_table               },
+	{ ID_TD,               tag_func_td                  },
+	{ ID_TEXT,             tag_func_text                },
+	{ ID_TH,               tag_func_td                  },
+	{ ID_TR,               tag_func_tr                  },
+	{ ID_TT,               tag_func_simple_without_flow },
+	{ ID_UL,               tag_func_simple_without_flow },
+	{ ID_U,                tag_func_simple_without_flow },
+	{ ID_VAR,              tag_func_simple_without_flow },
+	{ ID_LINK,             tag_func_hidden              },
+	{ NULL,                NULL                         }
+};
+
+static GHashTable *
+dispatch_func_table_new (HTMLDispatchFuncEntry *entry)
+{
+	GHashTable *table = g_hash_table_new (g_str_hash, g_str_equal);
+	gint i = 0;
+
+	while (entry[i].name) {
+		g_hash_table_insert (
+			table, (gpointer) entry[i].name, &entry[i]);
+		i++;
+	}
+
+	return table;
+}
+
+HTMLTagsFunc
+get_callback_func_node(const gchar* tag) {
+
+	static GHashTable *func_callback = NULL;
+	HTMLDispatchFuncEntry *entry;
+
+	if (func_callback == NULL)
+		func_callback = dispatch_func_table_new (func_callback_table);
+
+	if(tag == NULL)
+		return NULL;
+
+	entry = g_hash_table_lookup (func_callback, tag);
+
+	if (entry)
+		return *entry->func;
+	else
+		return NULL;
+}
+
 void
 element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style, gint *count)
 {
 	HTMLElement *testElement;
-	HTMLObject* html_object = NULL;
+	HTMLTagsFunc callback_func;
 	g_return_if_fail (HTML_IS_ENGINE (e));
 	g_return_if_fail (htmlelement != NULL);
 	g_return_if_fail (current != NULL);
 
-		testElement = html_element_from_xml(e, current, parent_style);
-		if(!g_ascii_strcasecmp(ID_TEXT,XMLCHAR2GCHAR(current->name))) {
-			elementtree_parse_text(current, pos+1, e, htmlelement, testElement);
-		} else if(!g_ascii_strcasecmp(ID_BASE,XMLCHAR2GCHAR(current->name))) {
-			elementtree_parse_base_in_node(current, pos+1, e);
-		} else if(
-			!g_ascii_strcasecmp(ID_SCRIPT,XMLCHAR2GCHAR(current->name)) ||
-			!g_ascii_strcasecmp(ID_NOSCRIPT,XMLCHAR2GCHAR(current->name))
-			) {
-			elementtree_parse_script_in_node(current->children, pos+1, e);
-		} else if(!g_ascii_strcasecmp(ID_HEAD,XMLCHAR2GCHAR(current->name))) {
-			elementtree_parse_head_in_node(current->children, pos+1, e);
-		} else if (html_object_is_clue(htmlelement)) {
-			if(	!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_HR) ) {
-					html_object = create_rule_from_xml(e, testElement, htmlelement->max_width);
-					html_clue_append (HTML_CLUE (htmlelement), html_object);
-					if (current->children)
-						g_print("In hr sub elements?");
-			} else if (!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_LI)) {
-				if (count &&
-					testElement->style) {
-						gchar *value;
-						if (html_element_get_attr (testElement, "value", &value))
-							*count = atoi (value);
-						testElement->style->listnumber = *count;
-						(*count)++;
-				}
-				html_object = create_flow_from_xml(e, testElement);
-				html_clue_append (HTML_CLUE (htmlelement), html_object);
-				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
-			} else if(	!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h1") ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h2") ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h3") ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h4") ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h5") ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), "h6") ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_P) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_BODY) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_CENTER) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_ADDRESS) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_DIV) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_DT) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_DD) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_BLOCKQUOTE) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_HTML)
-			) {
-				html_object = create_flow_from_xml(e, testElement);
-				html_clue_append (HTML_CLUE (htmlelement), html_object);
-				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
-			} else if(!g_ascii_strcasecmp(ID_BR,XMLCHAR2GCHAR(current->name))) {
-				elementtree_parse_text_innode(e, htmlelement, testElement, "", TRUE);
-			} else if(!g_ascii_strcasecmp(ID_FONT,XMLCHAR2GCHAR(current->name))) {
-				if (testElement->style->height) {
-					gint size = testElement->style->height->val;
-					size = CLAMP (size, GTK_HTML_FONT_STYLE_SIZE_1, GTK_HTML_FONT_STYLE_SIZE_MAX);
-					testElement->style = html_style_set_font_size (testElement->style, size);
-				}
-				testElement->style = html_style_set_display (testElement->style, HTMLDISPLAY_INLINE);
-				element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
-			} else if(!g_ascii_strcasecmp(ID_INPUT, XMLCHAR2GCHAR(current->name))) {
-				html_object = create_input_from_xml(e, testElement);
-				if (html_object) {
-					html_clue_append (HTML_CLUE (htmlelement), html_object);
-					element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
-				}
-			} else if(!g_ascii_strcasecmp(ID_OBJECT,XMLCHAR2GCHAR(current->name))) {
-				HTMLEmbedded *el = create_object_from_xml(e, testElement);
-				if (el)
-					html_clue_append (HTML_CLUE (htmlelement), HTML_OBJECT(el));
-			} else if(!g_ascii_strcasecmp(ID_MAP,XMLCHAR2GCHAR(current->name))) {
-				elementtree_parse_map(current, pos, e, testElement);
-			} else if(!g_ascii_strcasecmp(ID_FRAMESET,XMLCHAR2GCHAR(current->name))) {
-				if (e->allow_frameset) {
-					HTMLObject *frame = create_frameset_from_xml (e, testElement);
-					if (html_stack_is_empty (e->frame_stack)) {
-						html_clue_append (HTML_CLUE (htmlelement), frame);
-					} else {
-						html_frameset_append (html_stack_top (e->frame_stack), frame);
-					}
-					html_stack_push (e->frame_stack, frame);
-					element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
-				}
-			} else if(!g_ascii_strcasecmp(ID_FRAME,XMLCHAR2GCHAR(current->name))) {
-				HTMLObject *frame = create_frame_from_xml (e, testElement);
-				if (html_stack_is_empty (e->frame_stack)) {
-					html_clue_append (HTML_CLUE (htmlelement), frame);
-				} else {
-					if (!html_frameset_append (html_stack_top (e->frame_stack), frame))
-						html_object_destroy (frame);
-				}
-				element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
-			} else if(!g_ascii_strcasecmp(ID_TABLE,XMLCHAR2GCHAR(current->name))) {
-				html_object = HTML_OBJECT (create_table_from_xml(e, testElement));
-				html_clue_append (HTML_CLUE (htmlelement), html_object);
-				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
-			} else if(
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_PRE) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_A) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_B) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_CODE) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_KBD) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_TT) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_VAR) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_STRIKE) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_S) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_BIG) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_SMALL) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_CITE) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_SUB) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_SUP) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_U) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_I) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_LABEL) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_EM) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_NOBR) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_NOFRAME) ||
-				!g_ascii_strcasecmp(XMLCHAR2GCHAR(current->name), ID_SPAN)
-			) {
-				/*html_object = create_flow_from_xml(e, testElement);
-				html_clue_append (HTML_CLUE (htmlelement), html_object);
-				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);*/
-				element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
-			} else if(	!g_ascii_strcasecmp(ID_IMG,	XMLCHAR2GCHAR(current->name))) {
-				html_object = HTML_OBJECT (create_image_from_xml(e, testElement, htmlelement->max_width));
-				if(!html_object)
-					return; /*FIXME*/
-				html_clue_append (HTML_CLUE (htmlelement), html_object);
-				/*sub element in img not exist*/
-			} else if(	!g_ascii_strcasecmp(ID_IFRAME,	XMLCHAR2GCHAR(current->name))) {
-				html_object = HTML_OBJECT (create_iframe_from_xml(e, testElement, htmlelement->max_width));
-				if(!html_object)
-					return; /*FIXME*/
-				html_clue_append (HTML_CLUE (htmlelement), html_object);
-				/*sub element in img not exist*/
-			} else if(	!g_ascii_strcasecmp(ID_TEXTAREA,  XMLCHAR2GCHAR(current->name))) {
-				elementtree_parse_textarea(current, pos+1, e, htmlelement, testElement);
-			} else if(	!g_ascii_strcasecmp(ID_SELECT,  XMLCHAR2GCHAR(current->name))) {
-				elementtree_parse_select(current, pos+1, e, htmlelement, testElement);
-			} else if(	!g_ascii_strcasecmp(ID_FORM,  XMLCHAR2GCHAR(current->name))) {
-				/*FIXME its bug becase form must be HTMLObject */
-				create_form_from_xml(e, testElement);
-				element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
-				e->form = NULL;
-			} else if(	!g_ascii_strcasecmp(ID_UL,  XMLCHAR2GCHAR(current->name)) ||
-					!g_ascii_strcasecmp(ID_OL,  XMLCHAR2GCHAR(current->name)) ||
-					!g_ascii_strcasecmp(ID_DIR, XMLCHAR2GCHAR(current->name))||
-					!g_ascii_strcasecmp(ID_MENU,XMLCHAR2GCHAR(current->name))||
-					!g_ascii_strcasecmp(ID_DL,  XMLCHAR2GCHAR(current->name)) ) {
-				element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
-			} else {
-				g_printerr("unknow in clue %s\n",XMLCHAR2GCHAR(current->name));
-				elementtree_parse_dumpnode_in_node(current, pos + 1);
-			}
-		} else if (HTML_IS_TABLE(htmlelement)) {
-			if(!g_ascii_strcasecmp(ID_TR,XMLCHAR2GCHAR(current->name))) {
-				html_table_start_row (HTML_TABLE(htmlelement));
-				element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, testElement->style);
-				html_table_end_row (HTML_TABLE(htmlelement));
-			} else if(	!g_ascii_strcasecmp(ID_TD,XMLCHAR2GCHAR(current->name)) ||
-					!g_ascii_strcasecmp(ID_TH,XMLCHAR2GCHAR(current->name)) ) {
-				HTMLTableCell *cell = create_cell_from_xml(e, testElement);
-				html_table_add_cell (HTML_TABLE(htmlelement), cell);
-				html_object = create_flow_from_xml(e, testElement);
-				html_clue_append (HTML_CLUE (cell), html_object);
-				element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);
-			} else {
-				g_printerr("unknow in table %s\n",XMLCHAR2GCHAR(current->name));
-				elementtree_parse_dumpnode_in_node(current, pos + 1);
-			}
-		} else {
-			/*It's must call after all operarion*/
-			html_element_free(testElement);
-			g_printerr("object not created\n");
-			element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parent_style);
-		}
+	testElement = html_element_from_xml(e, current, parent_style);
+	callback_func = get_callback_func_node(XMLCHAR2GCHAR(current->name));
+	if (callback_func) {
+		callback_func(current, pos, e, htmlelement, testElement, count);
+	} else {
+		/*It's must call after all operarion*/
+		html_element_free(testElement);
+		g_printerr("object not created\n");
+		element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parent_style);
+	}
 }
+#endif
 
 void
 elementtree_parse_param_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e, GtkHTMLEmbedded *eb)
@@ -5382,6 +5626,7 @@ elementtree_parse_select(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObjec
 
 }
 
+#ifndef USEOLDRENDER
 void element_parse_nodedump_htmlobject(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style)
 {
     xmlNode *current = NULL; /* current node */
@@ -5392,6 +5637,10 @@ void element_parse_nodedump_htmlobject(xmlNode* xmlelement, gint pos, HTMLEngine
         element_parse_nodedump_htmlobject_one(current, pos, e, htmlelement, parent_style, &i);
     }
 }
+
+#else
+HTMLParseFunc get_callback_node(const gchar* tag);
+HTMLParseFunc get_callback_text_node(const gchar* tag);
 
 static void element_parse_dump(ELEMENT_PARSE_PARAMS) {
 	elementtree_parse_dumpnode(xmlelement, 0);
@@ -5465,6 +5714,7 @@ stupid_render(ELEMENT_PARSE_PARAMS) {
 		pop_element (e, XMLCHAR2GCHAR(current->name));
 	}
 }
+#endif
 
 /*css*/
 void process_element(xmlNode* element, CRCascade *cascade, CRSelEng *selector);
