@@ -36,7 +36,7 @@ AM_CFLAGS = 						\
 	-DGTKHTML_DATADIR=\""$(gtkhtml_data)"\"		\
 	-DGNOMELOCALEDIR=\""$(prefix)/$(DATADIRNAME)/locale"\"
 
-lib_LTLIBRARIES = libgtkhtml-3.14.la
+lib_LTLIBRARIES = libgtkhtml-@GTKHTML_API_VERSION@.la
 
 libgtkhtmldir = $(includedir)/libgtkhtml-@GTKHTML_API_VERSION@/gtkhtml
 
@@ -54,7 +54,7 @@ libgtkhtml_HEADERS =				\
 	htmlenums.h				\
 	$(NULL)
 
-libgtkhtml_3_14_la_SOURCES =			\
+libgtkhtml_@GTKHTML_API_VERSION@_la_SOURCES =			\
 	gtkhtml-embedded.c			\
 	gtkhtml-properties.c			\
 	gtkhtml-search.c			\
@@ -205,8 +205,8 @@ libgtkhtml_3_14_la_SOURCES =			\
 	$(PLATFORM_DEP_SOURCES)			\
 	$(NULL)
 
-libgtkhtml_3_14_la_LDFLAGS = -version-info $(GTKHTML_CURRENT):$(GTKHTML_REVISION):$(GTKHTML_AGE) -no-undefined
-libgtkhtml_3_14_la_LIBADD = $(GTKHTML_LIBS) $(GCONF_LIBS) ../a11y/libgtkhtml-a11y.la $(GAIL_LIBS) $(REGEX_LIBS)
+libgtkhtml_@GTKHTML_API_VERSION@_la_LDFLAGS = -version-info $(GTKHTML_CURRENT):$(GTKHTML_REVISION):$(GTKHTML_AGE) -no-undefined
+libgtkhtml_@GTKHTML_API_VERSION@_la_LIBADD = $(GTKHTML_LIBS) $(GCONF_LIBS) ../a11y/libgtkhtml-a11y.la $(GAIL_LIBS) $(REGEX_LIBS)
 
 dist-hook:
 	mkdir $(distdir)/tests
