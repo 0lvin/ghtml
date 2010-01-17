@@ -394,13 +394,11 @@ draw_pixmap (HTMLPainter *painter, GdkPixbuf *pixbuf, gint x, gint y, gint scale
 	HTMLPrinter *printer;
 	double print_x, print_y;
 	double print_scale_width, print_scale_height;
-	double page_height;
 	cairo_t *cr;
 
 	printer = HTML_PRINTER (painter);
 	g_return_if_fail (printer->context != NULL);
 	cr = gtk_print_context_get_cairo_context (printer->context);
-	page_height =(double) gtk_print_context_get_height (printer->context);
 	print_x = SCALE_ENGINE_TO_GNOME_PRINT (x);
 	print_y = SCALE_ENGINE_TO_GNOME_PRINT (y);
 	print_scale_width  = SCALE_ENGINE_TO_GNOME_PRINT (scale_width);

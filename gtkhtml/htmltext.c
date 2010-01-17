@@ -946,7 +946,7 @@ html_text_calc_part_width (HTMLText *text, HTMLPainter *painter, gchar *start, g
 	HTMLTextPangoInfo *pi;
 	PangoLanguage *language = NULL;
 	PangoFont *font = NULL;
-	gchar *s = start;
+	gchar *s;
 
 	if (offset < 0)
 		return 0;
@@ -968,6 +968,8 @@ html_text_calc_part_width (HTMLText *text, HTMLPainter *painter, gchar *start, g
 
 	if (start == NULL)
 		start = html_text_get_text (text, offset);
+
+	s = start;
 
 	pi = html_text_get_pango_info (text, painter);
 
@@ -2632,7 +2634,7 @@ html_text_cursor_backward (HTMLObject *self, HTMLCursor *cursor, HTMLEngine *eng
 {
 	HTMLText *text;
 	HTMLTextPangoInfo *pi = NULL;
-	gint len, attrpos = 0;
+	gint attrpos = 0;
 	gboolean retval = FALSE;
 
 	g_assert (self);
@@ -2643,7 +2645,6 @@ html_text_cursor_backward (HTMLObject *self, HTMLCursor *cursor, HTMLEngine *eng
 
 	text = HTML_TEXT (self);
 	pi = html_text_get_pango_info (text, engine->painter);
-	len = html_object_get_length (self);
 	do {
 		attrpos = cursor->offset;
 		if (cursor->offset > 1 ||
@@ -3111,7 +3112,7 @@ html_text_get_text (HTMLText *text, guint offset)
 {
 	gchar *s = text->text;
 
-	while (offset--)
+	while (offset-- && s && *s)
 		s = g_utf8_next_char (s);
 
 	return s;
@@ -3229,10 +3230,8 @@ html_text_magic_link (HTMLText *text, HTMLEngine *engine, guint offset)
 		offset--;
 	}
 
-	if (uc == ' ' || uc == ENTITY_NBSP) {
+	if (uc == ' ' || uc == ENTITY_NBSP)
 		str = g_utf8_next_char (str);
-		offset++;
-	}
 
 	if (exec) {
 		for (i = 0; i < G_N_ELEMENTS (mim); i++) {

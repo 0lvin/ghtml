@@ -1,13 +1,13 @@
 # Norwegian bokmål translation of gtkhtml.
 # Copyright (C) 2000-2004 Free Software Foundation, Inc.
-# Kjartan Maraas <kmaraas@gnome.org>, 2000-2009.
+# Kjartan Maraas <kmaraas@gnome.org>, 2000-2010.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gtkhtml 3.25\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-12-05 20:33+0100\n"
-"PO-Revision-Date: 2009-12-05 20:34+0100\n"
+"POT-Creation-Date: 2010-01-13 21:58+0100\n"
+"PO-Revision-Date: 2010-01-13 21:59+0100\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -920,75 +920,83 @@ msgstr "_Regel"
 msgid "_Table"
 msgstr "_Tabell"
 
-#: ../components/editor/gtkhtml-editor-private.c:424
+#: ../components/editor/gtkhtml-editor-private.c:271
 msgid "Paragraph Style"
 msgstr "Stil for avsnitt"
 
-#: ../components/editor/gtkhtml-editor-private.c:438
+#: ../components/editor/gtkhtml-editor-private.c:285
 msgid "Editing Mode"
 msgstr "Redigeringsmodus"
 
-#: ../components/editor/gtkhtml-editor-private.c:450
+#: ../components/editor/gtkhtml-editor-private.c:297
 msgid "Font Color"
 msgstr "Tekstfarge"
 
-#: ../components/editor/gtkhtml-editor-private.c:460
+#: ../components/editor/gtkhtml-editor-private.c:307
 msgid "Font Size"
 msgstr "Skriftstørrelse"
 
-#: ../components/editor/gtkhtml-editor-private.c:487
+#: ../components/editor/gtkhtml-editor-private.c:334
 msgid "Automatic"
 msgstr "Automatisk"
 
-#: ../components/editor/gtkhtml-editor-private.c:786
+#: ../components/editor/gtkhtml-editor-private.c:587
 msgid "Could not open the link."
 msgstr "Kunne ikke åpne lenken."
 
-#: ../components/editor/gtkhtml-editor.c:774
+#: ../components/editor/gtkhtml-editor.c:778
 msgid "Current Folder"
 msgstr "Aktiv mappe"
 
-#: ../components/editor/gtkhtml-editor.c:775
+#: ../components/editor/gtkhtml-editor.c:779
 msgid "The initial folder for file chooser dialogs"
 msgstr "Startmappe for filvelgerdialoger"
 
-#: ../components/editor/gtkhtml-editor.c:785
+#: ../components/editor/gtkhtml-editor.c:789
 msgid "Filename"
 msgstr "Filnavn"
 
-#: ../components/editor/gtkhtml-editor.c:786
+#: ../components/editor/gtkhtml-editor.c:790
 msgid "The filename to use when saving"
 msgstr "Filnavn som skal brukes ved lagring"
 
-#: ../components/editor/gtkhtml-editor.c:796
+#: ../components/editor/gtkhtml-editor.c:800
+msgid "HTML Editing Widget"
+msgstr "Redigeringskomponent for HTML"
+
+#: ../components/editor/gtkhtml-editor.c:801
+msgid "The main HTML editing widget"
+msgstr "Hovedkomponent for redigering av HTML"
+
+#: ../components/editor/gtkhtml-editor.c:811
 msgid "HTML Mode"
 msgstr "HTML-modus"
 
-#: ../components/editor/gtkhtml-editor.c:797
+#: ../components/editor/gtkhtml-editor.c:812
 msgid "Edit HTML or plain text"
 msgstr "Rediger i HTML eller vanlig tekst"
 
-#: ../components/editor/gtkhtml-editor.c:807
+#: ../components/editor/gtkhtml-editor.c:822
 msgid "Inline Spelling"
 msgstr "Stavekontroll"
 
-#: ../components/editor/gtkhtml-editor.c:808
+#: ../components/editor/gtkhtml-editor.c:823
 msgid "Check your spelling as you type"
 msgstr "Sjekk staving mens du skriver"
 
-#: ../components/editor/gtkhtml-editor.c:818
+#: ../components/editor/gtkhtml-editor.c:833
 msgid "Magic Links"
 msgstr "Magiske lenker"
 
-#: ../components/editor/gtkhtml-editor.c:819
+#: ../components/editor/gtkhtml-editor.c:834
 msgid "Make URIs clickable as you type"
 msgstr "Gjør URIer klikkbare når du skriver"
 
-#: ../components/editor/gtkhtml-editor.c:829
+#: ../components/editor/gtkhtml-editor.c:844
 msgid "Magic Smileys"
 msgstr "Magiske smilefjes"
 
-#: ../components/editor/gtkhtml-editor.c:830
+#: ../components/editor/gtkhtml-editor.c:845
 msgid "Convert emoticons to images as you type"
 msgstr "Konverter smilefjes til bilder mens du skriver"
 
@@ -1455,83 +1463,83 @@ msgstr "_HTML-kildekode"
 msgid "_Plain Source"
 msgstr "_All tekst"
 
-#: ../gtkhtml/gtkhtml.c:3073
+#: ../gtkhtml/gtkhtml.c:3060
 msgid "Editable"
 msgstr "Redigerbar"
 
-#: ../gtkhtml/gtkhtml.c:3074
+#: ../gtkhtml/gtkhtml.c:3061
 msgid "Whether the html can be edited"
 msgstr "Om HTML-koden kan redigeres"
 
-#: ../gtkhtml/gtkhtml.c:3080
+#: ../gtkhtml/gtkhtml.c:3067
 msgid "Document Title"
 msgstr "Dokumenttittel"
 
-#: ../gtkhtml/gtkhtml.c:3081
+#: ../gtkhtml/gtkhtml.c:3068
 msgid "The title of the current document"
 msgstr "Tittel for aktivt dokument"
 
-#: ../gtkhtml/gtkhtml.c:3087
+#: ../gtkhtml/gtkhtml.c:3074
 msgid "Document Base"
 msgstr "Dokumentbasis"
 
-#: ../gtkhtml/gtkhtml.c:3088
+#: ../gtkhtml/gtkhtml.c:3075
 msgid "The base URL for relative references"
 msgstr "Basis-URL for relative referanser"
 
-#: ../gtkhtml/gtkhtml.c:3094
+#: ../gtkhtml/gtkhtml.c:3081
 msgid "Target Base"
 msgstr "Målbasis"
 
-#: ../gtkhtml/gtkhtml.c:3095
+#: ../gtkhtml/gtkhtml.c:3082
 msgid "The base URL of the target frame"
 msgstr "Basis-URL for målrammen"
 
-#: ../gtkhtml/gtkhtml.c:3103
+#: ../gtkhtml/gtkhtml.c:3090
 msgid "Fixed Width Font"
 msgstr "Skrift med fast bredde"
 
-#: ../gtkhtml/gtkhtml.c:3104
+#: ../gtkhtml/gtkhtml.c:3091
 msgid "The Monospace font to use for typewriter text"
 msgstr "Skrift med fast bredde som skal brukes for skrivemaskintekst"
 
-#: ../gtkhtml/gtkhtml.c:3110
+#: ../gtkhtml/gtkhtml.c:3097
 msgid "New Link Color"
 msgstr "Farge for ny lenke"
 
-#: ../gtkhtml/gtkhtml.c:3111
+#: ../gtkhtml/gtkhtml.c:3098
 msgid "The color of new link elements"
 msgstr "Farge for nye lenkeelementer"
 
-#: ../gtkhtml/gtkhtml.c:3116
+#: ../gtkhtml/gtkhtml.c:3103
 msgid "Visited Link Color"
 msgstr "Farge for besøkt lenke"
 
-#: ../gtkhtml/gtkhtml.c:3117
+#: ../gtkhtml/gtkhtml.c:3104
 msgid "The color of visited link elements"
 msgstr "Farge for besøkte lenkeelementer"
 
-#: ../gtkhtml/gtkhtml.c:3122
+#: ../gtkhtml/gtkhtml.c:3109
 msgid "Active Link Color"
 msgstr "Farge for aktiv lenke"
 
-#: ../gtkhtml/gtkhtml.c:3123
+#: ../gtkhtml/gtkhtml.c:3110
 msgid "The color of active link elements"
 msgstr "Farge for aktive lenkeelementer"
 
-#: ../gtkhtml/gtkhtml.c:3128
+#: ../gtkhtml/gtkhtml.c:3115
 msgid "Spelling Error Color"
 msgstr "Farge for stavefeil"
 
-#: ../gtkhtml/gtkhtml.c:3129
+#: ../gtkhtml/gtkhtml.c:3116
 msgid "The color of the spelling error markers"
 msgstr "Farge for markering av stavefeil"
 
-#: ../gtkhtml/gtkhtml.c:3134
+#: ../gtkhtml/gtkhtml.c:3121
 msgid "Cite Quotation Color"
 msgstr "Farge på sitattekst"
 
-#: ../gtkhtml/gtkhtml.c:3135
+#: ../gtkhtml/gtkhtml.c:3122
 msgid "The color of the cited text"
 msgstr "Farge på sitert tekst"
 

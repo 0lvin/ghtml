@@ -1490,7 +1490,7 @@ html_engine_paste_link (HTMLEngine *e, const gchar *text, gint len, const gchar 
 	}
 
 	html_engine_paste_text (e, text, len);
-	html_text_add_link (HTML_TEXT (e->cursor->object), e, url, target, e->cursor->offset - len, e->cursor->offset);
+	html_text_add_link (HTML_TEXT (e->cursor->object), e, url, target, e->cursor->offset >= len ? e->cursor->offset - len : 0, e->cursor->offset);
 
 	g_free (url);
 }

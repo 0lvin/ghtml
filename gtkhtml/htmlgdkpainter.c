@@ -603,13 +603,13 @@ draw_pixmap (HTMLPainter *painter,
 			      255);
 
 	if (color != NULL) {
-		guchar *p, *q;
+		guchar *q;
 		guint i, j;
 
 		n_channels = gdk_pixbuf_get_n_channels (tmp_pixbuf);
-		p = q = gdk_pixbuf_get_pixels (tmp_pixbuf);
+		q = gdk_pixbuf_get_pixels (tmp_pixbuf);
 		for (i = 0; i < paint.height; i++) {
-			p = q;
+			guchar *p = q;
 
 			for (j = 0; j < paint.width; j++) {
 				gint r, g, b, a;

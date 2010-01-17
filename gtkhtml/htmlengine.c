@@ -354,7 +354,6 @@ parse_element_name (const gchar *str)
 {
 	const gchar *ep = str;
 
-	ep = str;
 	if (*ep == '/')
 		ep++;
 
@@ -1357,7 +1356,7 @@ pop_block (HTMLEngine *e, HTMLElement *elem)
 		HTMLElement *cur = l->data;
 
 		if (cur == elem) {
-			l = remove_element (e, l);
+			remove_element (e, l);
 			return;
 		} else if (cur->style->display != HTMLDISPLAY_INLINE || elem->style->display > HTMLDISPLAY_BLOCK) {
 			l = remove_element (e, l);
@@ -1382,7 +1381,7 @@ pop_inline (HTMLEngine *e, HTMLElement *elem)
 			break;
 
 		if (cur == elem) {
-			l = remove_element (e, l);
+			remove_element (e, l);
 			return;
 		} else {
 			l = l->next;

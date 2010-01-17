@@ -328,7 +328,6 @@ engine_print_begin_print (GtkPrintOperation *operation,
 	}
 
 	page_height = html_printer_get_page_height (printer);
-	page_width = html_printer_get_page_width (printer);
 
 	if (data->calc_header_height != NULL)
 		data->header_height = data->calc_header_height (

@@ -1,14 +1,14 @@
 dnl Initialization
-
-AC_PREREQ(2.54)
-AC_INIT(gtkhtml, [3.29.5], http://bugzilla.gnome.org/enter_bug.cgi?product=GtkHtml)
+AC_PREREQ(2.58)
+AC_INIT([gtkhtml], [3.29.6], [http://bugzilla.gnome.org/enter_bug.cgi?product=GtkHtml])
 AM_INIT_AUTOMAKE([gnu 1.9])
-AM_CONFIG_HEADER(config.h)
+AC_CONFIG_MACRO_DIR([m4])
+AC_CONFIG_HEADERS(config.h)
 AC_CONFIG_SRCDIR(README)
 
 PACKAGE=gtkhtml
 
-# Required Package Versions
+dnl Required Package Versions
 m4_define([gtk_minimum_version], [2.18.0])
 m4_define([gail_minimum_version], [1.1.0])
 m4_define([gnome_icon_theme_minimum_version], [2.22.0])
@@ -22,8 +22,7 @@ AC_DEFINE_UNQUOTED(EDITOR_API_VERSION, "${EDITOR_API_VERSION}", [Editor API Vers
 AC_SUBST(EDITOR_API_VERSION)
 
 GTKHTML_RELEASE_STRING=${PACKAGE}-${GTKHTML_API_VERSION}
-AC_DEFINE_UNQUOTED(GTKHTML_RELEASE_STRING, "${GTKHTML_RELEASE_STRING}",
-					   [GtkHTML Release String])
+AC_DEFINE_UNQUOTED(GTKHTML_RELEASE_STRING, "${GTKHTML_RELEASE_STRING}", [GtkHTML Release String])
 AC_SUBST(GTKHTML_RELEASE_STRING)
 
 GETTEXT_PACKAGE=${GTKHTML_RELEASE_STRING}
@@ -33,19 +32,20 @@ AC_DEFINE_UNQUOTED(GETTEXT_PACKAGE, "$GETTEXT_PACKAGE", [Package name for gettex
 I18N_LIB_CFLAGS="-DGNOME_EXPLICIT_TRANSLATION_DOMAIN=\\\"${GTKHTML_RELEASE_STRING}\\\""
 AC_SUBST(I18N_LIB_CFLAGS)
 
-# Automake 1.11 - Silent Build Rules
+dnl Automake 1.11 - Silent Build Rules
 m4_ifdef([AM_SILENT_RULES], [AM_SILENT_RULES([yes])])
 
 AM_MAINTAINER_MODE
 
-dnl
-dnl Due to the sed scripts being split on 90 line
-dnl blocks, this macro needs to be right at the beggining.
-dnl
+dnl ************
+dnl I18N stuff
+dnl ************
 IT_PROG_INTLTOOL([0.36.3])
+AM_GLIB_GNU_GETTEXT
 
-# Compiler Warning Flags
-
+dnl **********************************
+dnl Compiler Warning Flags
+dnl **********************************
 AS_COMPILER_FLAGS(WARNING_FLAGS,
 	"-DG_DISABLE_DEPRECATED
 	-DPANGO_DISABLE_DEPRECATED
@@ -67,44 +67,38 @@ AS_COMPILER_FLAGS(WARNING_FLAGS,
 	-Wredundant-decls -Wundef -Wwrite-strings")
 AC_SUBST(WARNING_FLAGS)
 
-# Other useful compiler warnings for test builds only.
-# These may produce warnings we have no control over.
-#
-#	-Wmissing-format-attribute
-#	-Wshadow
+dnl Other useful compiler warnings for test builds only.
+dnl These may produce warnings we have no control over.
+dnl
+dnl	-Wmissing-format-attribute
+dnl	-Wshadow
 
 CFLAGS="$CFLAGS $WARNING_FLAGS"
 
+dnl *********************
+dnl Necessary programs
+dnl *********************
+AC_PROG_CC
+AC_PROG_CXX
 AC_C_INLINE
 AC_FUNC_ALLOCA
 AC_FUNC_MALLOC
-AC_PROG_CXX
-AC_PROG_RANLIB
 AC_TYPE_SIZE_T
 
-AC_CHECK_FUNCS([memchr])
-AC_CHECK_FUNCS([memmove])
-AC_CHECK_FUNCS([memset])
-AC_CHECK_FUNCS([regcomp])
-AC_CHECK_FUNCS([setlocale])
-AC_CHECK_FUNCS([strchr])
-AC_CHECK_FUNCS([strcspn])
-AC_CHECK_FUNCS([strrchr])
-AC_CHECK_FUNCS([strstr])
-AC_CHECK_FUNCS([strtol])
-AC_CHECK_FUNCS([strtoull])
-AC_CHECK_HEADERS([fcntl.h])
-AC_CHECK_HEADERS([libintl.h])
+AC_CHECK_FUNCS([memchr memmove memset regcomp setlocale strchr strcspn strrchr strstr strtol strtoull])
+AC_CHECK_HEADERS([fcntl.h libintl.h])
 
-AC_ISC_POSIX
-AC_PROG_CC
-AC_STDC_HEADERS
+dnl *****************
+dnl libtool
+dnl *****************
 LT_PREREQ(2.2)
 LT_INIT(disable-static win32-dll)
 
 AC_PATH_PROG(GLIB_GENMARSHAL, glib-genmarshal)
 
+dnl ********
 dnl Win32
+dnl ********
 AC_MSG_CHECKING([for Win32])
 case "$host" in
 *-mingw*)
@@ -123,56 +117,62 @@ AC_SUBST(CFLAGS)
 AC_SUBST(CPPFLAGS)
 AC_SUBST(LDFLAGS)
 
-AM_GLIB_GNU_GETTEXT
-
+dnl **********************************
+dnl GAIL modules
+dnl **********************************
 GAIL_MODULES="gail >= gail_minimum_version"
 PKG_CHECK_MODULES(GAIL, $GAIL_MODULES)
 AC_SUBST(GAIL_CFLAGS)
 AC_SUBST(GAIL_LIBS)
 AC_SUBST(GAIL_MODULES)
 
+dnl **********************************
+dnl GTHREAD modules
+dnl **********************************
 GTHREAD_MODULES="gthread-2.0"
 PKG_CHECK_MODULES(GTHREAD, $GTHREAD_MODULES)
 AC_SUBST(GTHREAD_CFLAGS)
 AC_SUBST(GTHREAD_LIBS)
 
+dnl **********************************
+dnl GTKHTML modules
+dnl **********************************
 GTKHTML_MODULES="gtk+-2.0 >= gtk_minimum_version enchant iso-codes libxml-2.0 libcroco-0.6"
 PKG_CHECK_MODULES(GTKHTML, $GTKHTML_MODULES)
 AC_SUBST(GTKHTML_CFLAGS)
 AC_SUBST(GTKHTML_LIBS)
 AC_SUBST(GTKHTML_MODULES)
 
-# Glade catalog files
+dnl **********************************
+dnl Glade catalog files
+dnl **********************************
 AC_ARG_WITH(glade-catalog,
 	AC_HELP_STRING([--with-glade-catalog],
-		[install the catalog files for Glade 3 ]
-		[(for maintainers only) [[default=no]]]),
-	glade_catalog="$withval", glade_catalog="no")
+	[install the catalog files for Glade 3]
+	[(for maintainers only) @<:@default=no@:>@]),
+	[glade_catalog="$withval"], [glade_catalog="no"])
 if test "x$glade_catalog" = "xyes"; then
 	PKG_CHECK_MODULES(GLADEUI, gladeui-1.0)
 fi
 AM_CONDITIONAL(GLADE_CATALOG, test x$glade_catalog = xyes)
 
-# These are still needed for 'dist' targets.
+dnl These are still needed for 'dist' targets.
 ORBIT_IDL="`$PKG_CONFIG --variable=orbit_idl ORBit-2.0`"
 AC_SUBST(ORBIT_IDL)
 
 dnl **********************************
 dnl soup for testgtkhtml
 dnl **********************************
-
 HAVE_NEWSOUP="no"
 have_newsoup="no"
 PKG_CHECK_MODULES(SOUP, libsoup-2.4  >= 2.26.0,
-  [
-    HAVE_NEWSOUP="yes"
-    have_soup="yes"
-  ],
-  [
-    PKG_CHECK_MODULES(SOUP, libsoup-2.4,
-	have_soup="yes",
-	have_soup="no")
-  ])
+	[	HAVE_NEWSOUP="yes"
+		have_soup="yes"
+	],
+	[	PKG_CHECK_MODULES(SOUP, libsoup-2.4,
+		have_soup="yes",
+		have_soup="no")
+	])
 AC_SUBST(HAVE_NEWSOUP)
 AM_CONDITIONAL(HAVE_SOUP, test x$have_soup != xno)
 AM_CONDITIONAL(HAVE_NEWSOUP, test x$HAVE_NEWSOUP != xno)
@@ -189,14 +189,13 @@ AC_SUBST(HAVE_GCONF)
 AM_CONDITIONAL(HAVE_GCONF, test x$HAVE_GCONF != xno)
 
 dnl **************************************************
-dnl * Gnome Icon Theme
+dnl Gnome Icon Theme
 dnl **************************************************
 PKG_CHECK_MODULES(GIT, gnome-icon-theme >= gnome_icon_theme_minimum_version)
 
 dnl **************************************************
-dnl * iso-codes
+dnl iso-codes
 dnl **************************************************
-
 AC_MSG_CHECKING([for iso-codes package])
 have_iso_codes=no
 if $PKG_CONFIG --exists iso-codes; then
@@ -231,7 +230,7 @@ if test "x$have_iso_codes" = "xyes"; then
 fi
 
 dnl **************************************************
-dnl * regex library
+dnl regex library
 dnl **************************************************
 AC_CHECK_FUNCS(regexec,,[AC_CHECK_LIB(regex,regexec,[REGEX_LIBS=-lregex],[AC_MSG_ERROR([No regex library found])])])
 AC_SUBST(REGEX_LIBS)
@@ -239,10 +238,13 @@ AC_SUBST(REGEX_LIBS)
 dnl ******************************
 dnl shlib factory
 dnl ******************************
+AC_ARG_ENABLE([shlib-factory],
+		AS_HELP_STRING([--enable-shlib-factory],
+		[build editor factory as shared library @<:@default=yes@:>@]),
+		[enable_shlib_factory="$enableval"],
+		[enable_shlib_factory="yes"])
 
-AC_ARG_ENABLE(shlib-factory, [  --enable-shlib-factory  build editor factory as shared library [default=yes]],shlib_factory="$enableval", shlib_factory="yes")
-
-if test "x$shlib_factory" = "xyes"; then
+if test "x$enable_shlib_factory" = "xyes"; then
 	GNOME_GTKHTML_EDITOR_SHLIB=1
 	GNOME_GTKHTML_EDITOR_TYPE="shlib"
 	AC_DEFINE(GNOME_GTKHTML_EDITOR_SHLIB,, [Editor shlib])
@@ -251,12 +253,12 @@ else
 fi
 
 AC_SUBST(GNOME_GTKHTML_EDITOR_TYPE)
-AM_CONDITIONAL(EDITOR_SHLIB, test x$shlib_factory = xyes)
+AM_CONDITIONAL(EDITOR_SHLIB, test x$enable_shlib_factory = xyes)
 
 dnl **********************************
 dnl Library version information.
 dnl **********************************
- 
+
 dnl Increment the following if the interface has additions, changes,
 dnl removals.
 GTKHTML_CURRENT=20
@@ -266,7 +268,7 @@ dnl increment CURRENT.
 GTKHTML_REVISION=1
 
 dnl Increment if any interfaces have been added; set to 0
-dnl if any interfaces have been removed. removal has 
+dnl if any interfaces have been removed. removal has
 dnl precedence over adding, so set to 0 if both happened.
 GTKHTML_AGE=1
 
@@ -278,21 +280,21 @@ dnl **************
 dnl Done.
 dnl **************
 
-AC_OUTPUT([
+AC_CONFIG_FILES([
 Makefile
 gtkhtml-zip
-po/Makefile.in
-gtkhtml/Makefile
-gtkhtml/libgtkhtml.pc
 a11y/Makefile
+art/Makefile
 components/Makefile
 components/editor/Makefile
 components/editor/gtkhtml-editor.pc
-art/Makefile
+gtkhtml/Makefile
+gtkhtml/libgtkhtml.pc
+po/Makefile.in
 ])
+AC_OUTPUT
 
 echo "
-
 Configuration:
 
 	Cookies support in soup :		${HAVE_NEWSOUP}

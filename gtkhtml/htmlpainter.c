@@ -140,7 +140,7 @@ text_width (HTMLPainter *painter, PangoFontDescription *desc, const gchar *text,
 	if (pi && glyphs) {
 		GList *list;
 		gint i;
-		for (list = glyphs, i = 0; list; list = list->next->next, i++) {
+		for (list = glyphs; list; list = list->next->next) {
 			PangoGlyphString *str = (PangoGlyphString *) list->data;
 			for (i=0; i < str->num_glyphs; i ++)
 				width += str->glyphs [i].geometry.width;

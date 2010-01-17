@@ -66,8 +66,6 @@ html_clueh_real_calc_size (HTMLObject *clue, HTMLPainter *painter, GList **chang
 	gint a = 0, d = 0;
 	gboolean changed;
 
-	changed = FALSE;
-
 	/* Make sure the children are properly sized */
 	html_object_set_max_width (clue, painter, clue->max_width);
 

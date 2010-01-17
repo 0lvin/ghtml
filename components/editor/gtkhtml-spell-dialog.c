@@ -417,7 +417,6 @@ spell_dialog_init (GtkhtmlSpellDialog *dialog)
 	GtkTreeSelection *selection;
 	GtkTreeViewColumn *column;
 	GtkCellRenderer *renderer;
-	GtkWidget *action_area;
 	GtkWidget *container;
 	GtkWidget *content_area;
 	GtkWidget *table;
@@ -440,7 +439,6 @@ spell_dialog_init (GtkhtmlSpellDialog *dialog)
 
 	/* Build the widgets. */
 
-	action_area = gtk_dialog_get_action_area (GTK_DIALOG (dialog));
 	content_area = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
 
 	gtk_dialog_add_button (

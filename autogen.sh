@@ -1,13 +1,14 @@
 #!/bin/sh
 # Run this to generate all the initial makefiles, etc.
 
+PKG_NAME="gtkhtml"
+REQUIRED_AUTOCONF_VERSION=2.58
 REQUIRED_AUTOMAKE_VERSION=1.9
 REQUIRED_LIBTOOL_VERSION=2.2
+REQUIRED_INTLTOOL_VERSION=0.36.3
 
 srcdir=`dirname $0`
 test -z "$srcdir" && srcdir=.
-
-PKG_NAME="gtkhtml"
 
 (test -f $srcdir/configure.ac \
   && test -d $srcdir/gtkhtml \
@@ -16,7 +17,6 @@ PKG_NAME="gtkhtml"
     echo " top-level gtkhtml directory"
     exit 1
 }
-
 
 gnome_autogen=
 gnome_datadir=

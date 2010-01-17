@@ -1050,7 +1050,6 @@ left_in_flow (HTMLCursor *cursor, HTMLEngine *e)
 {
 	gboolean retval;
 
-	retval = TRUE;
 	if (cursor->offset != html_object_get_left_edge_offset (cursor->object, e->painter, cursor->offset) && html_object_is_container (cursor->object)) {
 		HTMLObject *obj;
 
@@ -1163,7 +1162,6 @@ right_in_flow (HTMLCursor *cursor, HTMLEngine *e)
 {
 	gboolean retval;
 
-	retval = TRUE;
 	if (cursor->offset != html_object_get_right_edge_offset (cursor->object, e->painter, cursor->offset)) {
 		if (html_object_is_container (cursor->object)) {
 			HTMLObject *obj;

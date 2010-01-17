@@ -486,8 +486,8 @@ check_point (HTMLObject *self,
 		parent = HTML_OBJECT (clue)->parent;
 		obj = html_object_check_point (HTML_OBJECT (clue),
 					       painter,
-					       x - HTML_OBJECT (clue)->parent->x,
-					       y - HTML_OBJECT (clue)->parent->y + HTML_OBJECT (clue)->parent->ascent,
+					       x - parent->x,
+					       y - parent->y + parent->ascent,
 					       offset_return,
 					       for_cursor);
 		if (obj != NULL) {
@@ -503,8 +503,8 @@ check_point (HTMLObject *self,
 		parent = HTML_OBJECT (clue)->parent;
 		obj = html_object_check_point (HTML_OBJECT (clue),
 					       painter,
-					       x - HTML_OBJECT (clue)->parent->x,
-					       y - HTML_OBJECT (clue)->parent->y + HTML_OBJECT (clue)->parent->ascent,
+					       x - parent->x,
+					       y - parent->y + parent->ascent,
 					       offset_return,
 					       for_cursor);
 		if (obj != NULL) {

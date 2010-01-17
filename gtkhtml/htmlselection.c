@@ -140,9 +140,13 @@ html_engine_select_interval (HTMLEngine *e, HTMLInterval *i)
 {
 	e = html_engine_get_top_html_engine (e);
 	html_engine_hide_cursor (e);
-	if (e->selection && html_interval_eq (e->selection, i))
+	if (e->selection && html_interval_eq (e->selection, i)) {
 		html_interval_destroy (i);
-	else {
+	} else if (i && i->from.object == i->to.object && i->from.offset == i->to.offset) {
+		/* shouldn't select zero letters */
+		html_interval_destroy (i);
+		html_engine_unselect_all (e);
+	} else {
 		if (!e->selection || !optimize_selection (e, i)) {
 			html_engine_unselect_all (e);
 			e->selection = i;

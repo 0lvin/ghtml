@@ -1817,7 +1817,7 @@ save (HTMLObject *s,
 	if (HTML_IS_CLUEFLOW (HTML_OBJECT (self)->prev))
 		prev = HTML_CLUEFLOW (HTML_OBJECT (self)->prev);
 
-	d = i = get_similar_depth (self, prev);
+	i = get_similar_depth (self, prev);
 	while (i < self->levels->len) {
 		const gchar *stag = get_start_indent_item (self->levels->data[i]);
 
@@ -2267,7 +2267,7 @@ search_text (HTMLObject **beg, HTMLSearch *info)
 		pp = (info->forward) ? par : par + text_bytes;
 
 		/* now fill par with text */
-		head = cur = (info->forward) ? *beg : end;
+		head = (info->forward) ? *beg : end;
 		cur = *beg;
 		while (cur) {
 			if (html_object_is_text (cur)) {

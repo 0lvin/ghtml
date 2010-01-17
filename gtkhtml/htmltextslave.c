@@ -1169,7 +1169,7 @@ html_text_slave_get_glyph_item_at_offset (HTMLTextSlave *slave, HTMLPainter *pai
 	GSList *cur;
 	gint index;
 
-	prev_gi = next_gi = NULL;
+	next_gi = NULL;
 
 	index = g_utf8_offset_to_pointer (html_text_slave_get_text (slave), offset) - slave->owner->text;
 	if (index_out)

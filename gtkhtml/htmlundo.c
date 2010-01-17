@@ -442,10 +442,13 @@ redo_level_end (HTMLUndo *undo)
 
 		/* we use position from last redo action on the stack */
 		action = (HTMLUndoAction *) save_redo.stack->data;
-		html_undo_add_redo_action (undo, action = html_undo_action_new (level->description [HTML_UNDO_REDO],
-										undo_step_action,
-										HTML_UNDO_DATA (level),
-										action->position, action->position_after));
+		action = html_undo_action_new (
+			level->description[HTML_UNDO_REDO],
+			undo_step_action,
+			HTML_UNDO_DATA (level),
+			action->position,
+			action->position_after);
+		html_undo_add_redo_action (undo, action);
 #ifdef UNDO_DEBUG
 		action->is_level = TRUE;
 #endif

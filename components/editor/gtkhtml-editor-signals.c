@@ -111,11 +111,9 @@ cell_properties_set_table (GtkhtmlEditor *editor,
 {
 	GtkHTML *html;
 	HTMLObject *parent;
-	HTMLTableCell *cell;
 	HTMLTableCell *iter;
 
 	html = gtkhtml_editor_get_html (editor);
-	cell = HTML_TABLE_CELL (editor->priv->cell_object);
 	parent = editor->priv->cell_parent;
 
 	iter = html_engine_get_table_cell (html->engine);
@@ -253,7 +251,7 @@ cell_properties_set_horizontal_alignment_cb (GtkhtmlEditor *editor,
 	active = gtk_combo_box_get_active (GTK_COMBO_BOX (widget));
 	align = HTML_HALIGN_LEFT + (HTMLHAlignType) active;
 
-	html_engine_table_cell_set_halign (html->engine, cell, active);
+	html_engine_table_cell_set_halign (html->engine, cell, align);
 }
 
 static void
@@ -1014,6 +1012,42 @@ gtkhtml_editor_image_properties_url_entry_changed_cb (GtkWidget *window))
  * Link Properties Window
  *****************************************************************************/
 
+static gchar *
+sanitize_description_text (const gchar *ptext)
+{
+	gchar *p, *text = g_strdup (ptext);
+
+	if (!text)
+		return text;
+
+	/* replace line breakers with spaces */
+	for (p = text; *p; p++) {
+		if (*p == '\r' || *p == '\n')
+			*p = ' ';
+	}
+
+	return g_strstrip (text);
+}
+
+static void
+update_link_offsets (GtkhtmlEditor *editor)
+{
+	Link *link;
+	GtkHTML *html;
+
+	g_return_if_fail (editor != NULL);
+	g_return_if_fail (GTKHTML_IS_EDITOR (editor));
+	g_return_if_fail (editor->priv != NULL);
+
+	html = gtkhtml_editor_get_html (editor);
+
+	link = html_text_get_link_at_offset (HTML_TEXT (html->engine->cursor->object), html->engine->cursor->offset);
+	g_return_if_fail (link != NULL);
+
+	editor->priv->link_start_offset = link->start_offset;
+	editor->priv->link_end_offset = link->end_offset;
+}
+
 AUTOCONNECTED_SIGNAL_HANDLER (void
 gtkhtml_editor_link_properties_description_changed_cb (GtkWidget *window))
 {
@@ -1029,8 +1063,7 @@ gtkhtml_editor_link_properties_description_changed_cb (GtkWidget *window))
 	dsc_entry = WIDGET (LINK_PROPERTIES_DESCRIPTION_ENTRY);
 	url_entry = WIDGET (LINK_PROPERTIES_URL_ENTRY);
 
-	text = g_strstrip (g_strdup (
-		gtk_entry_get_text (GTK_ENTRY (dsc_entry))));
+	text = sanitize_description_text (gtk_entry_get_text (GTK_ENTRY (dsc_entry)));
 
 	editor->priv->link_custom_description = (*text != '\0');
 
@@ -1059,7 +1092,7 @@ gtkhtml_editor_link_properties_description_changed_cb (GtkWidget *window))
 			gtk_entry_get_text (GTK_ENTRY (url_entry)));
 
 		editor->priv->link_object = html->engine->cursor->object;
-		editor->priv->link_end_offset = start_offset + length;
+		update_link_offsets (editor);
 	}
 
 	g_free (text);
@@ -1090,7 +1123,9 @@ gtkhtml_editor_link_properties_url_changed_cb (GtkWidget *window))
 	if (html_engine_is_selection_active (html->engine)) {
 		html_engine_set_link (html->engine, text);
 	} else if (!editor->priv->link_custom_description) {
-		gtk_entry_set_text (GTK_ENTRY (dsc_entry), text);
+		gchar *descr = sanitize_description_text (text);
+		gtk_entry_set_text (GTK_ENTRY (dsc_entry), descr);
+		g_free (descr);
 		editor->priv->link_custom_description = FALSE;
 	} else {
 		gint start_offset;
@@ -1117,7 +1152,7 @@ gtkhtml_editor_link_properties_url_changed_cb (GtkWidget *window))
 			html->engine, descr, length, text);
 
 		editor->priv->link_object = html->engine->cursor->object;
-		editor->priv->link_end_offset = start_offset + length;
+		update_link_offsets (editor);
 	}
 
 	g_free (text);
@@ -1190,6 +1225,13 @@ gtkhtml_editor_link_properties_show_window_cb (GtkWidget *window))
 	gtk_entry_set_text (
 		GTK_ENTRY (url_entry),
 		(url != NULL) ? url : "http://");
+
+	if (dsc) {
+		gchar *tmp = dsc;
+
+		dsc = sanitize_description_text (dsc);
+		g_free (tmp);
+	}
 
 	gtk_entry_set_text (GTK_ENTRY (dsc_entry), dsc ? dsc : "");
 	gtk_widget_grab_focus (url_entry);

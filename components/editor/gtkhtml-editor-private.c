@@ -600,15 +600,11 @@ gtkhtml_editor_spell_check (GtkhtmlEditor *editor,
                             gboolean whole_document)
 {
 	GtkHTML *html;
-	guint position;
-	gboolean inline_spelling;
 	gboolean spelling_errors;
 
 	g_return_if_fail (GTKHTML_IS_EDITOR (editor));
 
 	html = gtkhtml_editor_get_html (editor);
-	position = html->engine->cursor->position;
-	inline_spelling = gtk_html_get_inline_spelling (html);
 
 	if (whole_document) {
 		html_engine_disable_selection (html->engine);

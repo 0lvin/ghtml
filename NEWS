@@ -1,3 +1,24 @@
+GtkHTML-3.29.5 2010-01-11
+-------------------------
+
+Bug Fixes:
+	#606244 - Remove usage of deprecated GTK+ symbols (Frédéric Péters)
+	#604561 - Copy popup action shown with no text selected (Milan Crha)
+	#605587 - draw_spell_error() doesn't restore GC fill style
+	          (Michel Dänzer)
+
+Other Changes:
+	Allow overriding the HTML widget in GtkhtmlEditor. (Matthew Barnes)
+	Remove duplicate policy supplied by EWebView. (Matthew Barnes)
+	Change GtkHTML::url-requested to G_SIGNAL_RUN_LAST. (Matthew Barnes)
+
+Translations:
+	Xandru Armesto Fernandez (ast)
+	Jorge González (es)
+	Matej Urbančič (sl)
+	Daniel Nylander (sv)
+	Maxim V. Dziumanenko (uk)
+
 GtkHTML-3.29.4 2009-12-21
 -------------------------
 

@@ -320,11 +320,10 @@ gtk_html_a11y_grab_focus_cb(GtkWidget * widget)
 static void
 gtk_html_a11y_cursor_changed_cb (GtkWidget *widget)
 {
-        AtkObject *focus_object, *obj;
+	AtkObject *focus_object;
 
 	focus_object = gtk_html_a11y_get_focus_object (widget);
 	g_return_if_fail (focus_object != NULL);
-	obj = gtk_widget_get_accessible (widget);
 
 	if (gtk_html_a11y_focus_object != focus_object) {
 		gtk_html_a11y_focus_object = focus_object;
@@ -335,18 +334,17 @@ gtk_html_a11y_cursor_changed_cb (GtkWidget *widget)
 
 			offset = (GTK_HTML(widget))->engine->cursor->offset;
 			g_signal_emit_by_name(focus_object, "text_caret_moved",offset);
-                }
-        }
+		}
+	}
 }
 
 static void
 gtk_html_a11y_insert_object_cb (GtkWidget * widget, gint pos, gint len)
 {
-	AtkObject * a11y, *obj;
+	AtkObject * a11y;
 
 	HTMLCursor *cursor = GTK_HTML (widget)->engine->cursor;
 
-        obj = gtk_widget_get_accessible (widget);
 	a11y = gtk_html_a11y_get_focus_object (widget);
 	g_return_if_fail (a11y != NULL);
 
@@ -364,9 +362,8 @@ gtk_html_a11y_insert_object_cb (GtkWidget * widget, gint pos, gint len)
 static void
 gtk_html_a11y_delete_object_cb (GtkWidget * widget, gint pos, gint len)
 {
-	AtkObject * a11y, *obj;
+	AtkObject * a11y;
 
-        obj = gtk_widget_get_accessible (widget);
 	a11y = gtk_html_a11y_get_focus_object (widget);
 	g_return_if_fail (a11y != NULL);
 
