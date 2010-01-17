@@ -682,6 +682,7 @@ html_element_parse_events (HTMLElement *node)
 static void
 html_element_free (HTMLElement *element)
 {
+	g_return_if_fail (element);
 	if (element->attributes)
 		g_hash_table_destroy (element->attributes);
 

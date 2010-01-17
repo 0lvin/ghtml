@@ -11,7 +11,7 @@ test ! -e configure.ac && autoscan && echo AM_INIT_AUTOMAKE >>configure.scan && 
 libtoolize --copy --force &&
 glib-gettextize -f &&
 intltoolize --force &&
-aclocal &&
+aclocal --force -I ./m4 &&
 autoconf &&
 autoheader &&
 automake --add-missing &&
