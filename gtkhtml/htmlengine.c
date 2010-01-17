@@ -300,6 +300,7 @@ void tag_func_img                 (TAG_FUNC_PARAM);
 void tag_func_iframe              (TAG_FUNC_PARAM);
 void tag_func_textarea            (TAG_FUNC_PARAM);
 void tag_func_select              (TAG_FUNC_PARAM);
+void tag_func_style               (TAG_FUNC_PARAM);
 void tag_func_form                (TAG_FUNC_PARAM);
 void tag_func_tr                  (TAG_FUNC_PARAM);
 void tag_func_td                  (TAG_FUNC_PARAM);
@@ -456,8 +457,7 @@ html_element_parse_coreattrs (HTMLElement *node)
 static HTMLStyle *
 gen_style_for_element(const gchar *name, HTMLStyle *style)
 {
-	if(!name)
-		return style;
+	g_return_val_if_fail (name, style);
 	if (!g_ascii_strcasecmp(name, ID_B)) {
 		style = html_style_set_decoration (style, GTK_HTML_FONT_STYLE_BOLD);
 		style = html_style_set_display (style, HTMLDISPLAY_INLINE);
@@ -589,9 +589,7 @@ html_element_from_xml (HTMLEngine *e, const xmlNode* xmlelement, HTMLStyle *styl
 	xmlAttr *currprop;
 
 	name = XMLCHAR2GCHAR(xmlelement->name);
-
-	if (!name)
-		return NULL;
+	g_return_val_if_fail (name, NULL);
 
 	element = html_element_new (e, name);
 	element->attributes = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
@@ -5352,6 +5350,12 @@ tag_func_data(TAG_FUNC_PARAM)
 }
 
 void
+tag_func_style(TAG_FUNC_PARAM)
+{
+	elementtree_parse_style_in_node(current, pos+1, e);
+}
+
+void
 tag_func_select(TAG_FUNC_PARAM)
 {
 	g_return_if_fail (html_object_is_clue(htmlelement));
@@ -5443,6 +5447,7 @@ static HTMLDispatchFuncEntry func_callback_table[] = {
 	{ ID_P,                tag_func_simple_tag          },
 	{ ID_SCRIPT,           tag_func_hidden              },
 	{ ID_SELECT,           tag_func_select              },
+	{ ID_STYLE,            tag_func_style               },
 	{ ID_SMALL,            tag_func_simple_without_flow },
 	{ ID_SPAN,             tag_func_simple_without_flow },
 	{ ID_S,                tag_func_simple_without_flow },
@@ -5502,22 +5507,36 @@ get_callback_func_node(const gchar* tag) {
 void
 element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style, gint *count)
 {
-	HTMLElement *testElement;
 	HTMLTagsFunc callback_func;
 	g_return_if_fail (HTML_IS_ENGINE (e));
 	g_return_if_fail (htmlelement != NULL);
 	g_return_if_fail (current != NULL);
 
-	testElement = html_element_from_xml(e, current, parent_style);
-	callback_func = get_callback_func_node(XMLCHAR2GCHAR(current->name));
-	if (callback_func) {
-		callback_func(current, pos, e, htmlelement, testElement, count);
-	} else {
-		/*It's must call after all operarion*/
-		html_element_free(testElement);
-		g_printerr("object not created\n");
-		element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parent_style);
+	if(!current->name) {
+		g_printerr("Not Set Name\n");
+		elementtree_parse_dumpnode_in_node(current, pos);
+		return;
 	}
+	if (
+		current->type == XML_ELEMENT_NODE ||
+		current->type == XML_TEXT_NODE
+	) {
+		callback_func = get_callback_func_node(XMLCHAR2GCHAR(current->name));
+		if (callback_func) {
+			HTMLElement *testElement;
+			testElement = html_element_from_xml(e, current, parent_style);
+			g_return_if_fail (testElement);
+			callback_func(current, pos, e, htmlelement, testElement, count);
+			html_element_free(testElement);
+		} else {
+			g_printerr("unknow tag %s\n", XMLCHAR2GCHAR(current->name));
+			elementtree_parse_dumpnode_in_node(current, pos);
+			element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parent_style);
+		}
+	} else if (current->type != XML_COMMENT_NODE) { /*skip comments*/
+		g_printerr("It's in this stage this stage not correct\n");
+		elementtree_parse_dumpnode_in_node(current, pos);
+	};
 }
 #endif
 
@@ -5683,8 +5702,8 @@ stupid_render(ELEMENT_PARSE_PARAMS) {
     for (current = xmlelement; current; current = current->next)
 	if(current->name) {
 		HTMLParseFunc begin = NULL;
-      		/* You can look xmlnode types in http://xmlsoft.org/html/libxml-tree.html#xmlElementType*/
-      		switch (current->type) {
+		/* You can look xmlnode types in http://xmlsoft.org/html/libxml-tree.html#xmlElementType*/
+		switch (current->type) {
 			case XML_ELEMENT_NODE: begin = get_callback_node(XMLCHAR2GCHAR(current->name)); break;
 			case XML_ATTRIBUTE_NODE: break;
 			case XML_TEXT_NODE: begin = get_callback_text_node(XMLCHAR2GCHAR(current->name)); break;
