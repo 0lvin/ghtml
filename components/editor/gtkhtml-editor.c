@@ -1627,6 +1627,19 @@ gtkhtml_editor_insert_image (GtkhtmlEditor *editor,
 	html_engine_paste_object (html->engine, image, 1);
 }
 
+void
+gtkhtml_editor_insert_text (GtkhtmlEditor *editor,
+                            const gchar *plain_text)
+{
+	GtkHTML *html;
+
+	g_return_if_fail (GTKHTML_IS_EDITOR (editor));
+
+	html = gtkhtml_editor_get_html (editor);
+
+	html_engine_insert_text (html->engine, plain_text, -1);
+}
+
 gboolean
 gtkhtml_editor_search_by_data (GtkhtmlEditor *editor,
                                glong level,

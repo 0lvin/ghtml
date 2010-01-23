@@ -11,6 +11,7 @@ PACKAGE=gtkhtml
 dnl Required Package Versions
 m4_define([gtk_minimum_version], [2.18.0])
 m4_define([gail_minimum_version], [1.1.0])
+m4_define([enchant_minimum_version], [1.1.7])
 m4_define([gnome_icon_theme_minimum_version], [2.22.0])
 
 GTKHTML_API_VERSION=3.14
@@ -137,7 +138,7 @@ AC_SUBST(GTHREAD_LIBS)
 dnl **********************************
 dnl GTKHTML modules
 dnl **********************************
-GTKHTML_MODULES="gtk+-2.0 >= gtk_minimum_version enchant iso-codes libxml-2.0 libcroco-0.6"
+GTKHTML_MODULES="gtk+-2.0 >= gtk_minimum_version enchant >= enchant_minimum_version iso-codes libxml-2.0 libcroco-0.6"
 PKG_CHECK_MODULES(GTKHTML, $GTKHTML_MODULES)
 AC_SUBST(GTKHTML_CFLAGS)
 AC_SUBST(GTKHTML_LIBS)

@@ -166,6 +166,8 @@ void		gtkhtml_editor_insert_html	(GtkhtmlEditor *editor,
 						 const gchar *html_text);
 void		gtkhtml_editor_insert_image	(GtkhtmlEditor *editor,
 						 const gchar *image_uri);
+void		gtkhtml_editor_insert_text	(GtkhtmlEditor *editor,
+						 const gchar *plain_text);
 gboolean	gtkhtml_editor_search_by_data	(GtkhtmlEditor *editor,
 						 glong level,
 						 const gchar *klass,
