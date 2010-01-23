@@ -1722,6 +1722,8 @@ element_parse_object (ELEMENT_PARSE_PARAMS)
 
 	el = create_object_from_xml (e, element);
 
+	html_element_free (element);
+
 	/* show alt text on TRUE */
 	if (el) {
 		append_element (e, clue, HTML_OBJECT(el));
@@ -4758,7 +4760,6 @@ create_object_from_xml (HTMLEngine *e, HTMLElement *element)
 	if (element->style->height)
 		height = element->style->height->val;
 
-	html_element_free (element);
 	eb = (GtkHTMLEmbedded *) gtk_html_embedded_new (classid, name, type, data,
 							width, height);
 
@@ -4780,7 +4781,7 @@ create_object_from_xml (HTMLEngine *e, HTMLElement *element)
 	if(object_found) {
 		/* automatically add this to a form if it is part of one */
 		if (e->form)
-				html_form_add_element (e->form, HTML_EMBEDDED (el));
+			html_form_add_element (e->form, HTML_EMBEDDED (el));
 		return el;
 	}
 
@@ -5552,7 +5553,7 @@ elementtree_parse_param_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e, Gt
 	if (	html_element_get_attr (element, "name", &name) &&
 		html_element_get_attr (element, "value", &value)
 	)
-		gtk_html_embedded_set_parameter(eb, name, value);
+		gtk_html_embedded_set_parameter(eb, g_strdup(name), g_strdup(value));
 
 	/* no close tag */
 	html_element_free (element);
