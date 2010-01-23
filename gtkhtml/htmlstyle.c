@@ -631,8 +631,16 @@ parse_border (HTMLStyle *style,const gchar *origvalue)
 	return style;
 }
 
+/*atributes elements*/
 HTMLStyle *
 html_style_add_attribute (HTMLStyle *style, const gchar *attr, const gchar *value)
+{
+	return html_style_add_styleattribute (style, attr, value);
+}
+
+/* atributes from style only*/
+HTMLStyle *
+html_style_add_styleattribute (HTMLStyle *style, const gchar *attr, const gchar *value)
 {
 	if (!attr)
 		return style;

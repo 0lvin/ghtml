@@ -42,7 +42,10 @@ html_color_copy (HTMLColor *orig)
 	if(!orig)
 		return NULL;
 
-	return html_color_new_from_rgb(orig->color.red,orig->color.green, orig->color.blue);
+	if (orig)
+		html_color_ref (orig);
+
+	return orig;
 }
 
 HTMLColor *

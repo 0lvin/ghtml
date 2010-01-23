@@ -89,6 +89,7 @@ HTMLStyle *html_style_set_flow_style       (HTMLStyle *style, HTMLClueFlowStyle 
 HTMLStyle *html_style_add_font_face        (HTMLStyle *style, const HTMLFontFace *face);
 HTMLStyle *html_style_add_color            (HTMLStyle *style, HTMLColor *face);
 HTMLStyle *html_style_add_attribute        (HTMLStyle *style, const gchar *attr, const gchar *value);
+HTMLStyle *html_style_add_styleattribute (HTMLStyle *style, const gchar *attr, const gchar *value);
 HTMLStyle *html_style_add_background_image (HTMLStyle *style, const gchar *url);
 HTMLStyle *html_style_add_dir              (HTMLStyle *style, const gchar *dir_text);
 HTMLStyle *html_style_add_background_color (HTMLStyle *style, HTMLColor *color);

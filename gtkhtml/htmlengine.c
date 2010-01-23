@@ -307,6 +307,7 @@ void tag_func_td                  (TAG_FUNC_PARAM);
 void element_parse_nodedump_htmlobject_one(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style, gint *count);
 void element_parse_nodedump_htmlobject  (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLStyle *parent_style);
 #endif
+void           html_element_parse_styleattrs (HTMLElement *node);
 void           set_style_to_text        (HTMLText *text, HTMLStyle *style, HTMLEngine *e, gint start_index, gint end_index);
 HTMLObject*    create_from_xml_fix_align(HTMLObject *o, HTMLElement *element, gint max_width);
 HTMLText *     create_text_from_xml     (HTMLEngine *e, HTMLElement *element, const gchar* text);
@@ -406,19 +407,11 @@ html_element_get_attr (HTMLElement *node, gchar *name, gchar **value)
 }
 #endif
 
-/* parse style with copy to attributes*/
-static void
-html_element_parse_coreattrs (HTMLElement *node)
+/* parse style*/
+void
+html_element_parse_styleattrs (HTMLElement *node)
 {
 	gchar *stylevalue;
-	/*
-	  <!ENTITY % coreattrs
-	  "id          ID            #IMPLIED  -- document-wide unique id --
-	  class       CDATA          #IMPLIED  -- space-separated list of classes --
-	  style       %StyleSheet;   #IMPLIED  -- associated style info --
-	  title       %Text;         #IMPLIED  -- advisory title --"
-	  >
-	*/
 	if(html_element_get_attr (node, ID_STYLE, &stylevalue)) {
 		gchar**  stylelist = g_strsplit(stylevalue,";",0);
 		gchar**  styleiter = stylelist;
@@ -436,8 +429,7 @@ html_element_parse_coreattrs (HTMLElement *node)
 							value = g_strdup("");
 						if (!g_hash_table_lookup (node->attributes, lower)) {
 							DE (g_print ("attrs (%s, %s)", lower, value));
-							node->style = html_style_add_attribute (node->style, lower, value);
-							g_hash_table_insert (node->attributes, lower, value);
+							node->style = html_style_add_styleattribute (node->style, lower, value);
 						} else {
 							g_free (lower);
 							g_free (value);
@@ -449,7 +441,6 @@ html_element_parse_coreattrs (HTMLElement *node)
 			}
 			g_strfreev (stylelist);
 		}
-		g_free(stylevalue);
 	};
 }
 
@@ -582,6 +573,14 @@ gen_style_for_element(const gchar *name, HTMLStyle *style)
 }
 
 /* create HTMLElement from XMLNode allways run parse coreattr frome style */
+	/*
+	  <!ENTITY % coreattrs
+	  "id          ID            #IMPLIED  -- document-wide unique id --
+	  class       CDATA          #IMPLIED  -- space-separated list of classes --
+	  style       %StyleSheet;   #IMPLIED  -- associated style info --
+	  title       %Text;         #IMPLIED  -- advisory title --"
+	  >
+	*/
 static HTMLElement *
 html_element_from_xml (HTMLEngine *e, const xmlNode* xmlelement, HTMLStyle *style) {
 	HTMLElement *element;
@@ -616,7 +615,7 @@ html_element_from_xml (HTMLEngine *e, const xmlNode* xmlelement, HTMLStyle *styl
 		}
 	}
 
-	html_element_parse_coreattrs (element);
+	html_element_parse_styleattrs (element);
 	/* FIXME May be test this before use? */
 	if (!element->style)
 		element->style = html_style_new ();
