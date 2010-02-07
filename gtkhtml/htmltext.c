@@ -2397,7 +2397,7 @@ select_range (HTMLObject *self,
 						html_engine_queue_draw (engine, p);
 				}
 			} else {
-				if ((! was_selected && is_selected) || (was_selected && ! is_selected))
+				if ((!was_selected && is_selected) || (was_selected && !is_selected))
 					html_engine_queue_draw (engine, p);
 			}
 		}

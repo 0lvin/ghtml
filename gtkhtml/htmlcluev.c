@@ -48,9 +48,9 @@ remove_aligned_by_parent ( HTMLClueV *cluev,
     tmp = NULL;
     obj = cluev->align_left_list;
 
-    while ( obj ) {
-		if ( obj->parent == p ) {
-			if ( tmp ) {
+    while (obj) {
+		if (obj->parent == p) {
+			if (tmp) {
 				tmp->next_aligned = HTML_CLUEALIGNED (obj)->next_aligned;
 				tmp = HTML_CLUEALIGNED (obj);
 			} else {
@@ -68,9 +68,9 @@ remove_aligned_by_parent ( HTMLClueV *cluev,
     tmp = NULL;
     obj = cluev->align_right_list;
 
-    while ( obj ) {
-		if ( obj->parent == p ) {
-			if ( tmp ) {
+    while (obj) {
+		if (obj->parent == p) {
+			if (tmp) {
 				tmp->next_aligned = HTML_CLUEALIGNED (obj)->next_aligned;
 				tmp = HTML_CLUEALIGNED (obj);
 			} else {
@@ -269,7 +269,7 @@ html_cluev_do_layout (HTMLObject *o, HTMLPainter *painter, gboolean calc_size, G
 			o->ascent = aclue->y + aclue->parent->y - aclue->parent->ascent;
 	}
 
-	if (! changed
+	if (!changed
 	    && (o->ascent != old_ascent || o->descent != old_descent || o->width != old_width))
 		changed = TRUE;
 
@@ -515,7 +515,7 @@ check_point (HTMLObject *self,
 	for (p = HTML_CLUE (self)->head; p != 0; p = p->next) {
 		gint x1, y1;
 
-		if (! for_cursor) {
+		if (!for_cursor) {
 			x1 = x;
 			y1 = y;
 		} else {
@@ -596,7 +596,7 @@ relayout (HTMLObject *self,
 		self->y = self->ascent;
 	} else {
 		/* Relayout our parent starting from us.  */
-		if (! html_object_relayout (self->parent, engine, self))
+		if (!html_object_relayout (self->parent, engine, self))
 			html_engine_queue_draw (engine, self);
 	}
 

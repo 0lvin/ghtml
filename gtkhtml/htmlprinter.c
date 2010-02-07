@@ -222,8 +222,8 @@ draw_line (HTMLPainter *painter,
 	   gint x2, gint y2)
 {
 	HTMLPrinter *printer;
-	double printer_x1, printer_y1;
-	double printer_x2, printer_y2;
+	gdouble printer_x1, printer_y1;
+	gdouble printer_x2, printer_y2;
 	cairo_t *cr;
 
 	printer = HTML_PRINTER (painter);
@@ -392,8 +392,8 @@ static void
 draw_pixmap (HTMLPainter *painter, GdkPixbuf *pixbuf, gint x, gint y, gint scale_width, gint scale_height, const GdkColor *color)
 {
 	HTMLPrinter *printer;
-	double print_x, print_y;
-	double print_scale_width, print_scale_height;
+	gdouble print_x, print_y;
+	gdouble print_scale_width, print_scale_height;
 	cairo_t *cr;
 
 	printer = HTML_PRINTER (painter);
@@ -414,8 +414,8 @@ static void
 fill_rect (HTMLPainter *painter, gint x, gint y, gint width, gint height)
 {
 	HTMLPrinter *printer;
-	double printer_x, printer_y;
-	double printer_width, printer_height;
+	gdouble printer_x, printer_y;
+	gdouble printer_width, printer_height;
 	cairo_t *cr;
 
 	printer = HTML_PRINTER (painter);
@@ -448,9 +448,9 @@ draw_lines (HTMLPrinter *printer, double x, double y, double width, PangoAnalysi
 	cairo_set_line_cap (cr, CAIRO_LINE_CAP_BUTT);
 
 	if (properties->underline) {
-		double thickness = pango_units_to_double (pango_font_metrics_get_underline_thickness (metrics));
-		double position = pango_units_to_double (pango_font_metrics_get_underline_position (metrics));
-		double ly = y + position - thickness / 2;
+		gdouble thickness = pango_units_to_double (pango_font_metrics_get_underline_thickness (metrics));
+		gdouble position = pango_units_to_double (pango_font_metrics_get_underline_position (metrics));
+		gdouble ly = y + position - thickness / 2;
 
 		cairo_new_path (cr);
 		cairo_move_to (cr, x, ly + 4);
@@ -460,9 +460,9 @@ draw_lines (HTMLPrinter *printer, double x, double y, double width, PangoAnalysi
 	}
 
 	if (properties->strikethrough) {
-		double thickness = pango_units_to_double (pango_font_metrics_get_strikethrough_thickness (metrics));
-		double position = pango_units_to_double (pango_font_metrics_get_strikethrough_position (metrics));
-		double ly = y + position - thickness / 2;
+		gdouble thickness = pango_units_to_double (pango_font_metrics_get_strikethrough_thickness (metrics));
+		gdouble position = pango_units_to_double (pango_font_metrics_get_strikethrough_position (metrics));
+		gdouble ly = y + position - thickness / 2;
 
 		cairo_new_path (cr);
 		cairo_move_to (cr, x, ly - 8);
@@ -675,7 +675,7 @@ html_printer_new (GtkWidget *widget, GtkPrintContext *context)
 guint
 html_printer_get_page_width (HTMLPrinter *printer)
 {
-	double printer_width;
+	gdouble printer_width;
 	guint engine_width;
 
 	g_return_val_if_fail (printer != NULL, 0);
@@ -690,7 +690,7 @@ html_printer_get_page_width (HTMLPrinter *printer)
 guint
 html_printer_get_page_height (HTMLPrinter *printer)
 {
-	double printer_height;
+	gdouble printer_height;
 	guint engine_height;
 
 	g_return_val_if_fail (printer != NULL, 0);

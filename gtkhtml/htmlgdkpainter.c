@@ -141,7 +141,7 @@ end (HTMLPainter *painter)
 
 	gdk_painter = HTML_GDK_PAINTER (painter);
 
-	if (! gdk_painter->double_buffer)
+	if (!gdk_painter->double_buffer)
 		return;
 
 	gdk_draw_drawable (gdk_painter->window, gdk_painter->gc,
@@ -162,7 +162,7 @@ clear (HTMLPainter *painter)
 
 	gdk_painter = HTML_GDK_PAINTER (painter);
 
-	if (! gdk_painter->double_buffer) {
+	if (!gdk_painter->double_buffer) {
 		gdk_window_clear (gdk_painter->window);
 	} else {
 		if (gdk_painter->pixmap != NULL)

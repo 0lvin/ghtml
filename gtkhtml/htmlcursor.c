@@ -369,7 +369,7 @@ html_cursor_up (HTMLCursor *cursor,
 				     engine->painter, cursor->offset,
 				     &x, &y);
 
-	if (! cursor->have_target_x) {
+	if (!cursor->have_target_x) {
 		cursor->target_x = x;
 		cursor->have_target_x = TRUE;
 	}
@@ -384,7 +384,7 @@ html_cursor_up (HTMLCursor *cursor,
 		prev_x = x;
 		prev_y = y;
 
-		if (! backward (cursor, engine, FALSE))
+		if (!backward (cursor, engine, FALSE))
 			return FALSE;
 
 		html_object_get_cursor_base (cursor->object,
@@ -411,7 +411,7 @@ html_cursor_up (HTMLCursor *cursor,
 
 		if (dir == HTML_DIRECTION_RTL) {
 			if (new_line && x >= target_x) {
-				if (! cursor->have_target_x) {
+				if (!cursor->have_target_x) {
 					cursor->have_target_x = TRUE;
 					cursor->target_x = target_x;
 				}
@@ -429,7 +429,7 @@ html_cursor_up (HTMLCursor *cursor,
 			}
 		} else {
 			if (new_line && x <= target_x) {
-				if (! cursor->have_target_x) {
+				if (!cursor->have_target_x) {
 					cursor->have_target_x = TRUE;
 					cursor->target_x = target_x;
 				}
@@ -484,7 +484,7 @@ html_cursor_down (HTMLCursor *cursor,
 				     engine->painter, cursor->offset,
 				     &x, &y);
 
-	if (! cursor->have_target_x) {
+	if (!cursor->have_target_x) {
 		cursor->target_x = x;
 		cursor->have_target_x = TRUE;
 	}
@@ -499,10 +499,10 @@ html_cursor_down (HTMLCursor *cursor,
 		prev_y = y;
 
 		if (dir == HTML_DIRECTION_RTL) {
-			if (! move_left (cursor, engine))
+			if (!move_left (cursor, engine))
 				return FALSE;
 		} else {
-			if (! move_right (cursor, engine))
+			if (!move_right (cursor, engine))
 				return FALSE;
 		}
 
@@ -530,7 +530,7 @@ html_cursor_down (HTMLCursor *cursor,
 
 		if (dir == HTML_DIRECTION_RTL) {
 			if (new_line && x <= target_x) {
-				if (! cursor->have_target_x) {
+				if (!cursor->have_target_x) {
 					cursor->have_target_x = TRUE;
 					cursor->target_x = target_x;
 				}
@@ -548,7 +548,7 @@ html_cursor_down (HTMLCursor *cursor,
 			}
 		} else {
 			if (new_line && x >= target_x) {
-				if (! cursor->have_target_x) {
+				if (!cursor->have_target_x) {
 					cursor->have_target_x = TRUE;
 					cursor->target_x = target_x;
 				}
@@ -708,12 +708,12 @@ html_cursor_real_jump_to_position (HTMLCursor *cursor,
 
 	if (cursor->position < position) {
 		while (cursor->position < position) {
-			if (! forward (cursor, engine, exact_position))
+			if (!forward (cursor, engine, exact_position))
 				break;
 		}
 	} else if (cursor->position > position) {
 		while (cursor->position > position) {
-			if (! backward (cursor, engine, exact_position))
+			if (!backward (cursor, engine, exact_position))
 				break;
 		}
 	}
@@ -807,7 +807,7 @@ html_cursor_get_current_char (const HTMLCursor *cursor)
 
 	g_return_val_if_fail (cursor != NULL, 0);
 
-	if (! html_object_is_text (cursor->object)) {
+	if (!html_object_is_text (cursor->object)) {
 		if (cursor->offset < html_object_get_length (cursor->object))
 			return 0;
 
@@ -822,7 +822,7 @@ html_cursor_get_current_char (const HTMLCursor *cursor)
 		return html_text_get_char (HTML_TEXT (cursor->object), cursor->offset);
 
 	next = html_object_next_not_slave (cursor->object);
-	if (next == NULL || ! html_object_is_text (next))
+	if (next == NULL || !html_object_is_text (next))
 		return 0;
 
 	return html_text_get_char (HTML_TEXT (next), 0);
@@ -1092,7 +1092,7 @@ html_cursor_left_edge_of_line (HTMLCursor *cursor, HTMLEngine *engine)
 				     &x, &prev_y);
 
 	while (1) {
-		if (! left_in_flow (cursor, engine))
+		if (!left_in_flow (cursor, engine))
 			return TRUE;
 
 		html_object_get_cursor_base (cursor->object, engine->painter, cursor->offset,
@@ -1205,7 +1205,7 @@ html_cursor_right_edge_of_line (HTMLCursor *cursor, HTMLEngine *engine)
 				     &x, &prev_y);
 
 	while (1) {
-		if (! right_in_flow (cursor, engine))
+		if (!right_in_flow (cursor, engine))
 			return TRUE;
 
 		html_object_get_cursor_base (cursor->object, engine->painter, cursor->offset,

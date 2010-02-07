@@ -1,6 +1,6 @@
 dnl Initialization
 AC_PREREQ(2.58)
-AC_INIT([gtkhtml], [3.29.6], [http://bugzilla.gnome.org/enter_bug.cgi?product=GtkHtml])
+AC_INIT([gtkhtml], [3.29.90], [http://bugzilla.gnome.org/enter_bug.cgi?product=GtkHtml])
 AM_INIT_AUTOMAKE([gnu 1.9])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS(config.h)
@@ -69,12 +69,20 @@ AS_COMPILER_FLAGS(WARNING_FLAGS,
 AC_SUBST(WARNING_FLAGS)
 
 dnl Other useful compiler warnings for test builds only.
-dnl These may produce warnings we have no control over.
+dnl These may produce warnings we have no control over,
+dnl or false positives we don't always want to see.
 dnl
 dnl	-Wmissing-format-attribute
 dnl	-Wshadow
+dnl	-Wstrict-aliasing=2
 
-CFLAGS="$CFLAGS $WARNING_FLAGS"
+dnl GCC 4.4 got more aggressive in its aliasing optimizations, changing
+dnl behavior that -- according to the C99 standard -- is supposed to be
+dnl undefined.  We may still have aliasing abuses lying around that rely
+dnl on GCC's previous "undefined" behavior, so disable strict-aliasing
+dnl optimization until we can find and fix all the abuses.
+dnl XXX This really belongs in AM_CFLAGS.
+CFLAGS="$CFLAGS $WARNING_FLAGS -fno-strict-aliasing"
 
 dnl *********************
 dnl Necessary programs

@@ -1,3 +1,19 @@
+GtkHTML-3.29.6 2010-01-25
+-------------------------
+
+Bug Fixes:
+	#600754 - Check for enchant >= 1.1.7 (Matthew Barnes)
+	#606167 - Crash on composer Link editing (Milan Crha)
+	#591463 - Build fixes (H.Habighorst)
+	#494986 - Clicking URL moves view to the top in caret mode (Milan Crha)
+
+Other Changes:
+	Add gtkhtml_editor_insert_text() (Matthew Barnes)
+	Fix dead assignments found by clang. (Matthew Barnes)
+
+Translations:
+	Kjartan Maraas (nb)
+
 GtkHTML-3.29.5 2010-01-11
 -------------------------
 

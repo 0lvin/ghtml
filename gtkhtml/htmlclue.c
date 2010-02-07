@@ -476,7 +476,7 @@ save (HTMLObject *self,
 	clue = HTML_CLUE (self);
 
 	for (p = clue->head; p != NULL; p = p->next) {
-		if (! html_object_save (p, state))
+		if (!html_object_save (p, state))
 		    return FALSE;
 	}
 
@@ -494,7 +494,7 @@ save_plain (HTMLObject *self,
 	clue = HTML_CLUE (self);
 
 	for (p = clue->head; p != NULL; p = p->next) {
-		if (! html_object_save_plain (p, state, requested_width))
+		if (!html_object_save_plain (p, state, requested_width))
 		    return FALSE;
 	}
 
@@ -818,7 +818,7 @@ html_clue_append (HTMLClue *clue,
 
 	tail = get_tail (o);
 
-	if (! clue->head) {
+	if (!clue->head) {
 		clue->head = o;
 		o->prev = NULL;
 	} else {
@@ -854,7 +854,7 @@ html_clue_prepend (HTMLClue *clue,
 
 	tail = get_tail (o);
 
-	if (! clue->head) {
+	if (!clue->head) {
 		clue->head = o;
 		clue->tail = tail;
 		o->prev = NULL;

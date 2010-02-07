@@ -142,7 +142,7 @@ html_engine_get_document_font_style (HTMLEngine *engine)
 
 		if (curr == NULL)
 			return GTK_HTML_FONT_STYLE_DEFAULT;
-		else if (! html_object_is_text (curr))
+		else if (!html_object_is_text (curr))
 			return GTK_HTML_FONT_STYLE_DEFAULT;
 		else {
 			HTMLObject *obj;
@@ -170,7 +170,7 @@ html_engine_get_document_color (HTMLEngine *engine)
 
 		if (curr == NULL)
 			return NULL;
-		else if (! html_object_is_text (curr))
+		else if (!html_object_is_text (curr))
 			return NULL;
 		else {
 			HTMLObject *obj;

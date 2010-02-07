@@ -356,7 +356,7 @@ blink_timeout_cb (gpointer data)
 	g_return_val_if_fail (HTML_IS_ENGINE (data), FALSE);
 	engine = HTML_ENGINE (data);
 
-	engine->blinking_status = ! engine->blinking_status;
+	engine->blinking_status = !engine->blinking_status;
 
 	if (engine->blinking_status)
 		html_engine_show_cursor (engine);

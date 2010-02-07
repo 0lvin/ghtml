@@ -92,7 +92,7 @@ html_image_get_actual_width (HTMLImage *image, HTMLPainter *painter)
 		width = gdk_pixbuf_animation_get_width (anim) * pixel_size;
 
 		if (image->specified_height > 0 || image->percent_height) {
-			double scale;
+			gdouble scale;
 
 			scale =  ((double) html_image_get_actual_height (image, painter))
 				/ (gdk_pixbuf_animation_get_height (anim) * pixel_size);
@@ -125,7 +125,7 @@ html_image_get_actual_height (HTMLImage *image, HTMLPainter *painter)
 		height = gdk_pixbuf_animation_get_height (anim) * pixel_size;
 
 		if (image->specified_width > 0 || image->percent_width) {
-			double scale;
+			gdouble scale;
 
 			scale = ((double) html_image_get_actual_width (image, painter))
 				/ (gdk_pixbuf_animation_get_width (anim) * pixel_size);
@@ -1142,7 +1142,7 @@ html_image_factory_write_pixbuf (GtkHTMLStream *stream,
 {
 	HTMLImagePointer *p = user_data;
 
-	/* FIXME ! Check return value */
+	/* FIXME !Check return value */
 	gdk_pixbuf_loader_write (p->loader, (const guchar *) buffer, size, NULL);
 }
 

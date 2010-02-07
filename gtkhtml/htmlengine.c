@@ -3056,6 +3056,7 @@ html_engine_finalize (GObject *object)
 {
 	HTMLEngine *engine;
 	GList *p;
+	gint opened_streams;
 
 	engine = HTML_ENGINE (object);
 
@@ -3064,6 +3065,8 @@ html_engine_finalize (GObject *object)
 
 	if(engine->content_type)
 		g_free(engine->content_type);
+
+	opened_streams = engine->opened_streams;
 
         /* it is critical to destroy timers immediately so that
 	 * if widgets contained in the object tree manage to iterate the
@@ -3235,6 +3238,9 @@ html_engine_finalize (GObject *object)
 	}
 
 	G_OBJECT_CLASS (parent_class)->finalize (object);
+
+	/* just note when will be engine finalized before all the streams are closed */
+	g_return_if_fail (opened_streams == 0);
 }
 
 static void
@@ -5663,7 +5669,6 @@ HTMLParseFunc get_callback_text_node(const gchar* tag);
 
 static void element_parse_dump(ELEMENT_PARSE_PARAMS) {
 	elementtree_parse_dumpnode(xmlelement, 0);
-}
 
 static void element_parse_comment(ELEMENT_PARSE_PARAMS) {
 }
@@ -6412,7 +6417,7 @@ html_engine_set_editable (HTMLEngine *e,
 {
 	g_return_if_fail (HTML_IS_ENGINE (e));
 
-	if ((e->editable && editable) || (! e->editable && ! editable))
+	if ((e->editable && editable) || (!e->editable && !editable))
 		return;
 
 	if (editable)
@@ -6446,7 +6451,7 @@ html_engine_get_editable (HTMLEngine *e)
 {
 	g_return_val_if_fail (HTML_IS_ENGINE (e), FALSE);
 
-	if (e->editable && ! e->parsing && e->timerId == 0)
+	if (e->editable && !e->parsing && e->timerId == 0)
 		return TRUE;
 	else
 		return FALSE;
@@ -6468,9 +6473,9 @@ html_engine_set_focus (HTMLEngine *engine,
 	g_return_if_fail (HTML_IS_ENGINE (engine));
 
 	if (engine->editable || engine->caret_mode) {
-		if (! engine->have_focus && have_focus)
+		if (!engine->have_focus && have_focus)
 			html_engine_setup_blinking_cursor (engine);
-		else if (engine->have_focus && ! have_focus)
+		else if (engine->have_focus && !have_focus)
 			html_engine_stop_blinking_cursor (engine);
 	}
 
@@ -6490,7 +6495,7 @@ html_engine_make_cursor_visible (HTMLEngine *e)
 
 	g_return_val_if_fail (HTML_IS_ENGINE (e), FALSE);
 
-	if (! e->editable && !e->caret_mode)
+	if (!e->editable && !e->caret_mode)
 		return FALSE;
 
 	if (e->cursor->object == NULL)

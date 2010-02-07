@@ -1157,7 +1157,7 @@ static gint
 html_a11y_text_get_n_links (AtkHypertext *hypertext)
 {
 	HTMLText *text = HTML_TEXT (HTML_A11Y_HTML (hypertext));
-	if (!text || ! HTML_IS_TEXT (text))
+	if (!text || !HTML_IS_TEXT (text))
 		return 0;
 	return g_slist_length (text->links);
 }

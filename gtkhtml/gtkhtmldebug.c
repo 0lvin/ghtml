@@ -63,7 +63,7 @@ gtk_html_debug_log (GtkHTML *html,
 {
 	va_list ap;
 
-	if (! html->debug)
+	if (!html->debug)
 		return;
 
 	va_start (ap, format);

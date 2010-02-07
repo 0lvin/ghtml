@@ -40,7 +40,7 @@ find_first (HTMLEngine *e)
 	gunichar c;
 
 	c = html_cursor_get_current_char (e->cursor);
-	while (c == 0 || ! g_unichar_isalnum (c) || c == ' ') {
+	while (c == 0 || !g_unichar_isalnum (c) || c == ' ') {
 		if (!html_cursor_forward (e->cursor, e))
 			return FALSE;
 		c = html_cursor_get_current_char (e->cursor);

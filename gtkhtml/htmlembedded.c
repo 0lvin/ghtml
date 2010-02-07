@@ -247,7 +247,7 @@ html_embedded_encode_string (const gchar *before, const gchar *codepage)
 		g_iconv_close(iconv_cd);
 	    }
 
-        while ( pos < strlen(str) ) {
+        while (pos < strlen(str)) {
 
 		c = (guchar) str[pos];
 
@@ -259,15 +259,15 @@ html_embedded_encode_string (const gchar *before, const gchar *codepage)
 			{
 				encoded = g_string_append_c (encoded, c);
 			}
-		else if ( c == ' ' )
+		else if (c == ' ')
 			{
 				encoded = g_string_append_c (encoded, '+');
 			}
-		else if ( c == '\n' )
+		else if (c == '\n')
 			{
 				encoded = g_string_append (encoded, "%0D%0A");
 			}
-		else if ( c != '\r' )
+		else if (c != '\r')
 			{
 				sprintf( buffer, "%%%02X", (gint)c );
 				encoded = g_string_append (encoded, buffer);

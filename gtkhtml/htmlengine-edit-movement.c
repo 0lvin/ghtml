@@ -79,7 +79,7 @@ html_engine_move_cursor (HTMLEngine *e,
 	html_engine_hide_cursor (e);
 
 	for (c = 0; c < count; c++) {
-		if (! (* movement_func) (e->cursor, e))
+		if (!(* movement_func) (e->cursor, e))
 			break;
 	}
 

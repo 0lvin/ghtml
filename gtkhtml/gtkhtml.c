@@ -340,7 +340,7 @@ gtk_html_update_styles (GtkHTML *html)
 
 	/* printf ("gtk_html_update_styles called\n"); */
 
-	if (! html_engine_get_editable (html->engine))
+	if (!html_engine_get_editable (html->engine))
 		return;
 
 	engine          = html->engine;
@@ -2132,7 +2132,7 @@ button_release_event (GtkWidget *initial_widget,
 		html->in_selection_drag = FALSE;
 
 		if (!html->priv->dnd_in_progress
-		    && html->pointer_url != NULL && ! html->in_selection
+		    && html->pointer_url != NULL && !html->in_selection
 		    && (!gtk_html_get_editable (html) || html->priv->in_url_test_mode)) {
 			link_clicked (GTK_HTML (widget), html->pointer_url);
 			focus_object = html_engine_get_focus_object (html->engine, &focus_object_offset);
@@ -3757,7 +3757,7 @@ gtk_html_begin (GtkHTML *html)
 GtkHTMLStream *
 gtk_html_begin_content (GtkHTML *html, const gchar *content_type)
 {
-	g_return_val_if_fail (! gtk_html_get_editable (html), NULL);
+	g_return_val_if_fail (!gtk_html_get_editable (html), NULL);
 
 	return gtk_html_begin_full (html, NULL, content_type , 0);
 }
@@ -4371,7 +4371,7 @@ gtk_html_set_paragraph_style (GtkHTML *html,
 	    && (current_style != HTML_CLUEFLOW_STYLE_LIST_ITEM || item_type == cur_item_type))
 		return;
 
-	if (! html_engine_set_clueflow_style (html->engine, clueflow_style, item_type, 0, 0, NULL,
+	if (!html_engine_set_clueflow_style (html->engine, clueflow_style, item_type, 0, 0, NULL,
 					      HTML_ENGINE_SET_CLUEFLOW_STYLE, HTML_UNDO_UNDO, TRUE))
 		return;
 

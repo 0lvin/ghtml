@@ -503,16 +503,16 @@ get_pre_padding (HTMLClueFlow *flow, guint pad)
 
 		if (flow->style == HTML_CLUEFLOW_STYLE_PRE
 		    && prev->style != HTML_CLUEFLOW_STYLE_PRE
-		    && ! is_header (prev))
+		    && !is_header (prev))
 			return pad;
 
-		if (is_header (flow) && ! is_header (prev))
+		if (is_header (flow) && !is_header (prev))
 			return pad;
 
 		return 0;
 	}
 
-	if (! is_header (flow) && flow->levels->len == 0)
+	if (!is_header (flow) && flow->levels->len == 0)
 		return 0;
 
 	return pad;
@@ -542,7 +542,7 @@ get_post_padding (HTMLClueFlow *flow,
 
 		if (flow->style == HTML_CLUEFLOW_STYLE_PRE
 		    && next->style != HTML_CLUEFLOW_STYLE_PRE
-		    && ! is_header (next))
+		    && !is_header (next))
 			return pad;
 
 		if (is_header (flow))
@@ -551,7 +551,7 @@ get_post_padding (HTMLClueFlow *flow,
 		return 0;
 	}
 
-	if (! is_header (flow) && flow->levels->len == 0)
+	if (!is_header (flow) && flow->levels->len == 0)
 		return 0;
 
 	return pad;
@@ -590,7 +590,7 @@ get_level_indent (HTMLClueFlow *flow,
 	guint indent = 0;
 	gint i = 0;
 
-	if (flow->levels->len > 0 || ! is_item (flow)) {
+	if (flow->levels->len > 0 || !is_item (flow)) {
 		guint cite_width, indent_width;
 
 		cite_width = html_painter_get_block_cite_width (painter, GTK_HTML_FONT_STYLE_SIZE_3, NULL, dir)
@@ -987,7 +987,7 @@ layout_aligned (HTMLObject *o, HTMLPainter *painter, HTMLObject *cur,
 		GList **changed_objs, gboolean *leaf_children_changed_size,
 		gint *lmargin, gint *rmargin, gint indent, gboolean *changed)
 {
-	if (! html_clue_appended (HTML_CLUE (o->parent), HTML_CLUE (cur))) {
+	if (!html_clue_appended (HTML_CLUE (o->parent), HTML_CLUE (cur))) {
 		html_object_calc_size (cur, painter, changed_objs);
 
 		if (HTML_CLUE (cur)->halign == HTML_HALIGN_LEFT)
@@ -1698,7 +1698,7 @@ write_flow_tag (HTMLClueFlow *self, HTMLEngineSaveState *state)
 		const gchar *p_str = get_p_str (self, state);
 
 		if (p_str) {
-			if (! html_engine_save_output_string (state, "%s", p_str))
+			if (!html_engine_save_output_string (state, "%s", p_str))
 				return FALSE;
 		}
 	}
@@ -1728,7 +1728,7 @@ write_flow_tag (HTMLClueFlow *self, HTMLEngineSaveState *state)
 	halign = HTML_CLUE (self)->halign;
 	/* Alignment tag.  */
 	if (halign != HTML_HALIGN_NONE && halign != HTML_HALIGN_LEFT) {
-		if (! html_engine_save_output_string
+		if (!html_engine_save_output_string
 		    (state, "<DIV ALIGN=%s>",
 		     html_engine_save_get_paragraph_align (html_alignment_to_paragraph (halign))))
 			return FALSE;
@@ -1738,12 +1738,12 @@ write_flow_tag (HTMLClueFlow *self, HTMLEngineSaveState *state)
 		return FALSE;
 
 	/* Paragraph's content.  */
-	if (! HTML_OBJECT_CLASS (&html_clue_class)->save (HTML_OBJECT (self), state))
+	if (!HTML_OBJECT_CLASS (&html_clue_class)->save (HTML_OBJECT (self), state))
 		return FALSE;
 
 	/* Close alignment tag.  */
 	if (halign != HTML_HALIGN_NONE && halign != HTML_HALIGN_LEFT) {
-		if (! html_engine_save_output_string (state, "</DIV>"))
+		if (!html_engine_save_output_string (state, "</DIV>"))
 			return FALSE;
 	}
 
@@ -1791,7 +1791,7 @@ write_flow_tag (HTMLClueFlow *self, HTMLEngineSaveState *state)
 				const gchar *head_p_str = get_p_str (HTML_CLUEFLOW (head), state);
 
 				if (head_p_str) {
-					if (! html_engine_save_output_string (state, "</P>\n"))
+					if (!html_engine_save_output_string (state, "</P>\n"))
 						return FALSE;
 				}
 			}

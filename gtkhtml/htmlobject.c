@@ -408,7 +408,7 @@ relayout (HTMLObject *self,
 		self->y = self->ascent;
 	} else {
 		/* Relayout our parent starting from us.  */
-		if (! html_object_relayout (self->parent, engine, self))
+		if (!html_object_relayout (self->parent, engine, self))
 			html_engine_queue_draw (engine, self);
 	}
 
@@ -502,7 +502,7 @@ select_range (HTMLObject *self,
 	gboolean changed;
 
 	selected = length > 0 || (length == -1 && start < html_object_get_length (self)) || html_object_is_container (self) ? TRUE : FALSE;
-	changed  = (! selected && self->selected) || (selected && ! self->selected) ? TRUE : FALSE;
+	changed  = (!selected && self->selected) || (selected && !self->selected) ? TRUE : FALSE;
 
 	self->selected = selected;
 

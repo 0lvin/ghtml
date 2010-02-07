@@ -57,7 +57,7 @@ draw_background_helper (HTMLTableCell *cell,
 	cluev = HTML_CLUEV (cell);
 
 	if (cell->have_bg) {
-		if (! cell->bg_allocated) {
+		if (!cell->bg_allocated) {
 			html_painter_alloc_color (p, &cell->bg);
 			cell->bg_allocated = TRUE;
 		}
@@ -249,7 +249,7 @@ set_bg_color (HTMLObject *object, GdkColor *color)
 		return;
 	}
 
-	if (cell->have_bg && ! gdk_color_equal (&cell->bg, color))
+	if (cell->have_bg && !gdk_color_equal (&cell->bg, color))
 		cell->bg_allocated = FALSE;
 
 	cell->bg = *color;

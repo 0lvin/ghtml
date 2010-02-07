@@ -69,4 +69,4 @@ void gtk_html_embedded_set_parameter (GtkHTMLEmbedded *ge, gchar *param, gchar *
 gchar *gtk_html_embedded_get_parameter (GtkHTMLEmbedded *ge, gchar *param);
 void gtk_html_embedded_set_descent (GtkHTMLEmbedded *ge, gint descent);
 
-#endif /* ! _GTK_HTML_EMBEDDED_H */
+#endif /* _GTK_HTML_EMBEDDED_H */
