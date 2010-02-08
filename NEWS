@@ -1,3 +1,20 @@
+GtkHTML-3.29.90 2010-02-08
+--------------------------
+
+Bug Fixes:
+	(None)
+
+Other Changes:
+	Warn on console when finalizing HTMLEngine with opened streams
+	(Milan Crha)
+	Disable strict aliasing optimization. (Matthew Barnes)
+
+Translations:
+	Alexander Shopov (bg)
+	Jamil Ahmed (bn)
+	Ivar Smolin (et)
+	Theppitak Karoonboonyanan (th)
+
 GtkHTML-3.29.6 2010-01-25
 -------------------------
 
