@@ -77,7 +77,11 @@ do_action (AtkAction * action, gint i)
 	return FALSE;
 	}
 
+#if GTK_CHECK_VERSION(2,19,7)
+	if (!gtk_widget_get_sensitive (widget) || !gtk_widget_get_visible (widget))
+#else
 	if (!GTK_WIDGET_SENSITIVE (widget) || !GTK_WIDGET_VISIBLE (widget))
+#endif
 		return FALSE;
 
 	switch (i) {

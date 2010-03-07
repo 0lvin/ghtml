@@ -119,7 +119,11 @@ face_tool_button_reposition_window (GtkhtmlFaceToolButton *button)
 
 	gdk_window_get_origin (window, &x, &y);
 
+#if GTK_CHECK_VERSION(2,19,7)
+	if (!gtk_widget_get_has_window (GTK_WIDGET (button))) {
+#else
 	if (GTK_WIDGET_NO_WINDOW (button)) {
+#endif
 		x += GTK_WIDGET (button)->allocation.x;
 		y += GTK_WIDGET (button)->allocation.y;
 	}
@@ -324,7 +328,11 @@ face_tool_button_popup (GtkhtmlFaceToolButton *button)
 	GdkWindow *window;
 	GdkGrabStatus status;
 
+#if GTK_CHECK_VERSION(2,19,7)
+	if (!gtk_widget_get_realized (GTK_WIDGET (button)))
+#else
 	if (!GTK_WIDGET_REALIZED (button))
+#endif
 		return;
 
 	if (button->priv->popup_shown)
@@ -366,7 +374,11 @@ face_tool_button_popdown (GtkhtmlFaceToolButton *button)
 {
 	GtkToggleToolButton *tool_button;
 
+#if GTK_CHECK_VERSION(2,19,7)
+	if (!gtk_widget_get_realized (GTK_WIDGET (button)))
+#else
 	if (!GTK_WIDGET_REALIZED (button))
+#endif
 		return;
 
 	if (!button->priv->popup_shown)

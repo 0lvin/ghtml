@@ -162,7 +162,11 @@ color_combo_reposition_window (GtkhtmlColorCombo *combo)
 
 	gdk_window_get_origin (window, &x, &y);
 
+#if GTK_CHECK_VERSION(2,19,7)
+	if (!gtk_widget_get_has_window (GTK_WIDGET (combo))) {
+#else
 	if (GTK_WIDGET_NO_WINDOW (combo)) {
+#endif
 		x += GTK_WIDGET (combo)->allocation.x;
 		y += GTK_WIDGET (combo)->allocation.y;
 	}
@@ -620,7 +624,11 @@ color_combo_popup (GtkhtmlColorCombo *combo)
 	GdkGrabStatus status;
 	const gchar *label;
 
+#if GTK_CHECK_VERSION(2,19,7)
+	if (!gtk_widget_get_realized (GTK_WIDGET (combo)))
+#else
 	if (!GTK_WIDGET_REALIZED (combo))
+#endif
 		return;
 
 	if (combo->priv->popup_shown)
@@ -667,7 +675,11 @@ color_combo_popdown (GtkhtmlColorCombo *combo)
 {
 	GtkToggleButton *toggle_button;
 
+#if GTK_CHECK_VERSION(2,19,7)
+	if (!gtk_widget_get_realized (GTK_WIDGET (combo)))
+#else
 	if (!GTK_WIDGET_REALIZED (combo))
+#endif
 		return;
 
 	if (!combo->priv->popup_shown)

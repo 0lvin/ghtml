@@ -147,7 +147,11 @@ calc_min_width (HTMLObject *self,
 
 	widget = HTML_EMBEDDED (self)->widget;
 
+#if GTK_CHECK_VERSION(2,19,7)
+	if (widget == NULL || !gtk_widget_get_visible (widget))
+#else
 	if (widget == NULL || !GTK_WIDGET_VISIBLE (widget))
+#endif
 		return 0;
 
 	requisition.width = requisition.height = 0;
