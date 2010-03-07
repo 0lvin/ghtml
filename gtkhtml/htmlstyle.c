@@ -131,6 +131,11 @@ html_style_new (void)
 	style->text_valign = HTML_VALIGN_NONE;
 	style->dir = HTML_DIRECTION_DERIVED;
 	style->listnumber = 0;
+
+	style->leftmargin = 0;
+	style->rightmargin = 0;
+	style->topmargin = 0;
+	style->bottommargin = 0;
 	return style;
 }
 
@@ -185,6 +190,12 @@ html_style_copy(HTMLStyle *orig)
 		style->href = g_strdup(orig->href);
 	/*flow*/
 	style->fstyle = orig->fstyle;
+
+	style->leftmargin = style->leftmargin;
+	style->rightmargin = style->rightmargin;
+	style->topmargin = style->topmargin;
+	style->bottommargin = style->bottommargin;
+
 	return style;
 }
 
@@ -203,6 +214,10 @@ html_style_copy_onlyinherit(HTMLStyle *orig)
 		html_color_unref (style->border_color);
 	style->border_color = NULL;
 	style->padding = 0;
+	style->leftmargin = 0;
+	style->rightmargin = 0;
+	style->topmargin = 0;
+	style->bottommargin = 0;
 	return style;
 }
 
@@ -761,8 +776,32 @@ html_style_add_styleattribute (HTMLStyle *style, const gchar *attr, const gchar 
 			g_free (style->target);
 		style->target = g_strdup(value);
 	} else if ( !g_ascii_strcasecmp ("type", attr) ||
-				!g_ascii_strcasecmp ("list-style-type", attr)) { /*ol li*/
+			!g_ascii_strcasecmp ("list-style-type", attr)) { /*ol li*/
 		style = parse_list_type (style, value);
+	} else if (!g_ascii_strcasecmp ("leftmargin", attr)) {
+		if (!style)
+			style = html_style_new ();
+		style->leftmargin = atoi (value);
+	} else if (!g_ascii_strcasecmp ("rightmargin", attr)) {
+		if (!style)
+			style = html_style_new ();
+		style->rightmargin = atoi (value);
+	} else if (!g_ascii_strcasecmp ("topmargin", attr)) {
+		if (!style)
+			style = html_style_new ();
+		style->topmargin = atoi (value);
+	} else if (!g_ascii_strcasecmp ("bottommargin", attr)) {
+		if (!style)
+			style = html_style_new ();
+		style->bottommargin = atoi (value);
+	} else if (!g_ascii_strcasecmp ("marginwidth", attr)) {
+		if (!style)
+			style = html_style_new ();
+		style->leftmargin = style->rightmargin = atoi (value);
+	} else if (!g_ascii_strcasecmp ("marginheight", attr)) {
+		if (!style)
+			style = html_style_new ();
+		style->topmargin = style->bottommargin = atoi (value);
 	}
 	return style;
 }

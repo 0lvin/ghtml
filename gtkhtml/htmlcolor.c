@@ -58,6 +58,12 @@ html_color_new_from_gdk_color (const GdkColor *color)
 	return nc;
 }
 
+GdkColor
+html_color_get_gdk_color (HTMLColor *color)
+{
+	return color->color;
+}
+
 HTMLColor *
 html_color_new_from_rgb (gushort red, gushort green, gushort blue)
 {

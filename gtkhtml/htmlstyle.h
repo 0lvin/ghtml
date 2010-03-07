@@ -66,6 +66,8 @@ struct _HTMLStyle {
 	gchar *href;    /* for click url */
 	/*flow*/
 	HTMLClueFlowStyle fstyle;
+
+	gint leftmargin, rightmargin, topmargin, bottommargin;
 };
 
 HTMLStyle *html_style_new                  (void);

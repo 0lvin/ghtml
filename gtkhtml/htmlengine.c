@@ -101,7 +101,7 @@
 #include "htmlmarshal.h"
 #include "htmlstyle.h"
 
-/*#define USEOLDRENDER*/
+/* #define USEOLDRENDER */
 /* #define CHECK_CURSOR */
 
 /* Know error's not inherit list type
@@ -287,6 +287,7 @@ void tag_func_head                (TAG_FUNC_PARAM);
 void tag_func_hr                  (TAG_FUNC_PARAM);
 void tag_func_li                  (TAG_FUNC_PARAM);
 void tag_func_simple_tag          (TAG_FUNC_PARAM);
+void tag_func_body                (TAG_FUNC_PARAM);
 void tag_func_br                  (TAG_FUNC_PARAM);
 void tag_func_font                (TAG_FUNC_PARAM);
 void tag_func_input               (TAG_FUNC_PARAM);
@@ -314,6 +315,7 @@ HTMLText *     create_text_from_xml     (HTMLEngine *e, HTMLElement *element, co
 HTMLObject*    create_image_from_xml    (HTMLEngine *e, HTMLElement *element, gint max_width);
 HTMLObject*    create_rule_from_xml     (HTMLEngine *e, HTMLElement *element, gint max_width);
 HTMLObject*    create_iframe_from_xml   (HTMLEngine *e, HTMLElement *element, gint max_width);
+void           fix_body_from_xml        (HTMLEngine *e, HTMLElement *element, HTMLObject * clue);
 HTMLTableCell* create_cell_from_xml     (HTMLEngine *e, HTMLElement *element);
 HTMLTable*     create_table_from_xml    (HTMLEngine *e, HTMLElement *element);
 HTMLObject*    create_flow_from_xml     (HTMLEngine *e, HTMLElement *element);
@@ -2046,63 +2048,28 @@ element_parse_br (ELEMENT_PARSE_PARAMS)
 static void
 element_parse_body (ELEMENT_PARSE_PARAMS)
 {
+	HTMLElement *element;
+	gchar * value;
 	GdkColor color;
-	xmlAttr *currprop;
 
 	g_return_if_fail (HTML_IS_ENGINE (e));
-	for(currprop = xmlelement->properties; currprop; currprop = currprop->next)
-        {
-		gchar * name = XMLCHAR2GCHAR(currprop->name);
-		gchar * value = XMLCHAR2GCHAR(currprop->children->content);
-		if(name && value) {
-			if (g_ascii_strncasecmp (name, "bgcolor", 7) == 0) {
-				gtk_html_debug_log (e->widget, "setting color\n");
-				html_parse_color (value, &color);
-				html_colorset_set_color (e->settings->color_set, &color, HTMLBgColor);
-			} else if (g_ascii_strncasecmp (name, "background", 10) == 0
-				&& ! e->defaultSettings->forceDefault) {
-				if (e->bgPixmapPtr != NULL)
-					html_image_factory_unregister(e->image_factory, e->bgPixmapPtr, NULL);
-				e->bgPixmapPtr = html_image_factory_register(e->image_factory, NULL, value, FALSE);
-			} else if ( g_ascii_strncasecmp(name, ID_TEXT, 4 ) == 0
-				&& !e->defaultSettings->forceDefault ) {
-					if (html_parse_color (value, &color)) {
-						html_colorset_set_color (e->settings->color_set, &color, HTMLTextColor);
-						push_element (e, ID_BODY, NULL,
-							html_style_add_color (NULL, html_colorset_get_color (e->settings->color_set, HTMLTextColor)));
-					}
-			} else if ( g_ascii_strncasecmp( name, ID_LINK, 4 ) == 0
-				&& !e->defaultSettings->forceDefault ) {
-					html_parse_color (value, &color);
-					html_colorset_set_color (e->settings->color_set, &color, HTMLLinkColor);
-			} else if ( g_ascii_strncasecmp( name, "vlink", 5 ) == 0
-				&& !e->defaultSettings->forceDefault ) {
-					html_parse_color (value, &color);;
-					html_colorset_set_color (e->settings->color_set, &color, HTMLVLinkColor);
-			} else if ( g_ascii_strncasecmp( name, "alink", 5 ) == 0
-				&& !e->defaultSettings->forceDefault ) {
-					html_parse_color (value, &color);
-					html_colorset_set_color (e->settings->color_set, &color, HTMLALinkColor);
-			} else if ( g_ascii_strncasecmp( name, "leftmargin", 10 ) == 0) {
-				e->leftBorder = atoi (value);
-			} else if ( g_ascii_strncasecmp( name, "rightmargin", 11 ) == 0) {
-				e->rightBorder = atoi (value);
-			} else if ( g_ascii_strncasecmp( name, "topmargin", 9 ) == 0) {
-				e->topBorder = atoi (value);
-			} else if ( g_ascii_strncasecmp( name, "bottommargin", 12 ) == 0) {
-				e->bottomBorder = atoi (value);
-			} else if ( g_ascii_strncasecmp( name, "marginwidth", 11 ) == 0) {
-				e->leftBorder = e->rightBorder = atoi (value);
-			} else if ( g_ascii_strncasecmp( name, "marginheight", 12 ) == 0) {
-				e->topBorder = e->bottomBorder = atoi (value);
-			} else if (e->parser_clue && g_ascii_strncasecmp (name, "dir", 3) == 0) {
-				if (!g_ascii_strncasecmp (value, "ltr", 3))
-					HTML_CLUEV (e->parser_clue)->dir = HTML_DIRECTION_LTR;
-				else if (!g_ascii_strncasecmp (value, "rtl", 3))
-					HTML_CLUEV (e->parser_clue)->dir = HTML_DIRECTION_RTL;
+
+	element = html_element_from_xml (e, xmlelement, NULL);
+
+	if (
+		html_element_get_attr (element, "background", &value) &&
+		value &&
+		*value &&
+		!e->defaultSettings->forceDefault )
+			if (html_parse_color (value, &color)) {
+				html_colorset_set_color (e->settings->color_set, &color, HTMLTextColor);
+				push_element (e, ID_BODY, NULL,
+					html_style_add_color (NULL,
+						html_colorset_get_color (e->settings->color_set, HTMLTextColor)));
 			}
-		}
-	}
+
+	fix_body_from_xml(e, element, e->parser_clue);
+
 	gtk_html_debug_log (e->widget, "parsed <body>\n");
 	if (xmlelement && e->parser_clue) {
 		stupid_render (e, clue, xmlelement->children);
@@ -4733,6 +4700,66 @@ create_frameset_from_xml (HTMLEngine *e, HTMLElement *element)
 	return html_frameset_new (e->widget, rows, cols);
 }
 
+void
+fix_body_from_xml(HTMLEngine *e, HTMLElement *element, HTMLObject * clue) {
+	if (HTML_IS_CLUEV(clue) && element->style) {
+		GdkColor color;
+		gchar * value;
+
+		e->leftBorder = element->style->leftmargin;
+		e->rightBorder = element->style->rightmargin;
+		e->topBorder = element->style->topmargin;
+		e->bottomBorder = element->style->bottommargin;
+
+		HTML_CLUEV (e->parser_clue)->dir = element->style->dir;
+
+		if (element->style->bg_color) {
+			color = html_color_get_gdk_color(element->style->bg_color);
+			html_colorset_set_color (e->settings->color_set, &color, HTMLBgColor);
+		}
+
+		if (
+			html_element_get_attr (element, "background", &value) &&
+			value &&
+			*value &&
+			! e->defaultSettings->forceDefault) {
+				if (e->bgPixmapPtr != NULL)
+					html_image_factory_unregister(e->image_factory, e->bgPixmapPtr, NULL);
+				e->bgPixmapPtr = html_image_factory_register(e->image_factory, NULL, value, FALSE);
+		};
+
+		if (
+			html_element_get_attr (element, ID_TEXT, &value) &&
+			value &&
+			*value &&
+			! e->defaultSettings->forceDefault)
+				if (html_parse_color (value, &color)) {
+					html_colorset_set_color (e->settings->color_set, &color, HTMLTextColor);
+				}
+		if (
+			html_element_get_attr (element, ID_LINK, &value) &&
+			!e->defaultSettings->forceDefault ) {
+				html_parse_color (value, &color);
+				html_colorset_set_color (e->settings->color_set, &color, HTMLLinkColor);
+		}
+
+		if (
+			html_element_get_attr (element, "vlink", &value) &&
+			!e->defaultSettings->forceDefault ) {
+				html_parse_color (value, &color);;
+				html_colorset_set_color (e->settings->color_set, &color, HTMLVLinkColor);
+		}
+
+		if (
+			html_element_get_attr (element, "alink", &value) &&
+			!e->defaultSettings->forceDefault ) {
+				html_parse_color (value, &color);
+				html_colorset_set_color (e->settings->color_set, &color, HTMLALinkColor);
+		}
+
+	}
+}
+
 /*create object and automatic register him in current form*/
 HTMLEmbedded *
 create_object_from_xml (HTMLEngine *e, HTMLElement *element)
@@ -5299,6 +5326,15 @@ tag_func_table(TAG_FUNC_PARAM)
 }
 
 void
+tag_func_body(TAG_FUNC_PARAM)
+{
+	g_return_if_fail (html_object_is_clue(htmlelement));
+	if (HTML_IS_CLUEV(htmlelement) && testElement->style)
+		fix_body_from_xml(e, testElement, htmlelement);
+	tag_func_simple_tag(current, pos, e, htmlelement, testElement, count);
+}
+
+void
 tag_func_simple_tag(TAG_FUNC_PARAM)
 {
 	HTMLObject* html_object = NULL;
@@ -5409,7 +5445,7 @@ static HTMLDispatchFuncEntry func_callback_table[] = {
 	{ ID_BLOCKQUOTE,       tag_func_simple_tag          },
 	{ ID_CAPTION,          tag_func_hidden              },
 	{ ID_TBODY,            tag_func_simple_tag          },
-	{ ID_BODY,             tag_func_simple_tag          },
+	{ ID_BODY,             tag_func_body                },
 	{ ID_BR,               tag_func_br                  },
 	{ ID_B,                tag_func_simple_without_flow },
 	{ ID_CENTER,           tag_func_simple_tag          },
@@ -5434,7 +5470,7 @@ static HTMLDispatchFuncEntry func_callback_table[] = {
 	{ ID_HEADING6,         tag_func_simple_tag          },
 	{ ID_HEAD,             tag_func_head                },
 	{ ID_HR,               tag_func_hr                  },
-	{ ID_HTML,             tag_func_simple_tag          },
+	{ ID_HTML,             tag_func_simple_without_flow },
 	{ ID_IFRAME,           tag_func_frame               },
 	{ ID_IMG,              tag_func_img                 },
 	{ ID_INPUT,            tag_func_input               },
@@ -5669,6 +5705,7 @@ HTMLParseFunc get_callback_text_node(const gchar* tag);
 
 static void element_parse_dump(ELEMENT_PARSE_PARAMS) {
 	elementtree_parse_dumpnode(xmlelement, 0);
+}
 
 static void element_parse_comment(ELEMENT_PARSE_PARAMS) {
 }

@@ -47,4 +47,6 @@ gboolean    html_color_equal              (HTMLColor *color1, HTMLColor *color2)
 
 void        html_color_set                (HTMLColor *color, GdkColor *c);
 
+GdkColor    html_color_get_gdk_color      (HTMLColor *color);
+
 #endif
