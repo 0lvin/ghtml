@@ -1,3 +1,21 @@
+GtkHTML-3.29.92 2010-03-08
+--------------------------
+
+Bug Fixes:
+	(None)
+
+Other Changes:
+	Work around recent GTK+ deprecations. (Matthew Barnes)
+
+Translations:
+	Lucas Lommer (cs)
+	Bruce Cowan (en_GB)
+	Claude Paroz (fr)
+	Gabor Kelemen (hu)
+	Changwoo Ryu (ko)
+	Piotr Drąg (pl)
+	Yuri Kozlov (ru)
+
 GtkHTML-3.29.91 2010-02-22
 --------------------------
 
