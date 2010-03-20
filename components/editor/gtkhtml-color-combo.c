@@ -162,11 +162,7 @@ color_combo_reposition_window (GtkhtmlColorCombo *combo)
 
 	gdk_window_get_origin (window, &x, &y);
 
-#if GTK_CHECK_VERSION(2,19,7)
 	if (!gtk_widget_get_has_window (GTK_WIDGET (combo))) {
-#else
-	if (GTK_WIDGET_NO_WINDOW (combo)) {
-#endif
 		x += GTK_WIDGET (combo)->allocation.x;
 		y += GTK_WIDGET (combo)->allocation.y;
 	}
@@ -322,7 +318,11 @@ color_combo_default_release_event_cb (GtkhtmlColorCombo *combo,
                                       GdkEventButton *event,
                                       GtkButton *button)
 {
-	if (GTK_WIDGET_STATE (button) != GTK_STATE_NORMAL)
+	GtkStateType state;
+
+	state = gtk_widget_get_state (GTK_WIDGET (button));
+
+	if (state != GTK_STATE_NORMAL)
 		gtk_button_clicked (button);
 
 	return FALSE;
@@ -375,7 +375,11 @@ color_combo_swatch_release_event_cb (GtkhtmlColorCombo *combo,
                                      GdkEventButton *event,
                                      GtkButton *button)
 {
-	if (GTK_WIDGET_STATE (button) != GTK_STATE_NORMAL)
+	GtkStateType state;
+
+	state = gtk_widget_get_state (GTK_WIDGET (button));
+
+	if (state != GTK_STATE_NORMAL)
 		gtk_button_clicked (button);
 
 	return FALSE;

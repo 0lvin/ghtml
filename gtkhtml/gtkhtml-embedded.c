@@ -238,11 +238,7 @@ gtk_html_embedded_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 
 	child = gtk_bin_get_child (GTK_BIN (widget));
 
-#if GTK_CHECK_VERSION(2,19,7)
 	if (child && gtk_widget_get_visible (child)) {
-#else
-	if (child && GTK_WIDGET_VISIBLE (child)) {
-#endif
 		gtk_widget_size_allocate (child, allocation);
 	}
 	widget->allocation = *allocation;

@@ -119,11 +119,7 @@ face_tool_button_reposition_window (GtkhtmlFaceToolButton *button)
 
 	gdk_window_get_origin (window, &x, &y);
 
-#if GTK_CHECK_VERSION(2,19,7)
 	if (!gtk_widget_get_has_window (GTK_WIDGET (button))) {
-#else
-	if (GTK_WIDGET_NO_WINDOW (button)) {
-#endif
 		x += GTK_WIDGET (button)->allocation.x;
 		y += GTK_WIDGET (button)->allocation.y;
 	}
@@ -150,7 +146,11 @@ face_tool_button_face_release_event_cb (GtkhtmlFaceToolButton *button,
                                         GdkEventButton *event,
                                         GtkButton *face_button)
 {
-	if (GTK_WIDGET_STATE (button) != GTK_STATE_NORMAL)
+	GtkStateType state;
+
+	state = gtk_widget_get_state (GTK_WIDGET (button));
+
+	if (state != GTK_STATE_NORMAL)
 		gtk_button_clicked (face_button);
 
 	return FALSE;

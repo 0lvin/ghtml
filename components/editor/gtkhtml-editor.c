@@ -1637,7 +1637,7 @@ gtkhtml_editor_insert_text (GtkhtmlEditor *editor,
 
 	html = gtkhtml_editor_get_html (editor);
 
-	html_engine_insert_text (html->engine, plain_text, -1);
+	html_engine_paste_text (html->engine, plain_text, -1);
 }
 
 gboolean
