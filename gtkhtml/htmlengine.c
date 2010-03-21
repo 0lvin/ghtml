@@ -5188,9 +5188,15 @@ elementtree_parse_text (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject
 void
 tag_func_text (TAG_FUNC_PARAM)
 {
-	HTMLObject* html_object = html_object_is_clue(htmlelement)?htmlelement:parentclue;
+	HTMLObject* html_object, *parent_object;
+	html_object = html_object_is_clue(htmlelement)?htmlelement:parentclue;
 	g_return_if_fail (html_object_is_clue(html_object));
-	elementtree_parse_text(current, pos+1, e, html_object, testElement);
+	if(html_object_is(html_object, HTML_TYPE_CLUEV)) {
+		parent_object = create_flow_from_xml(e, testElement);
+		html_clue_append (HTML_CLUE (html_object), parent_object);
+	} else 
+		parent_object = html_object;
+	elementtree_parse_text(current, pos+1, e, parent_object, testElement);
 }
 
 void

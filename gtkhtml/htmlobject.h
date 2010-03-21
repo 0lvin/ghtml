@@ -331,6 +331,8 @@ void            html_object_set_painter           (HTMLObject            *o,
 						   HTMLPainter           *p);
 void            html_object_reset                 (HTMLObject            *o);
 gboolean        html_object_is_text               (HTMLObject            *object);
+gboolean        html_object_is                    (HTMLObject            *object,
+							HTMLType 			 type);
 gboolean        html_object_is_clue               (HTMLObject            *object);
 HTMLEngine     *html_object_get_engine            (HTMLObject            *self,
 						   HTMLEngine            *e);

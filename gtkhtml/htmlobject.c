@@ -1346,6 +1346,14 @@ html_object_is_text (HTMLObject *object)
 }
 
 gboolean
+html_object_is (HTMLObject *object, HTMLType type)
+{
+	g_return_val_if_fail (object != NULL, FALSE);
+
+	return (type == HTML_OBJECT_TYPE (object));
+}
+
+gboolean
 html_object_is_clue (HTMLObject *object)
 {
 	HTMLType type;
