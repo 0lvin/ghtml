@@ -1550,8 +1550,10 @@ static GtkActionEntry html_entries[] = {
 
 	{ "insert-rule",
 	  "stock_insert-rule",
+	  /* Translators: 'Rule' here means a horizontal line in an HTML text */
 	  N_("_Rule..."),
 	  NULL,
+	  /* Translators: 'Rule' here means a horizontal line in an HTML text */
 	  N_("Insert Rule"),
 	  G_CALLBACK (action_insert_rule_cb) },
 
@@ -1592,6 +1594,7 @@ static GtkActionEntry html_entries[] = {
 
 	{ "properties-rule",
 	  NULL,
+	  /* Translators: 'Rule' here means a horizontal line in an HTML text */
 	  N_("_Rule..."),
 	  NULL,
 	  NULL,
@@ -1668,6 +1671,7 @@ static GtkRadioActionEntry html_size_entries[] = {
 
 	{ "size-minus-two",
 	  NULL,
+	  /* Translators: This is a font size level. It is shown on a tool bar. Please keep it as short as possible. */
 	  N_("-2"),
 	  NULL,
 	  NULL,
@@ -1675,6 +1679,7 @@ static GtkRadioActionEntry html_size_entries[] = {
 
 	{ "size-minus-one",
 	  NULL,
+	  /* Translators: This is a font size level. It is shown on a tool bar. Please keep it as short as possible. */
 	  N_("-1"),
 	  NULL,
 	  NULL,
@@ -1682,6 +1687,7 @@ static GtkRadioActionEntry html_size_entries[] = {
 
 	{ "size-plus-zero",
 	  NULL,
+	  /* Translators: This is a font size level. It is shown on a tool bar. Please keep it as short as possible. */
 	  N_("+0"),
 	  NULL,
 	  NULL,
@@ -1689,6 +1695,7 @@ static GtkRadioActionEntry html_size_entries[] = {
 
 	{ "size-plus-one",
 	  NULL,
+	  /* Translators: This is a font size level. It is shown on a tool bar. Please keep it as short as possible. */
 	  N_("+1"),
 	  NULL,
 	  NULL,
@@ -1696,6 +1703,7 @@ static GtkRadioActionEntry html_size_entries[] = {
 
 	{ "size-plus-two",
 	  NULL,
+	  /* Translators: This is a font size level. It is shown on a tool bar. Please keep it as short as possible. */
 	  N_("+2"),
 	  NULL,
 	  NULL,
@@ -1703,6 +1711,7 @@ static GtkRadioActionEntry html_size_entries[] = {
 
 	{ "size-plus-three",
 	  NULL,
+	  /* Translators: This is a font size level. It is shown on a tool bar. Please keep it as short as possible. */
 	  N_("+3"),
 	  NULL,
 	  NULL,
@@ -1710,6 +1719,7 @@ static GtkRadioActionEntry html_size_entries[] = {
 
 	{ "size-plus-four",
 	  NULL,
+	  /* Translators: This is a font size level. It is shown on a tool bar. Please keep it as short as possible. */
 	  N_("+4"),
 	  NULL,
 	  NULL,
@@ -1759,6 +1769,7 @@ static GtkActionEntry context_entries[] = {
 
 	{ "context-delete-table-menu",
 	  NULL,
+	  /* Translators: Popup menu item caption, containing all the Delete options for a table */
 	  N_("Table Delete"),
 	  NULL,
 	  NULL,
@@ -1773,6 +1784,7 @@ static GtkActionEntry context_entries[] = {
 
 	{ "context-insert-table-menu",
 	  NULL,
+	  /* Translators: Popup menu item caption, containing all the Insert options for a table */
 	  N_("Table Insert"),
 	  NULL,
 	  NULL,
@@ -1875,6 +1887,7 @@ static GtkActionEntry html_context_entries[] = {
 
 	{ "context-properties-rule",
 	  NULL,
+	  /* Translators: 'Rule' here means a horizontal line in an HTML text */
 	  N_("Rule..."),
 	  NULL,
 	  NULL,
@@ -2034,8 +2047,10 @@ editor_actions_setup_spell_check_menu (GtkhtmlEditor *editor)
 
 		/* Add an item to the "Add Word To" menu. */
 
-		action_label = g_strdup_printf ("%s Dictionary", name);
 		action_name = g_strdup_printf ("context-spell-add-%s", code);
+		/* Translators: %s will be replaced with the actual dictionary name,
+		   where a user can add a word to. This is part of an "Add Word To" submenu. */
+		action_label = g_strdup_printf (_("%s Dictionary"), name);
 
 		action = gtk_action_new (
 			action_name, action_label, NULL, NULL);
@@ -2177,6 +2192,7 @@ gtkhtml_editor_actions_init (GtkhtmlEditor *editor)
 		"short-label", _("_Link"), NULL);
 	g_object_set (
 		G_OBJECT (ACTION (INSERT_RULE)),
+		/* Translators: 'Rule' here means a horizontal line in an HTML text */
 		"short-label", _("_Rule"), NULL);
 	g_object_set (
 		G_OBJECT (ACTION (INSERT_TABLE)),

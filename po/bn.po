@@ -13,8 +13,8 @@ msgstr ""
 "Project-Id-Version: bn\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=gtkhtml&component=general\n"
-"POT-Creation-Date: 2009-12-26 01:30+0000\n"
-"PO-Revision-Date: 2010-01-25 11:02+0600\n"
+"POT-Creation-Date: 2010-03-17 15:38+0000\n"
+"PO-Revision-Date: 2010-03-24 11:02+0600\n"
 "Last-Translator: Israt Jahan <israt@ankur.org.bd>\n"
 "Language-Team: Bengali <ankur-bd-l10n@googlegroups.com>\n"
 "MIME-Version: 1.0\n"
@@ -205,54 +205,54 @@ msgstr "সাদা"
 msgid "Choose Custom Color"
 msgstr "স্বনির্বাচিত রং বেছে নিন"
 
-#: ../components/editor/gtkhtml-color-combo.c:711
+#: ../components/editor/gtkhtml-color-combo.c:727
 #: ../components/editor/gtkhtml-color-state.c:205
 msgid "Current color"
 msgstr "বর্তমান রং"
 
-#: ../components/editor/gtkhtml-color-combo.c:712
+#: ../components/editor/gtkhtml-color-combo.c:728
 msgid "The currently selected color"
 msgstr "বর্তমানে নির্বাচিত রং"
 
-#: ../components/editor/gtkhtml-color-combo.c:721
+#: ../components/editor/gtkhtml-color-combo.c:737
 #: ../components/editor/gtkhtml-color-state.c:215
 msgid "Default color"
 msgstr "ডিফল্ট রং"
 
-#: ../components/editor/gtkhtml-color-combo.c:722
+#: ../components/editor/gtkhtml-color-combo.c:738
 msgid "The color associated with the default button"
 msgstr "ডিফল্ট বোতামের সাথে যুক্ত রং"
 
-#: ../components/editor/gtkhtml-color-combo.c:732
+#: ../components/editor/gtkhtml-color-combo.c:748
 #: ../components/editor/gtkhtml-color-state.c:226
 msgid "Default label"
 msgstr "ডিফল্ট লেবেল"
 
-#: ../components/editor/gtkhtml-color-combo.c:733
+#: ../components/editor/gtkhtml-color-combo.c:749
 msgid "The label for the default button"
 msgstr "ডিফল্ট বোতামের লেবেল"
 
-#: ../components/editor/gtkhtml-color-combo.c:734
+#: ../components/editor/gtkhtml-color-combo.c:750
 #: ../components/editor/gtkhtml-color-state.c:228
 msgid "Default"
 msgstr "ডিফল্ট"
 
-#: ../components/editor/gtkhtml-color-combo.c:743
+#: ../components/editor/gtkhtml-color-combo.c:759
 #: ../components/editor/gtkhtml-color-state.c:237
 msgid "Default is transparent"
 msgstr "ডিফল্ট মান স্বচ্ছ ধার্য হয়েছে"
 
-#: ../components/editor/gtkhtml-color-combo.c:744
+#: ../components/editor/gtkhtml-color-combo.c:760
 #: ../components/editor/gtkhtml-color-state.c:238
 msgid "Whether the default color is transparent"
 msgstr "ডিফল্ট রং স্বচ্ছ নির্ধারণ করা হবে কি না"
 
-#: ../components/editor/gtkhtml-color-combo.c:754
+#: ../components/editor/gtkhtml-color-combo.c:770
 #: ../components/editor/gtkhtml-color-state.c:248
 msgid "Color palette"
 msgstr "রঙের প্যালেট"
 
-#: ../components/editor/gtkhtml-color-combo.c:755
+#: ../components/editor/gtkhtml-color-combo.c:771
 #: ../components/editor/gtkhtml-color-state.c:249
 msgid "Custom color palette"
 msgstr "রঙের স্বনির্ধারিত প্যালেট"
@@ -260,14 +260,14 @@ msgstr "রঙের স্বনির্ধারিত প্যালেট"
 #. Translators: This is the nickname for a
 #. * GtkhtmlColorCombo property named "popup-shown",
 #. * based on a similar property in GtkComboBox.
-#: ../components/editor/gtkhtml-color-combo.c:767
+#: ../components/editor/gtkhtml-color-combo.c:783
 msgid "Popup shown"
 msgstr "পপ-আপ প্রদর্শন করা হবে"
 
 #. Translators: This is the blurb for a
 #. * GtkhtmlColorCombo property named "popup-shown",
 #. * based on a similar property in GtkComboBox.
-#: ../components/editor/gtkhtml-color-combo.c:771
+#: ../components/editor/gtkhtml-color-combo.c:787
 msgid "Whether the combo's dropdown is shown"
 msgstr "কম্বো বাক্সের ড্রপ ডাউন প্রদর্শন করা হবে কি না"
 
@@ -275,7 +275,7 @@ msgstr "কম্বো বাক্সের ড্রপ ডাউন প্�
 #. GtkHtmlColorCombo property named "state". It holds all
 #. the internal values for a GtkHtml color combination box.
 #.
-#: ../components/editor/gtkhtml-color-combo.c:784
+#: ../components/editor/gtkhtml-color-combo.c:800
 msgid "Color state"
 msgstr "রঙের অবস্থা"
 
@@ -283,15 +283,15 @@ msgstr "রঙের অবস্থা"
 #. GtkHtmlColorCombo property named "state". It holds all
 #. the internal values for a GtkHtml color combination box.
 #.
-#: ../components/editor/gtkhtml-color-combo.c:789
+#: ../components/editor/gtkhtml-color-combo.c:805
 msgid "The state of a color combo box"
 msgstr "রঙের কম্বো বাক্সের অবস্থা"
 
-#: ../components/editor/gtkhtml-color-combo.c:971
+#: ../components/editor/gtkhtml-color-combo.c:987
 msgid "custom"
 msgstr "স্বনির্বাচিত"
 
-#: ../components/editor/gtkhtml-color-combo.c:979
+#: ../components/editor/gtkhtml-color-combo.c:995
 msgid "Custom Color..."
 msgstr "স্বনির্ধারিত রং..."
 
@@ -434,12 +434,10 @@ msgid "_Monkey"
 msgstr "বাঁদর (_M)"
 
 #: ../components/editor/gtkhtml-editor-actions.c:190
-#| msgid "Insert HTML File"
 msgid "Failed to insert HTML file."
 msgstr "HTML ফাইল প্রবেশে ব্যর্থ।"
 
 #: ../components/editor/gtkhtml-editor-actions.c:227
-#| msgid "Insert Text File"
 msgid "Failed to insert text file."
 msgstr "টেক্সট ফাইল প্রবেশে ব্যর্থ।"
 
@@ -458,7 +456,7 @@ msgstr "টেক্সট ফাইল প্রবেশ করুন"
 
 #. Replace Button
 #: ../components/editor/gtkhtml-editor-actions.c:1176
-#: ../components/editor/gtkhtml-spell-dialog.c:522
+#: ../components/editor/gtkhtml-spell-dialog.c:520
 msgid "_Replace"
 msgstr "প্রতিস্থাপন (_R)"
 
@@ -931,85 +929,83 @@ msgstr "নিয়ম (_R)"
 msgid "_Table"
 msgstr "সারণি (_T)"
 
-#: ../components/editor/gtkhtml-editor-private.c:431
+#: ../components/editor/gtkhtml-editor-private.c:271
 msgid "Paragraph Style"
 msgstr "অনুচ্ছেদের শৈলী"
 
-#: ../components/editor/gtkhtml-editor-private.c:445
+#: ../components/editor/gtkhtml-editor-private.c:285
 msgid "Editing Mode"
 msgstr "সম্পাদনার মোড"
 
-#: ../components/editor/gtkhtml-editor-private.c:457
+#: ../components/editor/gtkhtml-editor-private.c:297
 msgid "Font Color"
 msgstr "ফন্টের রং"
 
-#: ../components/editor/gtkhtml-editor-private.c:467
+#: ../components/editor/gtkhtml-editor-private.c:307
 msgid "Font Size"
 msgstr "ফন্টের আকার"
 
-#: ../components/editor/gtkhtml-editor-private.c:494
+#: ../components/editor/gtkhtml-editor-private.c:334
 msgid "Automatic"
 msgstr "স্বয়ংক্রিয়"
 
-#: ../components/editor/gtkhtml-editor-private.c:793
+#: ../components/editor/gtkhtml-editor-private.c:587
 msgid "Could not open the link."
 msgstr "লিংক খোলা যায়নি।"
 
-#: ../components/editor/gtkhtml-editor.c:842
+#: ../components/editor/gtkhtml-editor.c:778
 msgid "Current Folder"
 msgstr "বর্তমান ফোল্ডার"
 
-#: ../components/editor/gtkhtml-editor.c:843
+#: ../components/editor/gtkhtml-editor.c:779
 msgid "The initial folder for file chooser dialogs"
 msgstr "ফাইল নির্বাচনের ডায়লগে প্রদর্শিত প্রথম ফোল্ডার"
 
-#: ../components/editor/gtkhtml-editor.c:853
+#: ../components/editor/gtkhtml-editor.c:789
 msgid "Filename"
 msgstr "ফাইলের নাম"
 
-#: ../components/editor/gtkhtml-editor.c:854
+#: ../components/editor/gtkhtml-editor.c:790
 msgid "The filename to use when saving"
 msgstr "সংরক্ষণের জন্য ব্যবহৃত ফাইলের নাম"
 
-#: ../components/editor/gtkhtml-editor.c:864
-#| msgid "HTML editing mode"
+#: ../components/editor/gtkhtml-editor.c:800
 msgid "HTML Editing Widget"
 msgstr "HTML সম্পাদনার উইজেড"
 
-#: ../components/editor/gtkhtml-editor.c:865
-#| msgid "HTML editing mode"
+#: ../components/editor/gtkhtml-editor.c:801
 msgid "The main HTML editing widget"
 msgstr "প্রধান HTML সম্পাদনার মোড"
 
-#: ../components/editor/gtkhtml-editor.c:875
+#: ../components/editor/gtkhtml-editor.c:811
 msgid "HTML Mode"
 msgstr "HTML মোড"
 
-#: ../components/editor/gtkhtml-editor.c:876
+#: ../components/editor/gtkhtml-editor.c:812
 msgid "Edit HTML or plain text"
 msgstr "HTML অথবা সরল টেক্সট সম্পাদনা করুন"
 
-#: ../components/editor/gtkhtml-editor.c:886
+#: ../components/editor/gtkhtml-editor.c:822
 msgid "Inline Spelling"
 msgstr "ইনলাইন বানান পরীক্ষণ"
 
-#: ../components/editor/gtkhtml-editor.c:887
+#: ../components/editor/gtkhtml-editor.c:823
 msgid "Check your spelling as you type"
 msgstr "লেখার সময় বানান পরীক্ষা করুন"
 
-#: ../components/editor/gtkhtml-editor.c:897
+#: ../components/editor/gtkhtml-editor.c:833
 msgid "Magic Links"
 msgstr "ম্যাজিক লিংক"
 
-#: ../components/editor/gtkhtml-editor.c:898
+#: ../components/editor/gtkhtml-editor.c:834
 msgid "Make URIs clickable as you type"
 msgstr "URI টাইপ করার সময় সেগুলি ক্লিক করার জন্য তৈরি করা হবে"
 
-#: ../components/editor/gtkhtml-editor.c:908
+#: ../components/editor/gtkhtml-editor.c:844
 msgid "Magic Smileys"
 msgstr "ম্যাজিক স্মাইলি"
 
-#: ../components/editor/gtkhtml-editor.c:909
+#: ../components/editor/gtkhtml-editor.c:845
 msgid "Convert emoticons to images as you type"
 msgstr "টাইপ করার সময় ইমোটিকন রূপান্তর করা হবে"
 
@@ -1367,37 +1363,37 @@ msgstr "ভুল বানান"
 msgid "The current misspelled word"
 msgstr "বর্তমানে চিহ্নিত ভুল বানান"
 
-#: ../components/editor/gtkhtml-spell-dialog.c:449
+#: ../components/editor/gtkhtml-spell-dialog.c:447
 msgid "Spell Checker"
 msgstr "বানান পরীক্ষণ ব্যবস্থা"
 
 #. Replace All Button
-#: ../components/editor/gtkhtml-spell-dialog.c:536
+#: ../components/editor/gtkhtml-spell-dialog.c:534
 msgid "R_eplace All"
 msgstr "সব প্রতিস্থাপন করুন (_e)"
 
 #. Ignore Button
-#: ../components/editor/gtkhtml-spell-dialog.c:550
+#: ../components/editor/gtkhtml-spell-dialog.c:548
 msgid "_Ignore"
 msgstr "উপেক্ষা করুন (_I)"
 
 #. Skip Button
-#: ../components/editor/gtkhtml-spell-dialog.c:564
+#: ../components/editor/gtkhtml-spell-dialog.c:562
 msgid "_Skip"
 msgstr "এড়িয়ে চলুন (_S)"
 
 #. Back Button
-#: ../components/editor/gtkhtml-spell-dialog.c:577
+#: ../components/editor/gtkhtml-spell-dialog.c:575
 msgid "_Back"
 msgstr "পূর্বে (_B)"
 
 #. Dictionary Label
-#: ../components/editor/gtkhtml-spell-dialog.c:590
+#: ../components/editor/gtkhtml-spell-dialog.c:588
 msgid "Dictionary"
 msgstr "অভিধান"
 
 #. Add Word Button
-#: ../components/editor/gtkhtml-spell-dialog.c:619
+#: ../components/editor/gtkhtml-spell-dialog.c:617
 msgid "_Add Word"
 msgstr "শব্দ যোগ করুন (_A)"
 
@@ -1476,83 +1472,83 @@ msgstr "HTML সোর্স (_H)"
 msgid "_Plain Source"
 msgstr "সাধারণ সোর্স (_P)"
 
-#: ../gtkhtml/gtkhtml.c:3052
+#: ../gtkhtml/gtkhtml.c:3068
 msgid "Editable"
 msgstr "সম্পাদনযোগ্য"
 
-#: ../gtkhtml/gtkhtml.c:3053
+#: ../gtkhtml/gtkhtml.c:3069
 msgid "Whether the html can be edited"
 msgstr "html সম্পাদনযোগ্য কিনা"
 
-#: ../gtkhtml/gtkhtml.c:3059
+#: ../gtkhtml/gtkhtml.c:3075
 msgid "Document Title"
 msgstr "নথির শিরোনাম"
 
-#: ../gtkhtml/gtkhtml.c:3060
+#: ../gtkhtml/gtkhtml.c:3076
 msgid "The title of the current document"
 msgstr "বর্তমান নথির শিরোনাম"
 
-#: ../gtkhtml/gtkhtml.c:3066
+#: ../gtkhtml/gtkhtml.c:3082
 msgid "Document Base"
 msgstr "নথির ভিত্তি"
 
-#: ../gtkhtml/gtkhtml.c:3067
+#: ../gtkhtml/gtkhtml.c:3083
 msgid "The base URL for relative references"
 msgstr "আপেক্ষিক রেফারেন্সের জন্য মূল URL"
 
-#: ../gtkhtml/gtkhtml.c:3073
+#: ../gtkhtml/gtkhtml.c:3089
 msgid "Target Base"
 msgstr "টার্গেটের ভিত্তি"
 
-#: ../gtkhtml/gtkhtml.c:3074
+#: ../gtkhtml/gtkhtml.c:3090
 msgid "The base URL of the target frame"
 msgstr "টার্গেট ফ্রেমের মূল URL"
 
-#: ../gtkhtml/gtkhtml.c:3082
+#: ../gtkhtml/gtkhtml.c:3098
 msgid "Fixed Width Font"
 msgstr "নির্ধারিত প্রস্থের ফন্ট"
 
-#: ../gtkhtml/gtkhtml.c:3083
+#: ../gtkhtml/gtkhtml.c:3099
 msgid "The Monospace font to use for typewriter text"
 msgstr "টাইপরাইটার টেক্সটের ক্ষেত্রে ব্যবহৃত মোনোস্পেস ফন্ট"
 
-#: ../gtkhtml/gtkhtml.c:3089
+#: ../gtkhtml/gtkhtml.c:3105
 msgid "New Link Color"
 msgstr "নতুন লিংকের রং"
 
-#: ../gtkhtml/gtkhtml.c:3090
+#: ../gtkhtml/gtkhtml.c:3106
 msgid "The color of new link elements"
 msgstr "নতুন লিংক উপাদানের রং"
 
-#: ../gtkhtml/gtkhtml.c:3095
+#: ../gtkhtml/gtkhtml.c:3111
 msgid "Visited Link Color"
 msgstr "পরিদর্শিত লিংকের রং"
 
-#: ../gtkhtml/gtkhtml.c:3096
+#: ../gtkhtml/gtkhtml.c:3112
 msgid "The color of visited link elements"
 msgstr "পরিদর্শিত লিংকের উপাদানের রং"
 
-#: ../gtkhtml/gtkhtml.c:3101
+#: ../gtkhtml/gtkhtml.c:3117
 msgid "Active Link Color"
 msgstr "সক্রিয় লিংকের রং"
 
-#: ../gtkhtml/gtkhtml.c:3102
+#: ../gtkhtml/gtkhtml.c:3118
 msgid "The color of active link elements"
 msgstr "সক্রিয় লিংকের উপাদানের রং"
 
-#: ../gtkhtml/gtkhtml.c:3107
+#: ../gtkhtml/gtkhtml.c:3123
 msgid "Spelling Error Color"
 msgstr "ভুল বানানের রং"
 
-#: ../gtkhtml/gtkhtml.c:3108
+#: ../gtkhtml/gtkhtml.c:3124
 msgid "The color of the spelling error markers"
 msgstr "ভুল বানান চিহ্নের রং"
 
-#: ../gtkhtml/gtkhtml.c:3113
+#: ../gtkhtml/gtkhtml.c:3129
 msgid "Cite Quotation Color"
 msgstr "সাইট উদ্ধৃতির রং"
 
-#: ../gtkhtml/gtkhtml.c:3114
+#: ../gtkhtml/gtkhtml.c:3130
 msgid "The color of the cited text"
 msgstr "উদ্ধৃতির টেক্সটের রং"
 
@@ -1571,4 +1567,4 @@ msgstr "মুদ্রণের উদ্দেশ্যে ডিফল্ট 
 
 #: ../gtkhtml/test.c:364
 msgid "GtkHTML Test"
-msgstr "GtkHTML Test"
+msgstr "GtkHTML টেস্ট"

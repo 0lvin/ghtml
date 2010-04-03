@@ -11,7 +11,7 @@ msgstr ""
 "Project-Id-Version: gtkhtml\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2010-03-19 20:57+0100\n"
-"PO-Revision-Date: 2010-03-19 21:01+0100\n"
+"PO-Revision-Date: 2010-04-02 18:30+0200\n"
 "Last-Translator: Gil Forcada <gilforcada@guifi.net>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
 "MIME-Version: 1.0\n"
@@ -1348,7 +1348,7 @@ msgstr "L'idioma que utilitza el verificador ortogràfic"
 #: ../components/editor/gtkhtml-spell-dialog.c:117
 #, c-format
 msgid "Suggestions for \"%s\""
-msgstr "Suggerències per a «%s»"
+msgstr "Suggeriments per a «%s»"
 
 #: ../components/editor/gtkhtml-spell-dialog.c:358
 msgid "Misspelled Word"

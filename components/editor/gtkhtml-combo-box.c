@@ -320,8 +320,8 @@ combo_box_class_init (GtkhtmlComboBoxClass *class)
 		PROP_ACTION,
 		g_param_spec_object (
 			"action",
-			_("Action"),
-			_("A GtkRadioAction"),
+			"Action",
+			"A GtkRadioAction",
 			GTK_TYPE_RADIO_ACTION,
 			G_PARAM_READWRITE));
 }

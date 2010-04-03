@@ -202,8 +202,8 @@ color_state_class_init (GtkhtmlColorStateClass *class)
 		PROP_CURRENT_COLOR,
 		g_param_spec_boxed (
 			"current-color",
-			_("Current color"),
-			_("The current color"),
+			"Current color",
+			"The current color",
 			GDK_TYPE_COLOR,
 			G_PARAM_READWRITE));
 
@@ -212,8 +212,8 @@ color_state_class_init (GtkhtmlColorStateClass *class)
 		PROP_DEFAULT_COLOR,
 		g_param_spec_boxed (
 			"default-color",
-			_("Default color"),
-			_("The default color"),
+			"Default color",
+			"The default color",
 			GDK_TYPE_COLOR,
 			G_PARAM_CONSTRUCT |
 			G_PARAM_READWRITE));
@@ -223,8 +223,8 @@ color_state_class_init (GtkhtmlColorStateClass *class)
 		PROP_DEFAULT_LABEL,
 		g_param_spec_string (
 			"default-label",
-			_("Default label"),
-			_("Description of the default color"),
+			"Default label",
+			"Description of the default color",
 			_("Default"),
 			G_PARAM_CONSTRUCT |
 			G_PARAM_READWRITE));
@@ -234,8 +234,8 @@ color_state_class_init (GtkhtmlColorStateClass *class)
 		PROP_DEFAULT_TRANSPARENT,
 		g_param_spec_boolean (
 			"default-transparent",
-			_("Default is transparent"),
-			_("Whether the default color is transparent"),
+			"Default is transparent",
+			"Whether the default color is transparent",
 			FALSE,
 			G_PARAM_CONSTRUCT |
 			G_PARAM_READWRITE));
@@ -245,8 +245,8 @@ color_state_class_init (GtkhtmlColorStateClass *class)
 		PROP_PALETTE,
 		g_param_spec_object (
 			"palette",
-			_("Color palette"),
-			_("Custom color palette"),
+			"Color palette",
+			"Custom color palette",
 			GTKHTML_TYPE_COLOR_PALETTE,
 			G_PARAM_READWRITE));
 

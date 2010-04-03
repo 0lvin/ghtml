@@ -775,8 +775,8 @@ editor_class_init (GtkhtmlEditorClass *class)
 		PROP_CURRENT_FOLDER,
 		g_param_spec_string (
 			"current-folder",
-			_("Current Folder"),
-			_("The initial folder for file chooser dialogs"),
+			"Current Folder",
+			"The initial folder for file chooser dialogs",
 			g_get_home_dir (),
 			G_PARAM_READWRITE |
 			G_PARAM_CONSTRUCT));
@@ -786,8 +786,8 @@ editor_class_init (GtkhtmlEditorClass *class)
 		PROP_FILENAME,
 		g_param_spec_string (
 			"filename",
-			_("Filename"),
-			_("The filename to use when saving"),
+			"Filename",
+			"The filename to use when saving",
 			NULL,
 			G_PARAM_READWRITE |
 			G_PARAM_CONSTRUCT));
@@ -797,8 +797,8 @@ editor_class_init (GtkhtmlEditorClass *class)
 		PROP_HTML,
 		g_param_spec_object (
 			"html",
-			_("HTML Editing Widget"),
-			_("The main HTML editing widget"),
+			"HTML Editing Widget",
+			"The main HTML editing widget",
 			GTK_TYPE_HTML,
 			G_PARAM_READWRITE |
 			G_PARAM_CONSTRUCT_ONLY));
@@ -808,8 +808,8 @@ editor_class_init (GtkhtmlEditorClass *class)
 		PROP_HTML_MODE,
 		g_param_spec_boolean (
 			"html-mode",
-			_("HTML Mode"),
-			_("Edit HTML or plain text"),
+			"HTML Mode",
+			"Edit HTML or plain text",
 			TRUE,
 			G_PARAM_READWRITE |
 			G_PARAM_CONSTRUCT));
@@ -819,8 +819,8 @@ editor_class_init (GtkhtmlEditorClass *class)
 		PROP_INLINE_SPELLING,
 		g_param_spec_boolean (
 			"inline-spelling",
-			_("Inline Spelling"),
-			_("Check your spelling as you type"),
+			"Inline Spelling",
+			"Check your spelling as you type",
 			TRUE,
 			G_PARAM_READWRITE |
 			G_PARAM_CONSTRUCT));
@@ -830,8 +830,8 @@ editor_class_init (GtkhtmlEditorClass *class)
 		PROP_MAGIC_LINKS,
 		g_param_spec_boolean (
 			"magic-links",
-			_("Magic Links"),
-			_("Make URIs clickable as you type"),
+			"Magic Links",
+			"Make URIs clickable as you type",
 			TRUE,
 			G_PARAM_READWRITE |
 			G_PARAM_CONSTRUCT));
@@ -841,8 +841,8 @@ editor_class_init (GtkhtmlEditorClass *class)
 		PROP_MAGIC_SMILEYS,
 		g_param_spec_boolean (
 			"magic-smileys",
-			_("Magic Smileys"),
-			_("Convert emoticons to images as you type"),
+			"Magic Smileys",
+			"Convert emoticons to images as you type",
 			TRUE,
 			G_PARAM_READWRITE |
 			G_PARAM_CONSTRUCT));

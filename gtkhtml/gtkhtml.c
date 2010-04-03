@@ -2122,7 +2122,7 @@ button_release_event (GtkWidget *initial_widget,
 
 	engine =  html->engine;
 
-	if (html->in_selection) {
+	if (html->in_selection && !html->priv->dnd_in_progress) {
 		html_engine_update_selection_active_state (html->engine, html->priv->event_time);
 		if (html->in_selection_drag)
 			html_engine_select_region (engine, html->selection_x1, html->selection_y1,
@@ -3142,29 +3142,29 @@ gtk_html_class_init (GtkHTMLClass *klass)
 	g_object_class_install_property (gobject_class,
 					 PROP_EDITABLE,
 					 g_param_spec_boolean ("editable",
-							       _("Editable"),
-							       _("Whether the html can be edited"),
+							       "Editable",
+							       "Whether the html can be edited",
 							       FALSE,
 							       G_PARAM_READABLE | G_PARAM_WRITABLE));
 	g_object_class_install_property (gobject_class,
 					 PROP_TITLE,
 					 g_param_spec_string ("title",
-							      _("Document Title"),
-							      _("The title of the current document"),
+							      "Document Title",
+							      "The title of the current document",
 							      NULL,
 							      G_PARAM_WRITABLE | G_PARAM_READABLE));
 	g_object_class_install_property (gobject_class,
 					 PROP_DOCUMENT_BASE,
 					 g_param_spec_string ("document_base",
-							      _("Document Base"),
-							      _("The base URL for relative references"),
+							      "Document Base",
+							      "The base URL for relative references",
 							      NULL,
 							      G_PARAM_WRITABLE | G_PARAM_READABLE));
 	g_object_class_install_property (gobject_class,
 					 PROP_TARGET_BASE,
 					 g_param_spec_string ("target_base",
-							      _("Target Base"),
-							      _("The base URL of the target frame"),
+							      "Target Base",
+							      "The base URL of the target frame",
 							      NULL,
 							      G_PARAM_WRITABLE | G_PARAM_READABLE));
 
@@ -3172,39 +3172,39 @@ gtk_html_class_init (GtkHTMLClass *klass)
 
 	gtk_widget_class_install_style_property (widget_class,
 						 g_param_spec_string ("fixed_font_name",
-								     _("Fixed Width Font"),
-								     _("The Monospace font to use for typewriter text"),
+								     "Fixed Width Font",
+								     "The Monospace font to use for typewriter text",
 								     NULL,
 								     G_PARAM_READABLE));
 
 	gtk_widget_class_install_style_property (widget_class,
 						 g_param_spec_boxed ("link_color",
-								     _("New Link Color"),
-								     _("The color of new link elements"),
+								     "New Link Color",
+								     "The color of new link elements",
 								     GDK_TYPE_COLOR,
 								     G_PARAM_READABLE));
 	gtk_widget_class_install_style_property (widget_class,
 						 g_param_spec_boxed ("vlink_color",
-								     _("Visited Link Color"),
-								     _("The color of visited link elements"),
+								     "Visited Link Color",
+								     "The color of visited link elements",
 								     GDK_TYPE_COLOR,
 								     G_PARAM_READABLE));
 	gtk_widget_class_install_style_property (widget_class,
 						 g_param_spec_boxed ("alink_color",
-								     _("Active Link Color"),
-								     _("The color of active link elements"),
+								     "Active Link Color",
+								     "The color of active link elements",
 								     GDK_TYPE_COLOR,
 								     G_PARAM_READABLE));
 	gtk_widget_class_install_style_property (widget_class,
 						 g_param_spec_boxed ("spell_error_color",
-								     _("Spelling Error Color"),
-								     _("The color of the spelling error markers"),
+								     "Spelling Error Color",
+								     "The color of the spelling error markers",
 								     GDK_TYPE_COLOR,
 								     G_PARAM_READABLE));
 	gtk_widget_class_install_style_property (widget_class,
 						 g_param_spec_boxed ("cite_color",
-								     _("Cite Quotation Color"),
-								     _("The color of the cited text"),
+								     "Cite Quotation Color",
+								     "The color of the cited text",
 								     GDK_TYPE_COLOR,
 								     G_PARAM_READABLE));
 

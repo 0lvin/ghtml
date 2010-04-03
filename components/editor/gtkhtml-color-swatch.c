@@ -179,8 +179,8 @@ color_swatch_class_init (GtkhtmlColorSwatchClass *class)
 		PROP_COLOR,
 		g_param_spec_boxed (
 			"color",
-			_("Color"),
-			_("The current color"),
+			"Color",
+			"The current color",
 			GDK_TYPE_COLOR,
 			G_PARAM_READWRITE));
 
@@ -189,8 +189,8 @@ color_swatch_class_init (GtkhtmlColorSwatchClass *class)
 		PROP_SHADOW_TYPE,
 		g_param_spec_enum (
 			"shadow-type",
-			_("Frame Shadow"),
-			_("Appearance of the frame border"),
+			"Frame Shadow",
+			"Appearance of the frame border",
 			GTK_TYPE_SHADOW_TYPE,
 			GTK_SHADOW_ETCHED_IN,
 			G_PARAM_READWRITE));

@@ -197,8 +197,8 @@ spell_checker_class_init (GtkhtmlSpellCheckerClass *class)
 		PROP_LANGUAGE,
 		g_param_spec_boxed (
 			"language",
-			_("Language"),
-			_("The language used by the spell checker"),
+			"Language",
+			"The language used by the spell checker",
 			GTKHTML_TYPE_SPELL_LANGUAGE,
 			G_PARAM_CONSTRUCT_ONLY |
 			G_PARAM_READWRITE));

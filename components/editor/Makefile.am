@@ -100,7 +100,6 @@ ui_DATA = \
 	gtkhtml-editor-manager.ui
 
 EXTRA_DIST = \
-	ChangeLog				\
 	$(pkgconfig_DATA)			\
 	$(ui_DATA)				\
 	gtkhtml-editor-marshal.list		\

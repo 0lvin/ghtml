@@ -1579,11 +1579,11 @@ get_start_indent_item (HTMLListType type)
 	case HTML_LIST_TYPE_BLOCKQUOTE:
 		return "BLOCKQUOTE";
 	case HTML_LIST_TYPE_CIRCLE:
-		return "OL TYPE=circle";
+		return "OL TYPE=CIRCLE";
 	case HTML_LIST_TYPE_DISC:
-		return "OL TYPE=disc";
+		return "OL TYPE=DISC";
 	case HTML_LIST_TYPE_SQUARE:
-		return "OL TYPE=square";
+		return "OL TYPE=SQUARE";
 	}
 	return "";
 }

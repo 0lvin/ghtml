@@ -355,8 +355,8 @@ spell_dialog_class_init (GtkhtmlSpellDialogClass *class)
 		PROP_WORD,
 		g_param_spec_string (
 			"word",
-			_("Misspelled Word"),
-			_("The current misspelled word"),
+			"Misspelled Word",
+			"The current misspelled word",
 			NULL,
 			G_PARAM_READWRITE));
 
