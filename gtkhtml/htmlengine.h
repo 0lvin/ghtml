@@ -88,6 +88,7 @@ struct _HTMLEngine {
 	gboolean enableconvert;        /*enable convert encoding*/
 	gchar * content_type;          /*current encoding*/
 	gchar * css;                   /* current css */
+	xmlNode* rootNode;
 
 	gboolean parsing;
 	xmlParserCtxtPtr parser;    /*html parser*/

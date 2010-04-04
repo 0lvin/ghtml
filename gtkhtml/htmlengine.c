@@ -308,6 +308,7 @@ void tag_func_td                  (TAG_FUNC_PARAM);
 void element_parse_nodedump_htmlobject_one(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLObject* parentclue, HTMLStyle *parent_style, gint *count);
 void element_parse_nodedump_htmlobject  (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLObject* parentclue, HTMLStyle *parent_style);
 #endif
+void           process_node             (xmlNode* node, const gchar * css);
 void           html_element_parse_styleattrs (HTMLElement *node);
 void           set_style_to_text        (HTMLText *text, HTMLStyle *style, HTMLEngine *e, gint start_index, gint end_index);
 HTMLObject*    create_from_xml_fix_align(HTMLObject *o, HTMLElement *element, gint max_width);
@@ -3442,6 +3443,7 @@ html_engine_init (HTMLEngine *engine)
 	engine->content_type = g_strdup (default_content_type);
 	engine->title = NULL;
 	engine->css = NULL;
+	engine->rootNode = NULL;
 }
 
 HTMLEngine *
@@ -4021,6 +4023,10 @@ elementtree_parse_style_in_node(xmlNode* xmlelement, gint pos, HTMLEngine *e)
 					if(!e->css)
 						e->css = g_strdup("");
 					old = e->css;
+					/* approve after*/
+					if(e->rootNode)
+						process_node(e->rootNode, XMLCHAR2GCHAR(xmlelement->children->content));
+					
 					e->css = g_strconcat(e->css, XMLCHAR2GCHAR(xmlelement->children->content), NULL);
 					g_free(old);
 					//
@@ -5883,7 +5889,7 @@ void process_element(xmlNode* element, CRCascade *cascade, CRSelEng *selector)
 }
 
 /*process css on node*/
-static void
+void
 process_node(xmlNode* node, const gchar * css)
 {
 	enum CRStatus status  = CR_OK; /* status for libcroco operations */
@@ -5982,7 +5988,6 @@ html_engine_stream_end (GtkHTMLStream *stream,
 			gpointer data)
 {
 	HTMLEngine *e;
-	xmlNode* root = NULL;
 
 	e = HTML_ENGINE (data);
 
@@ -5995,23 +6000,24 @@ html_engine_stream_end (GtkHTMLStream *stream,
 
 	if (e->parser)
 		if (e->parser->myDoc)
-			root = xmlDocGetRootElement(e->parser->myDoc);
-	if(root) {
+			e->rootNode = xmlDocGetRootElement(e->parser->myDoc);
+	if(e->rootNode) {
 		e->eat_space = FALSE;
 		/*elementtree_parse_dumpnode(root, 0);*/
 #ifndef USEOLDRENDER
-		element_parse_nodedump_htmlobject(root, 0, e, e->parser_clue, e->parser_clue, style_from_engine(e));
+		element_parse_nodedump_htmlobject(e->rootNode, 0, e, e->parser_clue, e->parser_clue, style_from_engine(e));
 #else
-		stupid_render(e, e->parser_clue, root);
+		stupid_render(e, e->parser_clue, e->rootNode);
 #endif
 		if (e->css) {
-			html_engine_parse (e);
-			process_node(root, e->css);
+		/*	html_engine_parse (e);
+			process_node(e->rootNode, e->css);
 #ifndef USEOLDRENDER
-			element_parse_nodedump_htmlobject(root, 0, e, e->parser_clue, e->parser_clue, style_from_engine(e));
+			element_parse_nodedump_htmlobject(e->rootNode, 0, e, e->parser_clue, e->parser_clue, style_from_engine(e));
 #else
-			stupid_render(e, e->parser_clue, root);
+			stupid_render(e, e->parser_clue, e->rootNode);
 #endif
+         */
 			g_free(e->css);
 			e->css = NULL;
 		}
