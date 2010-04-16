@@ -192,6 +192,8 @@ gtkhtml_editor_private_init (GtkhtmlEditor *editor)
 	filename = gtkhtml_editor_find_data_file ("gtkhtml-editor-builder.ui");
 
 	priv->builder = gtk_builder_new ();
+	/* To keep translated strings in subclasses */
+        gtk_builder_set_translation_domain (priv->builder, GETTEXT_PACKAGE);
 	if (!gtk_builder_add_from_file (priv->builder, filename, &error)) {
 		g_critical ("Couldn't load builder file: %s\n", error->message);
 		g_clear_error (&error);

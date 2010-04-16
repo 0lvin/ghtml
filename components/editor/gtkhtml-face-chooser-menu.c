@@ -18,7 +18,10 @@
  * Boston, MA 02111-1307, USA.
  */
 
+#include "gtkhtml-face-chooser.h"
 #include "gtkhtml-face-chooser-menu.h"
+
+#include <glib/gi18n-lib.h>
 
 #define GTKHTML_FACE_CHOOSER_MENU_GET_PRIVATE(obj) \
 	(G_TYPE_INSTANCE_GET_PRIVATE \
@@ -147,7 +150,8 @@ face_chooser_menu_init (GtkhtmlFaceChooserMenu *chooser_menu)
 		GtkhtmlFace *face = iter->data;
 		GtkWidget *item;
 
-		item = gtk_image_menu_item_new_with_mnemonic (face->label);
+		/* To keep translated strings in subclasses */
+		item = gtk_image_menu_item_new_with_mnemonic (_(face->label));
 		gtk_image_menu_item_set_image (
 			GTK_IMAGE_MENU_ITEM (item),
 			gtk_image_new_from_icon_name (
