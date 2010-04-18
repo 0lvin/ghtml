@@ -403,11 +403,7 @@ html_engine_activate_selection (HTMLEngine *e, guint32 time)
 {
 	/* printf ("activate selection\n"); */
 
-#if GTK_CHECK_VERSION(2,19,7)
 	if (e->selection && e->block_selection == 0 && gtk_widget_get_realized (GTK_WIDGET (e->widget))) {
-#else
-	if (e->selection && e->block_selection == 0 && GTK_WIDGET_REALIZED (e->widget)) {
-#endif
 		gtk_selection_owner_set (GTK_WIDGET (e->widget), GDK_SELECTION_PRIMARY, time);
 		/* printf ("activated (%u).\n", time); */
 		clear_primary (e);

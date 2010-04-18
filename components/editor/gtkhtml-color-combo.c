@@ -152,6 +152,7 @@ color_combo_reposition_window (GtkhtmlColorCombo *combo)
 	GdkScreen *screen;
 	GdkWindow *window;
 	GdkRectangle monitor;
+	GtkAllocation allocation;
 	gint monitor_num;
 	gint x, y, width, height;
 
@@ -163,12 +164,14 @@ color_combo_reposition_window (GtkhtmlColorCombo *combo)
 	gdk_window_get_origin (window, &x, &y);
 
 	if (!gtk_widget_get_has_window (GTK_WIDGET (combo))) {
-		x += GTK_WIDGET (combo)->allocation.x;
-		y += GTK_WIDGET (combo)->allocation.y;
+		gtk_widget_get_allocation (GTK_WIDGET (combo), &allocation);
+		x += allocation.x;
+		y += allocation.y;
 	}
 
-	width = combo->priv->window->allocation.width;
-	height = combo->priv->window->allocation.height;
+	gtk_widget_get_allocation (combo->priv->window, &allocation);
+	width = allocation.width;
+	height = allocation.height;
 
 	x = CLAMP (x, monitor.x, monitor.x + monitor.width - width);
 	y = CLAMP (y, monitor.y, monitor.y + monitor.height - height);
@@ -615,7 +618,7 @@ color_combo_size_allocate (GtkWidget *widget,
 
 	priv = GTKHTML_COLOR_COMBO_GET_PRIVATE (widget);
 
-	widget->allocation = *allocation;
+	gtk_widget_set_allocation (widget, allocation);
 	gtk_widget_size_allocate (priv->toggle_button, allocation);
 }
 
@@ -628,11 +631,7 @@ color_combo_popup (GtkhtmlColorCombo *combo)
 	GdkGrabStatus status;
 	const gchar *label;
 
-#if GTK_CHECK_VERSION(2,19,7)
 	if (!gtk_widget_get_realized (GTK_WIDGET (combo)))
-#else
-	if (!GTK_WIDGET_REALIZED (combo))
-#endif
 		return;
 
 	if (combo->priv->popup_shown)
@@ -679,11 +678,7 @@ color_combo_popdown (GtkhtmlColorCombo *combo)
 {
 	GtkToggleButton *toggle_button;
 
-#if GTK_CHECK_VERSION(2,19,7)
 	if (!gtk_widget_get_realized (GTK_WIDGET (combo)))
-#else
-	if (!GTK_WIDGET_REALIZED (combo))
-#endif
 		return;
 
 	if (!combo->priv->popup_shown)

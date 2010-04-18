@@ -6889,11 +6889,7 @@ thaw_idle (gpointer data)
 
 	if (redraw_whole) {
 		html_engine_queue_redraw_all (e);
-#if GTK_CHECK_VERSION(2,19,7)
 	} else if (gtk_widget_get_realized (GTK_WIDGET (e->widget))) {
-#else
-	} else if (GTK_WIDGET_REALIZED (e->widget)) {
-#endif
 		gint nw, nh;
 		GdkRegion *region = gdk_region_new ();
 		GdkRectangle paint;
@@ -7273,19 +7269,29 @@ html_engine_set_painter (HTMLEngine *e, HTMLPainter *painter)
 gint
 html_engine_get_view_width (HTMLEngine *e)
 {
+	GtkAllocation allocation;
+
 	g_return_val_if_fail (HTML_IS_ENGINE (e), 0);
+
+	gtk_widget_get_allocation (GTK_WIDGET (e->widget), &allocation);
+
 	return MAX (0, (e->widget->iframe_parent
 		? html_engine_get_view_width (GTK_HTML (e->widget->iframe_parent)->engine)
-		: GTK_WIDGET (e->widget)->allocation.width) - (html_engine_get_left_border (e) + html_engine_get_right_border (e)));
+		: allocation.width) - (html_engine_get_left_border (e) + html_engine_get_right_border (e)));
 }
 
 gint
 html_engine_get_view_height (HTMLEngine *e)
 {
+	GtkAllocation allocation;
+
 	g_return_val_if_fail (HTML_IS_ENGINE (e), 0);
+
+	gtk_widget_get_allocation (GTK_WIDGET (e->widget), &allocation);
+
 	return MAX (0, (e->widget->iframe_parent
 		? html_engine_get_view_height (GTK_HTML (e->widget->iframe_parent)->engine)
-		: GTK_WIDGET (e->widget)->allocation.height) - (html_engine_get_top_border (e) + html_engine_get_bottom_border (e)));
+		: allocation.height) - (html_engine_get_top_border (e) + html_engine_get_bottom_border (e)));
 }
 
 /* beginnings of ID support */
@@ -7478,11 +7484,7 @@ html_engine_queue_redraw_all (HTMLEngine *e)
 	clear_pending_expose (e);
 	html_draw_queue_clear (e->draw_queue);
 
-#if GTK_CHECK_VERSION(2,19,7)
 	if (gtk_widget_get_realized (GTK_WIDGET (e->widget))) {
-#else
-	if (GTK_WIDGET_REALIZED (e->widget)) {
-#endif
 		gtk_widget_queue_draw (GTK_WIDGET (e->widget));
 	}
 }

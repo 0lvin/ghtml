@@ -152,7 +152,7 @@ color_swatch_size_allocate (GtkWidget *widget,
 
 	priv = GTKHTML_COLOR_SWATCH_GET_PRIVATE (widget);
 
-	widget->allocation = *allocation;
+	gtk_widget_set_allocation (widget, allocation);
 	gtk_widget_size_allocate (priv->frame, allocation);
 }
 

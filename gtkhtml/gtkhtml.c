@@ -578,11 +578,7 @@ scroll_update_mouse (GtkWidget *widget)
 	GdkWindow *bin_window;
 	gint x, y;
 
-#if GTK_CHECK_VERSION(2,19,7)
 	if (!gtk_widget_get_realized (widget))
-#else
-	if (!GTK_WIDGET_REALIZED (widget))
-#endif
 		return;
 
 	window = gtk_widget_get_window (widget);
@@ -695,7 +691,7 @@ scroll_timeout_cb (gpointer data)
 	GdkWindow *window;
 	GtkHTML *html;
 	HTMLEngine *engine;
-
+	GtkAllocation allocation;
 	GtkAdjustment *hadjustment;
 	GtkAdjustment *vadjustment;
 	gint x_scroll, y_scroll;
@@ -710,13 +706,15 @@ scroll_timeout_cb (gpointer data)
 	window = gtk_widget_get_window (widget);
 	gdk_window_get_pointer (window, &x, &y, NULL);
 
+	gtk_widget_get_allocation (widget, &allocation);
+
 	if (x < 0) {
 		x_scroll = x;
 		if (x + engine->x_offset >= 0)
 			x = 0;
-	} else if (x >= widget->allocation.width) {
-		x_scroll = x - widget->allocation.width + 1;
-		x = widget->allocation.width;
+	} else if (x >= allocation.width) {
+		x_scroll = x - allocation.width + 1;
+		x = allocation.width;
 	} else {
 		x_scroll = 0;
 	}
@@ -726,9 +724,9 @@ scroll_timeout_cb (gpointer data)
 		y_scroll = y;
 		if (y + engine->y_offset >= 0)
 			y = 0;
-	} else if (y >= widget->allocation.height) {
-		y_scroll = y - widget->allocation.height + 1;
-		y = widget->allocation.height;
+	} else if (y >= allocation.height) {
+		y_scroll = y - allocation.height + 1;
+		y = allocation.height;
 	} else {
 		y_scroll = 0;
 	}
@@ -742,9 +740,9 @@ scroll_timeout_cb (gpointer data)
 	vadjustment = gtk_layout_get_vadjustment (GTK_LAYOUT (widget));
 
 	inc_adjustment (hadjustment, html_engine_get_doc_width (html->engine),
-			widget->allocation.width, x_scroll);
+			allocation.width, x_scroll);
 	inc_adjustment (vadjustment, html_engine_get_doc_height (html->engine),
-			widget->allocation.height, y_scroll);
+			allocation.height, y_scroll);
 
 	GDK_THREADS_LEAVE ();
 
@@ -1490,11 +1488,7 @@ mouse_change_pos (GtkWidget *widget, GdkWindow *window, gint x, gint y, gint sta
 	HTMLType type;
 	gint offset;
 
-#if GTK_CHECK_VERSION(2,19,7)
 	if (!gtk_widget_get_realized (widget))
-#else
-	if (!GTK_WIDGET_REALIZED (widget))
-#endif
 		return FALSE;
 
 	html   = GTK_HTML (widget);
@@ -1502,7 +1496,10 @@ mouse_change_pos (GtkWidget *widget, GdkWindow *window, gint x, gint y, gint sta
 	obj    = html_engine_get_object_at (engine, x, y, (guint *) &offset, FALSE);
 
 	if ((html->in_selection || html->in_selection_drag) && html->allow_selection) {
+		GtkAllocation allocation;
 		gboolean need_scroll;
+
+		gtk_widget_get_allocation (widget, &allocation);
 
 		if (obj) {
 			type = HTML_OBJECT_TYPE (obj);
@@ -1532,13 +1529,13 @@ mouse_change_pos (GtkWidget *widget, GdkWindow *window, gint x, gint y, gint sta
 
 		if (x < html->engine->x_offset) {
 			need_scroll = TRUE;
-		} else if (x >= widget->allocation.width) {
+		} else if (x >= allocation.width) {
 			need_scroll = TRUE;
 		}
 
 		if (y < html->engine->y_offset) {
 			need_scroll = TRUE;
-		} else if (y >= widget->allocation.height) {
+		} else if (y >= allocation.height) {
 			need_scroll = TRUE;
 		}
 
@@ -1819,10 +1816,14 @@ static GtkWidget *
 shift_to_iframe_parent (GtkWidget *widget, gint *x, gint *y)
 {
 	while (GTK_HTML (widget)->iframe_parent) {
+		GtkAllocation allocation;
+
+		gtk_widget_get_allocation (widget, &allocation);
+
 		if (x)
-			*x += widget->allocation.x - GTK_HTML (widget)->engine->x_offset;
+			*x += allocation.x - GTK_HTML (widget)->engine->x_offset;
 		if (y)
-			*y += widget->allocation.y - GTK_HTML (widget)->engine->y_offset;
+			*y += allocation.y - GTK_HTML (widget)->engine->y_offset;
 
 		widget = GTK_HTML (widget)->iframe_parent;
 
@@ -2227,7 +2228,6 @@ focus_in_event (GtkWidget *widget,
 
 	/* printf ("focus in\n"); */
 	if (!html->iframe_parent) {
-		GTK_WIDGET_SET_FLAGS (widget, GTK_HAS_FOCUS);
 		if (html->engine->cursor && html->engine->cursor->position == 0 && html->engine->caret_mode)
 			goto_caret_anchor (html);
 		html_engine_set_focus (html->engine, TRUE);
@@ -2258,7 +2258,6 @@ focus_out_event (GtkWidget *widget,
 	html_engine_redraw_selection (html->engine);
 	/* printf ("focus out\n"); */
 	if (!html->iframe_parent) {
-		GTK_WIDGET_UNSET_FLAGS (widget, GTK_HAS_FOCUS);
 		html_engine_set_focus (html->engine, FALSE);
 	}
 
@@ -3493,8 +3492,8 @@ gtk_html_im_delete_surrounding_cb (GtkIMContext *slave, gint offset, gint n_char
 static void
 gtk_html_init (GtkHTML* html)
 {
-	GTK_WIDGET_SET_FLAGS (GTK_WIDGET (html), GTK_CAN_FOCUS);
-	GTK_WIDGET_SET_FLAGS (GTK_WIDGET (html), GTK_APP_PAINTABLE);
+	gtk_widget_set_can_focus (GTK_WIDGET (html), TRUE);
+	gtk_widget_set_app_paintable (GTK_WIDGET (html), TRUE);
 
 	html->editor_api = NULL;
 	html->debug = FALSE;
@@ -4037,11 +4036,7 @@ gtk_html_private_calc_scrollbars (GtkHTML *html, gboolean *changed_x, gboolean *
 	gint width, height;
 	gdouble value;
 
-#if GTK_CHECK_VERSION(2,19,7)
 	if (!gtk_widget_get_realized (GTK_WIDGET (html)))
-#else
-	if (!GTK_WIDGET_REALIZED (html))
-#endif
 		return;
 
 	/* printf ("calc scrollbars\n"); */
@@ -5058,22 +5053,24 @@ cursor_move (GtkHTML *html, GtkDirectionType dir_type, GtkHTMLCursorSkipType ski
 		}
 		break;
 	case GTK_HTML_CURSOR_SKIP_PAGE: {
+		GtkAllocation allocation;
 		gint line_height;
 
-		line_height =  GTK_WIDGET (html)->allocation.height > (3 * get_line_height (html))
+		gtk_widget_get_allocation (GTK_WIDGET (html), &allocation);
+		line_height = allocation.height > (3 * get_line_height (html))
 			? get_line_height (html) : 0;
 
 		switch (dir_type) {
 		case GTK_DIR_UP:
 		case GTK_DIR_LEFT:
 			if ((amount = html_engine_scroll_up (html->engine,
-							     GTK_WIDGET (html)->allocation.height - line_height)) > 0)
+							     allocation.height - line_height)) > 0)
 				scroll_by_amount (html, - amount);
 			break;
 		case GTK_DIR_DOWN:
 		case GTK_DIR_RIGHT:
 			if ((amount = html_engine_scroll_down (html->engine,
-							       GTK_WIDGET (html)->allocation.height - line_height)) > 0)
+							       allocation.height - line_height)) > 0)
 				scroll_by_amount (html, amount);
 			break;
 		default:
@@ -5114,11 +5111,14 @@ cursor_move (GtkHTML *html, GtkDirectionType dir_type, GtkHTMLCursorSkipType ski
 static gboolean
 move_selection (GtkHTML *html, GtkHTMLCommandType com_type)
 {
+	GtkAllocation allocation;
 	gboolean rv;
 	gint amount;
 
 	if (!html_engine_get_editable (html->engine) && !html->engine->caret_mode)
 		return FALSE;
+
+	gtk_widget_get_allocation (GTK_WIDGET (html), &allocation);
 
 	html->priv->cursor_moved = TRUE;
 	html->engine->shift_selection = TRUE;
@@ -5158,14 +5158,14 @@ move_selection (GtkHTML *html, GtkHTMLCommandType com_type)
 		rv = html_engine_forward_word (html->engine);
 		break;
 	case GTK_HTML_COMMAND_MODIFY_SELECTION_PAGEUP:
-		if ((amount = html_engine_scroll_up (html->engine, GTK_WIDGET (html)->allocation.height)) > 0) {
+		if ((amount = html_engine_scroll_up (html->engine, allocation.height)) > 0) {
 			scroll_by_amount (html, - amount);
 			rv = TRUE;
 		} else
 			rv = FALSE;
 		break;
 	case GTK_HTML_COMMAND_MODIFY_SELECTION_PAGEDOWN:
-		if ((amount = html_engine_scroll_down (html->engine, GTK_WIDGET (html)->allocation.height)) > 0) {
+		if ((amount = html_engine_scroll_down (html->engine, allocation.height)) > 0) {
 			scroll_by_amount (html, amount);
 			rv = TRUE;
 		} else

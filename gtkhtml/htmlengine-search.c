@@ -44,8 +44,13 @@ add_iframe_off (HTMLEngine *e, gint *x, gint *y)
 	g_assert (e->widget);
 
 	if (e->widget->iframe_parent) {
-		*x += e->widget->iframe_parent->allocation.x;
-		*y += e->widget->iframe_parent->allocation.y;
+		GtkAllocation allocation;
+
+		gtk_widget_get_allocation (
+			e->widget->iframe_parent, &allocation);
+
+		*x += allocation.x;
+		*y += allocation.y;
 	}
 }
 

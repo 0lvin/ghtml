@@ -223,8 +223,11 @@ gtk_html_embedded_size_request (GtkWidget *widget, GtkRequisition *requisition)
 	if (child) {
 		gtk_widget_size_request (child, requisition);
 	} else {
-		requisition->width = widget->requisition.width;
-		requisition->height = widget->requisition.height;
+		GtkRequisition self_requisition;
+
+		gtk_widget_get_requisition (widget, &self_requisition);
+		requisition->width = self_requisition.width;
+		requisition->height = self_requisition.height;
 	}
 }
 
@@ -241,7 +244,7 @@ gtk_html_embedded_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	if (child && gtk_widget_get_visible (child)) {
 		gtk_widget_size_allocate (child, allocation);
 	}
-	widget->allocation = *allocation;
+	gtk_widget_set_allocation (widget, allocation);
 }
 
 static void
