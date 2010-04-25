@@ -279,34 +279,34 @@ struct _HTMLElement {
 };
 
 #ifndef USEOLDRENDER
-void tag_func_data                (TAG_FUNC_PARAM);
-void tag_func_text                (TAG_FUNC_PARAM);
-void tag_func_base                (TAG_FUNC_PARAM);
-void tag_func_hidden              (TAG_FUNC_PARAM);
-void tag_func_head                (TAG_FUNC_PARAM);
-void tag_func_hr                  (TAG_FUNC_PARAM);
-void tag_func_li                  (TAG_FUNC_PARAM);
-void tag_func_simple_tag          (TAG_FUNC_PARAM);
-void tag_func_body                (TAG_FUNC_PARAM);
-void tag_func_br                  (TAG_FUNC_PARAM);
-void tag_func_font                (TAG_FUNC_PARAM);
-void tag_func_input               (TAG_FUNC_PARAM);
-void tag_func_object              (TAG_FUNC_PARAM);
-void tag_func_map                 (TAG_FUNC_PARAM);
-void tag_func_frameset            (TAG_FUNC_PARAM);
-void tag_func_frame               (TAG_FUNC_PARAM);
-void tag_func_table               (TAG_FUNC_PARAM);
-void tag_func_simple_without_flow (TAG_FUNC_PARAM);
-void tag_func_img                 (TAG_FUNC_PARAM);
-void tag_func_iframe              (TAG_FUNC_PARAM);
-void tag_func_textarea            (TAG_FUNC_PARAM);
-void tag_func_select              (TAG_FUNC_PARAM);
-void tag_func_style               (TAG_FUNC_PARAM);
-void tag_func_form                (TAG_FUNC_PARAM);
-void tag_func_tr                  (TAG_FUNC_PARAM);
-void tag_func_td                  (TAG_FUNC_PARAM);
-void element_parse_nodedump_htmlobject_one(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLObject* parentclue, HTMLStyle *parent_style, gint *count);
-void element_parse_nodedump_htmlobject  (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLObject* parentclue, HTMLStyle *parent_style);
+HTMLObject* tag_func_data                (TAG_FUNC_PARAM);
+HTMLObject* tag_func_text                (TAG_FUNC_PARAM);
+HTMLObject* tag_func_base                (TAG_FUNC_PARAM);
+HTMLObject* tag_func_hidden              (TAG_FUNC_PARAM);
+HTMLObject* tag_func_head                (TAG_FUNC_PARAM);
+HTMLObject* tag_func_hr                  (TAG_FUNC_PARAM);
+HTMLObject* tag_func_li                  (TAG_FUNC_PARAM);
+HTMLObject* tag_func_simple_tag          (TAG_FUNC_PARAM);
+HTMLObject* tag_func_body                (TAG_FUNC_PARAM);
+HTMLObject* tag_func_br                  (TAG_FUNC_PARAM);
+HTMLObject* tag_func_font                (TAG_FUNC_PARAM);
+HTMLObject* tag_func_input               (TAG_FUNC_PARAM);
+HTMLObject* tag_func_object              (TAG_FUNC_PARAM);
+HTMLObject* tag_func_map                 (TAG_FUNC_PARAM);
+HTMLObject* tag_func_frameset            (TAG_FUNC_PARAM);
+HTMLObject* tag_func_frame               (TAG_FUNC_PARAM);
+HTMLObject* tag_func_table               (TAG_FUNC_PARAM);
+HTMLObject* tag_func_simple_without_flow (TAG_FUNC_PARAM);
+HTMLObject* tag_func_img                 (TAG_FUNC_PARAM);
+HTMLObject* tag_func_iframe              (TAG_FUNC_PARAM);
+HTMLObject* tag_func_textarea            (TAG_FUNC_PARAM);
+HTMLObject* tag_func_select              (TAG_FUNC_PARAM);
+HTMLObject* tag_func_style               (TAG_FUNC_PARAM);
+HTMLObject* tag_func_form                (TAG_FUNC_PARAM);
+HTMLObject* tag_func_tr                  (TAG_FUNC_PARAM);
+HTMLObject* tag_func_td                  (TAG_FUNC_PARAM);
+HTMLObject* element_parse_nodedump_htmlobject_one(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLObject* parentclue, HTMLStyle *parent_style, gint *count);
+HTMLObject* element_parse_nodedump_htmlobject  (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLObject* parentclue, HTMLStyle *parent_style);
 #endif
 void           process_node             (xmlNode* node, const gchar * css);
 void           html_element_parse_styleattrs (HTMLElement *node);
@@ -3749,8 +3749,6 @@ html_engine_stream_mime (GtkHTMLStream *handle,
 
 	html_engine_parser_create(e);
 
-	g_print("encoding_b(%s)=%s\n",mime_type, e->parser->input->encoding);
-
 	if (e->parser->input) {
 		if(!e->parser->input->encoding)
 			need_convert = TRUE;
@@ -3776,7 +3774,6 @@ html_engine_stream_mime (GtkHTMLStream *handle,
 			}
 		}
 	}
-	g_print("encoding_a=%s\n",e->parser->input->encoding);
 }
 
 static void
@@ -3994,7 +3991,7 @@ html_engine_get_object_base (HTMLEngine *e, HTMLObject *o)
 #endif
 
 #ifndef USEOLDRENDER
-typedef void (*HTMLTagsFunc)(TAG_FUNC_PARAM);
+typedef HTMLObject* (*HTMLTagsFunc)(TAG_FUNC_PARAM);
 
 typedef struct _HTMLDispatchFuncEntry {
 	const gchar *name;
@@ -5191,55 +5188,59 @@ elementtree_parse_text (xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject
 }
 
 #ifndef USEOLDRENDER
-void
+HTMLObject*
 tag_func_text (TAG_FUNC_PARAM)
 {
 	HTMLObject* html_object, *parent_object;
 	html_object = html_object_is_clue(htmlelement)?htmlelement:parentclue;
-	g_return_if_fail (html_object_is_clue(html_object));
+	g_return_val_if_fail (html_object_is_clue(html_object), htmlelement);
 	if(html_object_is(html_object, HTML_TYPE_CLUEV)) {
 		parent_object = create_flow_from_xml(e, testElement);
 		html_clue_append (HTML_CLUE (html_object), parent_object);
 	} else 
 		parent_object = html_object;
 	elementtree_parse_text(current, pos+1, e, parent_object, testElement);
+	return htmlelement;
 }
 
-void
+HTMLObject*
 tag_func_base(TAG_FUNC_PARAM)
 {
 	elementtree_parse_base_in_node(current, pos+1, e);
+	return htmlelement;
 }
 
-void
+HTMLObject*
 tag_func_hidden(TAG_FUNC_PARAM)
 {
 	elementtree_parse_notrealized_in_node(current->children, pos+1, e);
+	return htmlelement;
 }
 
-
-void
+HTMLObject*
 tag_func_head(TAG_FUNC_PARAM)
 {
 	elementtree_parse_head_in_node(current->children, pos+1, e);
+	return htmlelement;
 }
 
-
-void
+HTMLObject*
 tag_func_hr(TAG_FUNC_PARAM)
 {
 	HTMLObject* html_object = NULL;
-	g_return_if_fail (html_object_is_clue(htmlelement));
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
 	html_object = create_rule_from_xml(e, testElement, htmlelement->max_width);
 	html_clue_append (HTML_CLUE (htmlelement), html_object);
 	if (current->children)
 		g_print("In hr sub elements?");
+	return htmlelement;
 }
-void
+
+HTMLObject*
 tag_func_li(TAG_FUNC_PARAM)
 {
 	HTMLObject* html_object = NULL;
-	g_return_if_fail (html_object_is_clue(htmlelement));
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
 	if (count &&
 		testElement->style) {
 			gchar *value;
@@ -5250,58 +5251,67 @@ tag_func_li(TAG_FUNC_PARAM)
 	}
 	html_object = create_flow_from_xml(e, testElement);
 	html_clue_append (HTML_CLUE (htmlelement), html_object);
+	/* returned new flow not use for return*/
 	element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, parentclue, testElement->style);
+	return htmlelement;
 }
 
-void
+HTMLObject*
 tag_func_br(TAG_FUNC_PARAM)
 {
-	g_return_if_fail (html_object_is_clue(htmlelement));
-	elementtree_parse_text_innode(e, htmlelement, testElement, "", TRUE);
+	return parentclue;
 }
-void
+
+HTMLObject*
 tag_func_font(TAG_FUNC_PARAM)
 {
-	g_return_if_fail (html_object_is_clue(htmlelement));
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
 	if (testElement->style->height) {
 		gint size = testElement->style->height->val;
 		size = CLAMP (size, GTK_HTML_FONT_STYLE_SIZE_1, GTK_HTML_FONT_STYLE_SIZE_MAX);
 		testElement->style = html_style_set_font_size (testElement->style, size);
 	}
 	testElement->style = html_style_set_display (testElement->style, HTMLDISPLAY_INLINE);
-	element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parentclue, testElement->style);
+	return element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parentclue, testElement->style);
 }
-void
+
+HTMLObject*
 tag_func_input(TAG_FUNC_PARAM)
 {
 	HTMLObject* html_object = NULL;
-	g_return_if_fail (html_object_is_clue(htmlelement));
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
 	html_object = create_input_from_xml(e, testElement);
 	if (html_object) {
 		html_clue_append (HTML_CLUE (htmlelement), html_object);
+		/* returned new flow not use for return*/
 		element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, parentclue, testElement->style);
 	}
+	return htmlelement;
 }
-void
+
+HTMLObject*
 tag_func_object(TAG_FUNC_PARAM)
 {
 	HTMLEmbedded *html_object;
-	g_return_if_fail (html_object_is_clue(htmlelement));
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
 	html_object = create_object_from_xml(e, testElement);
 	if (html_object)
 		html_clue_append (HTML_CLUE (htmlelement), HTML_OBJECT(html_object));
-}
-void
-tag_func_map(TAG_FUNC_PARAM)
-{
-	g_return_if_fail (html_object_is_clue(htmlelement));
-	elementtree_parse_map(current, pos, e, testElement);
+	return htmlelement;
 }
 
-void
+HTMLObject*
+tag_func_map(TAG_FUNC_PARAM)
+{
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
+	elementtree_parse_map(current, pos, e, testElement);
+	return htmlelement;
+}
+
+HTMLObject*
 tag_func_frameset(TAG_FUNC_PARAM)
 {
-	g_return_if_fail (html_object_is_clue(htmlelement));
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
 	if (e->allow_frameset) {
 		HTMLObject *frame = create_frameset_from_xml (e, testElement);
 		if (html_stack_is_empty (e->frame_stack)) {
@@ -5310,15 +5320,16 @@ tag_func_frameset(TAG_FUNC_PARAM)
 			html_frameset_append (html_stack_top (e->frame_stack), frame);
 		}
 		html_stack_push (e->frame_stack, frame);
-		element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parentclue, testElement->style);
+		return element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parentclue, testElement->style);
 	}
+	return htmlelement;
 }
 
-void
+HTMLObject*
 tag_func_frame(TAG_FUNC_PARAM)
 {
 	HTMLObject* html_object = NULL;
-	g_return_if_fail (html_object_is_clue(htmlelement));
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
 	html_object = create_frame_from_xml (e, testElement);
 	if (html_stack_is_empty (e->frame_stack)) {
 		html_clue_append (HTML_CLUE (htmlelement), html_object);
@@ -5326,130 +5337,140 @@ tag_func_frame(TAG_FUNC_PARAM)
 		if (!html_frameset_append (html_stack_top (e->frame_stack), html_object))
 			html_object_destroy (html_object);
 	}
-	element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parentclue, testElement->style);
+	return element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parentclue, testElement->style);
 }
 
-void
+HTMLObject*
 tag_func_table(TAG_FUNC_PARAM)
 {
 	HTMLObject* html_object = NULL;
-	g_return_if_fail (html_object_is_clue(htmlelement));
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
 	html_object = HTML_OBJECT (create_table_from_xml(e, testElement));
 	html_clue_append (HTML_CLUE (htmlelement), html_object);
+	/* returned new flow not use for return*/
 	element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, parentclue, testElement->style);
+	return htmlelement;
 }
 
-void
+HTMLObject*
 tag_func_body(TAG_FUNC_PARAM)
 {
-	g_return_if_fail (html_object_is_clue(htmlelement));
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
 	if (HTML_IS_CLUEV(htmlelement) && testElement->style)
 		fix_body_from_xml(e, testElement, htmlelement);
 	tag_func_simple_tag(current, pos, e, htmlelement, parentclue, testElement, count);
+	return htmlelement;
 }
 
-void
+HTMLObject*
 tag_func_simple_tag(TAG_FUNC_PARAM)
 {
 	HTMLObject* html_object = NULL;
-	g_return_if_fail (html_object_is_clue(htmlelement));
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
 	html_object = create_flow_from_xml(e, testElement);
 	html_clue_append (HTML_CLUE (htmlelement), html_object);
+	/* returned new flow not use for return*/
 	element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, parentclue, testElement->style);
+	return htmlelement;
 }
 
-
-void
+HTMLObject*
 tag_func_simple_without_flow(TAG_FUNC_PARAM)
 {
-	g_return_if_fail (html_object_is_clue(htmlelement));
-	/*html_object = create_flow_from_xml(e, testElement);
-	html_clue_append (HTML_CLUE (htmlelement), html_object);
-	element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, testElement->style);*/
-	element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parentclue, testElement->style);
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
+	return element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parentclue, testElement->style);
 }
 
-void
+HTMLObject*
 tag_func_img(TAG_FUNC_PARAM)
 {
 	HTMLObject* html_object = NULL;
-	g_return_if_fail (html_object_is_clue(htmlelement));
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
 	html_object = HTML_OBJECT (create_image_from_xml(e, testElement, htmlelement->max_width));
 	if(!html_object)
-		return; /*FIXME*/
+		return htmlelement; /*FIXME*/
 	html_clue_append (HTML_CLUE (htmlelement), html_object);
 	/*sub element in img not exist*/
+	return htmlelement;
 }
-void
+
+HTMLObject*
 tag_func_iframe(TAG_FUNC_PARAM)
 {
 	HTMLObject* html_object = NULL;
-	g_return_if_fail (html_object_is_clue(htmlelement));
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
 	html_object = HTML_OBJECT (create_iframe_from_xml(e, testElement, htmlelement->max_width));
 	if(!html_object)
-		return; /*FIXME*/
+		return htmlelement; /*FIXME*/
 	html_clue_append (HTML_CLUE (htmlelement), html_object);
 	/*sub element in img not exist*/
+	return htmlelement;
 }
 
-void
+HTMLObject*
 tag_func_textarea(TAG_FUNC_PARAM)
 {
-	g_return_if_fail (html_object_is_clue(htmlelement));
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
 	elementtree_parse_textarea(current, pos+1, e, htmlelement, testElement);
+	return htmlelement;
 }
 
-void
+HTMLObject*
 tag_func_data(TAG_FUNC_PARAM)
 {
 	elementtree_parse_data_in_node(current, pos+1, e, htmlelement);
+	return htmlelement;
 }
 
-void
+HTMLObject*
 tag_func_style(TAG_FUNC_PARAM)
 {
 	elementtree_parse_style_in_node(current, pos+1, e);
+	return htmlelement;
 }
 
-void
+HTMLObject*
 tag_func_select(TAG_FUNC_PARAM)
 {
-	g_return_if_fail (html_object_is_clue(htmlelement));
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
 	elementtree_parse_select(current, pos+1, e, htmlelement, testElement);
+	return htmlelement;
 }
 
-
-void
+HTMLObject*
 tag_func_form(TAG_FUNC_PARAM)
 {
-	g_return_if_fail (html_object_is_clue(htmlelement));
+	g_return_val_if_fail (html_object_is_clue(htmlelement), htmlelement);
 	/*FIXME its bug becase form must be HTMLObject */
 	create_form_from_xml(e, testElement);
 	element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parentclue, testElement->style);
 	e->form = NULL;
+	return htmlelement;
 }
 
-void
+HTMLObject*
 tag_func_tr(TAG_FUNC_PARAM)
 {
-	g_return_if_fail (HTML_IS_TABLE(htmlelement));
+	g_return_val_if_fail (HTML_IS_TABLE(htmlelement), htmlelement);
 	html_table_start_row (HTML_TABLE(htmlelement));
 	element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement,  parentclue, testElement->style);
 	html_table_end_row (HTML_TABLE(htmlelement));
+	return htmlelement;
 }
 
-void
+HTMLObject*
 tag_func_td(TAG_FUNC_PARAM)
 {
 	HTMLObject* html_object = NULL;
 	HTMLTableCell *cell = NULL;
-	g_return_if_fail (HTML_IS_TABLE(htmlelement));
+	g_return_val_if_fail (HTML_IS_TABLE(htmlelement), htmlelement);
 	cell = create_cell_from_xml(e, testElement);
 	html_table_add_cell (HTML_TABLE(htmlelement), cell);
 	html_object = create_flow_from_xml(e, testElement);
 	html_clue_append (HTML_CLUE (cell), html_object);
 	//replace parent in new flow
 	element_parse_nodedump_htmlobject(current->children,pos + 1, e, html_object, html_object, testElement->style);
+	return htmlelement;
 }
 
 static HTMLDispatchFuncEntry func_callback_table[] = {
@@ -5561,20 +5582,19 @@ get_callback_func_node(const gchar* tag) {
 		return NULL;
 }
 
-void
+HTMLObject *
 element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLObject* parentclue, HTMLStyle *parent_style, gint *count)
 {
 	HTMLTagsFunc callback_func;
-	g_return_if_fail (HTML_IS_ENGINE (e));
-	g_return_if_fail (htmlelement != NULL);
-	g_return_if_fail (current != NULL);
+	HTMLObject * for_return = htmlelement;
+	g_return_val_if_fail (HTML_IS_ENGINE (e), for_return);
+	g_return_val_if_fail (htmlelement != NULL, for_return);
+	g_return_val_if_fail (current != NULL, for_return);
 
 	if(!current->name) {
 		g_printerr("Not Set Name\n");
 		elementtree_parse_dumpnode_in_node(current, pos);
-		return;
-	}
-	if (
+	} else if (
 		current->type == XML_ELEMENT_NODE ||
 		current->type == XML_TEXT_NODE
 	) {
@@ -5582,18 +5602,19 @@ element_parse_nodedump_htmlobject_one(xmlNode* current, gint pos, HTMLEngine *e,
 		if (callback_func) {
 			HTMLElement *testElement;
 			testElement = html_element_from_xml(e, current, parent_style);
-			g_return_if_fail (testElement);
-			callback_func(current, pos, e, htmlelement, parentclue, testElement, count);
+			g_return_val_if_fail (testElement, for_return);
+			for_return = callback_func(current, pos, e, htmlelement, parentclue, testElement, count);
 			html_element_free(testElement);
 		} else {
 			g_printerr("unknow tag %s\n", XMLCHAR2GCHAR(current->name));
 			elementtree_parse_dumpnode_in_node(current, pos);
-			element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parentclue, parent_style);
+			for_return = element_parse_nodedump_htmlobject(current->children,pos + 1, e, htmlelement, parentclue, parent_style);
 		}
 	} else if (current->type != XML_COMMENT_NODE) { /*skip comments*/
 		g_printerr("It's in this stage this stage not correct\n");
 		elementtree_parse_dumpnode_in_node(current, pos);
 	};
+	return for_return;
 }
 #endif
 
@@ -5703,15 +5724,19 @@ elementtree_parse_select(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObjec
 }
 
 #ifndef USEOLDRENDER
-void element_parse_nodedump_htmlobject(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLObject* parentclue, HTMLStyle *parent_style)
+HTMLObject *
+element_parse_nodedump_htmlobject(xmlNode* xmlelement, gint pos, HTMLEngine *e, HTMLObject* htmlelement, HTMLObject* parentclue, HTMLStyle *parent_style)
 {
     xmlNode *current = NULL; /* current node */
     gint i = 1; /*it's only for list*/
+    HTMLObject * for_return;
+    for_return = htmlelement;
     for (current = xmlelement; current; current = current->next) {
 		/* verbose dump object */
 		/*elementtree_parse_dumpnode_in_node(current, pos);*/
-        element_parse_nodedump_htmlobject_one(current, pos, e, htmlelement, parentclue, parent_style, &i);
+        for_return = element_parse_nodedump_htmlobject_one(current, pos, e, for_return, parentclue, parent_style, &i);
     }
+    return for_return;
 }
 
 #else
@@ -6003,21 +6028,13 @@ html_engine_stream_end (GtkHTMLStream *stream,
 			e->rootNode = xmlDocGetRootElement(e->parser->myDoc);
 	if(e->rootNode) {
 		e->eat_space = FALSE;
-		/*elementtree_parse_dumpnode(root, 0);*/
+		/* elementtree_parse_dumpnode(e->rootNode, 0); */
 #ifndef USEOLDRENDER
 		element_parse_nodedump_htmlobject(e->rootNode, 0, e, e->parser_clue, e->parser_clue, style_from_engine(e));
 #else
 		stupid_render(e, e->parser_clue, e->rootNode);
 #endif
 		if (e->css) {
-		/*	html_engine_parse (e);
-			process_node(e->rootNode, e->css);
-#ifndef USEOLDRENDER
-			element_parse_nodedump_htmlobject(e->rootNode, 0, e, e->parser_clue, e->parser_clue, style_from_engine(e));
-#else
-			stupid_render(e, e->parser_clue, e->rootNode);
-#endif
-         */
 			g_free(e->css);
 			e->css = NULL;
 		}
