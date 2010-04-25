@@ -39,8 +39,37 @@ html_parse_color (const gchar *text,
 	gchar c [8];
 	gint  len = strlen (text);
 
-	if (gdk_color_parse (text, color))
+	if (gdk_color_parse (text, color)) {
 		return TRUE;
+	} else {
+		/* standard color names for HTML 4.01 */
+		static struct html_color_table {
+			const gchar *name, *value;
+		} color_tab[] = {
+			{ "black", "#000000" },
+			{ "silver", "#C0C0C0" },
+			{ "gray", "#808080" },
+			{ "white", "#FFFFFF" },
+			{ "maroon", "#800000" },
+			{ "red", "#FF0000" },
+			{ "purple", "#800080" },
+			{ "fuchsia", "#FF00FF" },
+			{ "green", "#008000" },
+			{ "lime", "#00FF00" },
+			{ "olive", "#808000" },
+			{ "yellow", "#FFFF00" },
+			{ "navy", "#000080" },
+			{ "blue", "#0000FF" },
+			{ "teal", "#008080" },
+			{ "aqua", "#00FFFF" }
+		};
+
+		gint i;
+		for (i = 0; i < G_N_ELEMENTS (color_tab); i++) {
+			if (g_ascii_strcasecmp (color_tab[i].name, text) == 0)
+				return gdk_color_parse (color_tab[i].value, color);
+		}
+	}
 
 	c [7] = 0;
 	if (*text != '#') {

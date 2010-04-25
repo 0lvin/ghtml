@@ -1,30 +1,27 @@
-# translation of gtkhtml.gnome-2-26.po to catalan
 # Catalan translation of gtkhtml module by Softcatalà
-# Copyright © 2004-2007, 2009 Free Software Foundation, Inc.
+# Copyright © 2004-2007 Free Software Foundation, Inc.
 #
-#
-# Jordi Negrevernis i Font, 2002.
+# Jordi Negrevernis i Font, 2002
 # Xavier Conde Rueda <xavi.conde@gmail.com>, 2004.
-# Gil Forcada <gilforcada@guifi.net>, 2005, 2008.
+# Gil Forcada <gilforcada@guifi.net>, 2005, 2008, 2009, 2010.
 # Josep Puigdemont <josep.puigdemont@gmail.com>, 2006, 2007.
-# Carles Ferrando Garcia <carles.ferrando@gmail.com>, 2009.
+#
 msgid ""
 msgstr ""
-"Project-Id-Version: gtkhtml.gnome-2-26\n"
+"Project-Id-Version: gtkhtml\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-08-28 12:23+0200\n"
-"PO-Revision-Date: 2009-08-25 08:36+0200\n"
-"Last-Translator: Carles Ferrando Garcia <carles.ferrando@gmail.com>\n"
-"Language-Team: catalan <tradgnome@softcatala.org>\n"
+"POT-Creation-Date: 2010-04-21 23:13+0200\n"
+"PO-Revision-Date: 2010-04-02 18:30+0200\n"
+"Last-Translator: Gil Forcada <gilforcada@guifi.net>\n"
+"Language-Team: Catalan <tradgnome@softcatala.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: KBabel 1.11.4\n"
 
 #: ../a11y/image.c:151
 #, c-format
 msgid "URL is %s, Alternative Text is %s"
-msgstr "La URL és %s, el text alternatiu és %s"
+msgstr "L'URL és %s, el text alternatiu és %s"
 
 #: ../a11y/image.c:153
 #, c-format
@@ -203,54 +200,54 @@ msgstr "blanc"
 msgid "Choose Custom Color"
 msgstr "Escolliu el color personalitzat"
 
-#: ../components/editor/gtkhtml-color-combo.c:711
+#: ../components/editor/gtkhtml-color-combo.c:727
 #: ../components/editor/gtkhtml-color-state.c:205
 msgid "Current color"
 msgstr "Color actual"
 
-#: ../components/editor/gtkhtml-color-combo.c:712
+#: ../components/editor/gtkhtml-color-combo.c:728
 msgid "The currently selected color"
 msgstr "El color seleccionat actualment"
 
-#: ../components/editor/gtkhtml-color-combo.c:721
+#: ../components/editor/gtkhtml-color-combo.c:737
 #: ../components/editor/gtkhtml-color-state.c:215
 msgid "Default color"
 msgstr "Color predeterminat"
 
-#: ../components/editor/gtkhtml-color-combo.c:722
+#: ../components/editor/gtkhtml-color-combo.c:738
 msgid "The color associated with the default button"
 msgstr "El color associat amb el botó predeterminat"
 
-#: ../components/editor/gtkhtml-color-combo.c:732
+#: ../components/editor/gtkhtml-color-combo.c:748
 #: ../components/editor/gtkhtml-color-state.c:226
 msgid "Default label"
 msgstr "Etiqueta predeterminada"
 
-#: ../components/editor/gtkhtml-color-combo.c:733
+#: ../components/editor/gtkhtml-color-combo.c:749
 msgid "The label for the default button"
 msgstr "L'etiqueta per al botó predeterminat"
 
-#: ../components/editor/gtkhtml-color-combo.c:734
+#: ../components/editor/gtkhtml-color-combo.c:750
 #: ../components/editor/gtkhtml-color-state.c:228
 msgid "Default"
 msgstr "Predeterminat"
 
-#: ../components/editor/gtkhtml-color-combo.c:743
+#: ../components/editor/gtkhtml-color-combo.c:759
 #: ../components/editor/gtkhtml-color-state.c:237
 msgid "Default is transparent"
 msgstr "Predeterminat a transparent"
 
-#: ../components/editor/gtkhtml-color-combo.c:744
+#: ../components/editor/gtkhtml-color-combo.c:760
 #: ../components/editor/gtkhtml-color-state.c:238
 msgid "Whether the default color is transparent"
 msgstr "Si el color predeterminat és transparent"
 
-#: ../components/editor/gtkhtml-color-combo.c:754
+#: ../components/editor/gtkhtml-color-combo.c:770
 #: ../components/editor/gtkhtml-color-state.c:248
 msgid "Color palette"
 msgstr "Paleta de color"
 
-#: ../components/editor/gtkhtml-color-combo.c:755
+#: ../components/editor/gtkhtml-color-combo.c:771
 #: ../components/editor/gtkhtml-color-state.c:249
 msgid "Custom color palette"
 msgstr "Paleta de color personalitzada"
@@ -258,14 +255,14 @@ msgstr "Paleta de color personalitzada"
 #. Translators: This is the nickname for a
 #. * GtkhtmlColorCombo property named "popup-shown",
 #. * based on a similar property in GtkComboBox.
-#: ../components/editor/gtkhtml-color-combo.c:767
+#: ../components/editor/gtkhtml-color-combo.c:783
 msgid "Popup shown"
 msgstr "Mostra una finestra emergent"
 
 #. Translators: This is the blurb for a
 #. * GtkhtmlColorCombo property named "popup-shown",
 #. * based on a similar property in GtkComboBox.
-#: ../components/editor/gtkhtml-color-combo.c:771
+#: ../components/editor/gtkhtml-color-combo.c:787
 msgid "Whether the combo's dropdown is shown"
 msgstr "Si s'ha de mostrar el quadre combinat desplegable"
 
@@ -273,7 +270,7 @@ msgstr "Si s'ha de mostrar el quadre combinat desplegable"
 #. GtkHtmlColorCombo property named "state". It holds all
 #. the internal values for a GtkHtml color combination box.
 #.
-#: ../components/editor/gtkhtml-color-combo.c:784
+#: ../components/editor/gtkhtml-color-combo.c:800
 msgid "Color state"
 msgstr "Estat del color"
 
@@ -281,15 +278,15 @@ msgstr "Estat del color"
 #. GtkHtmlColorCombo property named "state". It holds all
 #. the internal values for a GtkHtml color combination box.
 #.
-#: ../components/editor/gtkhtml-color-combo.c:789
+#: ../components/editor/gtkhtml-color-combo.c:805
 msgid "The state of a color combo box"
 msgstr "L'estat d'un quadre combinat de color"
 
-#: ../components/editor/gtkhtml-color-combo.c:971
+#: ../components/editor/gtkhtml-color-combo.c:987
 msgid "custom"
 msgstr "personalitzat"
 
-#: ../components/editor/gtkhtml-color-combo.c:979
+#: ../components/editor/gtkhtml-color-combo.c:995
 msgid "Custom Color..."
 msgstr "Color personalitzat..."
 
@@ -404,7 +401,7 @@ msgstr "_Guai"
 #. Translators: O:-)
 #: ../components/editor/gtkhtml-face-chooser.c:64
 msgid "Ange_l"
-msgstr "_Àngel"
+msgstr "Ànge_l"
 
 #. Translators: :'(
 #: ../components/editor/gtkhtml-face-chooser.c:66
@@ -431,597 +428,610 @@ msgstr "_Diabòlic"
 msgid "_Monkey"
 msgstr "_Mono"
 
-#: ../components/editor/gtkhtml-editor-actions.c:632
+#: ../components/editor/gtkhtml-editor-actions.c:190
+msgid "Failed to insert HTML file."
+msgstr "No s'ha pogut inserir el fitxer HTML."
+
+#: ../components/editor/gtkhtml-editor-actions.c:227
+msgid "Failed to insert text file."
+msgstr "No s'ha pogut inserir el fitxer de text."
+
+#: ../components/editor/gtkhtml-editor-actions.c:615
 msgid "Insert HTML File"
 msgstr "Insereix un fitxer HTML"
 
-#: ../components/editor/gtkhtml-editor-actions.c:641
-#: ../components/editor/gtkhtml-editor-actions.c:1542
+#: ../components/editor/gtkhtml-editor-actions.c:631
+#: ../components/editor/gtkhtml-editor-actions.c:1541
 msgid "Insert Image"
 msgstr "Insereix una imatge"
 
-#: ../components/editor/gtkhtml-editor-actions.c:688
+#: ../components/editor/gtkhtml-editor-actions.c:680
 msgid "Insert Text File"
 msgstr "Insereix un fitxer de text"
 
 #. Replace Button
-#: ../components/editor/gtkhtml-editor-actions.c:1177
-#: ../components/editor/gtkhtml-spell-dialog.c:522
+#: ../components/editor/gtkhtml-editor-actions.c:1176
+#: ../components/editor/gtkhtml-spell-dialog.c:520
 msgid "_Replace"
 msgstr "_Reemplaça"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1184
+#: ../components/editor/gtkhtml-editor-actions.c:1183
 msgid "Replace _All"
 msgstr "Reempl_aça-ho tot"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1198
+#: ../components/editor/gtkhtml-editor-actions.c:1197
 msgid "_Next"
 msgstr "Següe_nt"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1205
+#: ../components/editor/gtkhtml-editor-actions.c:1204
 msgid "_Copy"
 msgstr "_Copia"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1212
+#: ../components/editor/gtkhtml-editor-actions.c:1211
 msgid "Cu_t"
 msgstr "Re_talla"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1226
+#: ../components/editor/gtkhtml-editor-actions.c:1225
 msgid "Find A_gain"
 msgstr "Torna a cerc_ar"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1240
+#: ../components/editor/gtkhtml-editor-actions.c:1239
 msgid "_Increase Indent"
 msgstr "_Incrementa el sagnat"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1242
+#: ../components/editor/gtkhtml-editor-actions.c:1241
 msgid "Increase Indent"
 msgstr "Incrementa el sagnat"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1247
+#: ../components/editor/gtkhtml-editor-actions.c:1246
 msgid "_HTML File..."
 msgstr "Fitxer _HTML..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1254
+#: ../components/editor/gtkhtml-editor-actions.c:1253
 msgid "Te_xt File..."
 msgstr "Fit_xer de text..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1261
+#: ../components/editor/gtkhtml-editor-actions.c:1260
 msgid "_Paste"
 msgstr "_Enganxa"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1268
+#: ../components/editor/gtkhtml-editor-actions.c:1267
 msgid "Paste _Quotation"
 msgstr "En_ganxa una cita"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1275
+#: ../components/editor/gtkhtml-editor-actions.c:1274
 msgid "_Redo"
 msgstr "_Refés"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1282
+#: ../components/editor/gtkhtml-editor-actions.c:1281
 msgid "Select _All"
 msgstr "Seleccion_a-ho tot"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1289
+#: ../components/editor/gtkhtml-editor-actions.c:1288
 msgid "_Find..."
 msgstr "_Cerca..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1296
+#: ../components/editor/gtkhtml-editor-actions.c:1295
 msgid "Re_place..."
 msgstr "_Reemplaça..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1303
+#: ../components/editor/gtkhtml-editor-actions.c:1302
 msgid "Check _Spelling..."
 msgstr "Comprova l'_ortografia..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1310
+#: ../components/editor/gtkhtml-editor-actions.c:1309
 #: ../components/editor/gtkhtml-editor-builder.ui.h:79
 msgid "_Test URL..."
 msgstr "_Prova l'URL..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1317
+#: ../components/editor/gtkhtml-editor-actions.c:1316
 msgid "_Undo"
 msgstr "_Desfés"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1324
+#: ../components/editor/gtkhtml-editor-actions.c:1323
 msgid "_Decrease Indent"
 msgstr "_Redueix el sagnat"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1326
+#: ../components/editor/gtkhtml-editor-actions.c:1325
 msgid "Decrease Indent"
 msgstr "Redueix el sagnat"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1331
+#: ../components/editor/gtkhtml-editor-actions.c:1330
 msgid "_Wrap Lines"
 msgstr "_Talla la línia"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1340
+#: ../components/editor/gtkhtml-editor-actions.c:1339
 msgid "_Edit"
 msgstr "_Edita"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1347
+#: ../components/editor/gtkhtml-editor-actions.c:1346
 #: ../components/editor/main.c:327
 msgid "_File"
 msgstr "_Fitxer"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1354
+#: ../components/editor/gtkhtml-editor-actions.c:1353
 msgid "For_mat"
 msgstr "For_mat"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1361
+#: ../components/editor/gtkhtml-editor-actions.c:1360
 msgid "_Paragraph Style"
 msgstr "Estil de _paràgraf"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1368
+#: ../components/editor/gtkhtml-editor-actions.c:1367
 msgid "_Insert"
 msgstr "_Insereix"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1375
+#: ../components/editor/gtkhtml-editor-actions.c:1374
 msgid "_Alignment"
 msgstr "_Alineació"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1382
+#: ../components/editor/gtkhtml-editor-actions.c:1381
 msgid "Current _Languages"
 msgstr "Idiomes actua_ls"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1389
+#: ../components/editor/gtkhtml-editor-actions.c:1388
 #: ../components/editor/main.c:358
 msgid "_View"
 msgstr "_Visualitza"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1399
+#: ../components/editor/gtkhtml-editor-actions.c:1398
 msgid "_Center"
 msgstr "_Centra"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1401
+#: ../components/editor/gtkhtml-editor-actions.c:1400
 msgid "Center Alignment"
 msgstr "Alineació al centre"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1406
+#: ../components/editor/gtkhtml-editor-actions.c:1405
 msgid "_Left"
 msgstr "Es_querra"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1408
+#: ../components/editor/gtkhtml-editor-actions.c:1407
 msgid "Left Alignment"
 msgstr "Alineació a l'esquerra"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1413
+#: ../components/editor/gtkhtml-editor-actions.c:1412
 msgid "_Right"
 msgstr "D_reta"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1415
+#: ../components/editor/gtkhtml-editor-actions.c:1414
 msgid "Right Alignment"
 msgstr "Alineació a la dreta"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1423
+#: ../components/editor/gtkhtml-editor-actions.c:1422
 msgid "_HTML"
 msgstr "_HTML"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1425
+#: ../components/editor/gtkhtml-editor-actions.c:1424
 msgid "HTML editing mode"
 msgstr "Mode d'edició en HTML"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1430
+#: ../components/editor/gtkhtml-editor-actions.c:1429
 msgid "Plain _Text"
 msgstr "_Text pla"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1432
+#: ../components/editor/gtkhtml-editor-actions.c:1431
 msgid "Plain text editing mode"
 msgstr "Mode d'edició en text pla"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1440
+#: ../components/editor/gtkhtml-editor-actions.c:1439
 msgid "_Normal"
 msgstr "_Normal"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1447
+#: ../components/editor/gtkhtml-editor-actions.c:1446
 msgid "Header _1"
 msgstr "Capçalera _1"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1454
+#: ../components/editor/gtkhtml-editor-actions.c:1453
 msgid "Header _2"
 msgstr "Capçalera _2"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1461
+#: ../components/editor/gtkhtml-editor-actions.c:1460
 msgid "Header _3"
 msgstr "Capçalera _3"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1468
+#: ../components/editor/gtkhtml-editor-actions.c:1467
 msgid "Header _4"
 msgstr "Capçalera _4"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1475
+#: ../components/editor/gtkhtml-editor-actions.c:1474
 msgid "Header _5"
 msgstr "Capçalera _5"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1482
+#: ../components/editor/gtkhtml-editor-actions.c:1481
 msgid "Header _6"
 msgstr "Capçalera _6"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1489
+#: ../components/editor/gtkhtml-editor-actions.c:1488
 msgid "A_ddress"
 msgstr "A_dreça"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1496
+#: ../components/editor/gtkhtml-editor-actions.c:1495
 msgid "_Preformatted"
 msgstr "_Preformatat"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1503
+#: ../components/editor/gtkhtml-editor-actions.c:1502
 msgid "_Bulleted List"
 msgstr "Llista de _pics"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1510
+#: ../components/editor/gtkhtml-editor-actions.c:1509
 msgid "_Roman Numeral List"
 msgstr "Llista de nomb_res romans"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1517
+#: ../components/editor/gtkhtml-editor-actions.c:1516
 msgid "Numbered _List"
 msgstr "_Llista numerada"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1524
+#: ../components/editor/gtkhtml-editor-actions.c:1523
 msgid "_Alphabetical List"
 msgstr "Llista _alfabètica"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1540
-#: ../components/editor/gtkhtml-editor-actions.c:1575
+#: ../components/editor/gtkhtml-editor-actions.c:1539
+#: ../components/editor/gtkhtml-editor-actions.c:1574
 msgid "_Image..."
 msgstr "_Imatge..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1547
-#: ../components/editor/gtkhtml-editor-actions.c:1582
+#: ../components/editor/gtkhtml-editor-actions.c:1546
+#: ../components/editor/gtkhtml-editor-actions.c:1581
 msgid "_Link..."
 msgstr "En_llaç..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1549
+#: ../components/editor/gtkhtml-editor-actions.c:1548
 msgid "Insert Link"
 msgstr "Insereix un enllaç"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1554
-#: ../components/editor/gtkhtml-editor-actions.c:1596
+#: ../components/editor/gtkhtml-editor-actions.c:1553
+#: ../components/editor/gtkhtml-editor-actions.c:1595
 msgid "_Rule..."
 msgstr "_Regle..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1556
+#: ../components/editor/gtkhtml-editor-actions.c:1555
 msgid "Insert Rule"
 msgstr "Insereix un regle"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1561
-#: ../components/editor/gtkhtml-editor-actions.c:1603
+#: ../components/editor/gtkhtml-editor-actions.c:1560
+#: ../components/editor/gtkhtml-editor-actions.c:1602
 msgid "_Table..."
 msgstr "_Taula..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1563
+#: ../components/editor/gtkhtml-editor-actions.c:1562
 msgid "Insert Table"
 msgstr "Insereix una taula"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1568
+#: ../components/editor/gtkhtml-editor-actions.c:1567
 msgid "_Cell..."
 msgstr "_Cel·la..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1589
+#: ../components/editor/gtkhtml-editor-actions.c:1588
 msgid "Pa_ge..."
 msgstr "_Pàgina..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1612
+#: ../components/editor/gtkhtml-editor-actions.c:1611
 msgid "Font _Size"
 msgstr "_Mida de la lletra"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1619
+#: ../components/editor/gtkhtml-editor-actions.c:1618
 msgid "_Font Style"
 msgstr "_Estil de la lletra"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1629
+#: ../components/editor/gtkhtml-editor-actions.c:1628
 #: ../components/editor/gtkhtml-editor-builder.ui.h:60
 msgid "_Bold"
 msgstr "_Negreta"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1631
+#: ../components/editor/gtkhtml-editor-actions.c:1630
 msgid "Bold"
 msgstr "Negreta"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1637
+#: ../components/editor/gtkhtml-editor-actions.c:1636
 #: ../components/editor/gtkhtml-editor-builder.ui.h:67
 msgid "_Italic"
 msgstr "Curs_iva"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1639
+#: ../components/editor/gtkhtml-editor-actions.c:1638
 msgid "Italic"
 msgstr "Cursiva"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1645
+#: ../components/editor/gtkhtml-editor-actions.c:1644
 msgid "_Plain Text"
 msgstr "_Text"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1647
+#: ../components/editor/gtkhtml-editor-actions.c:1646
 msgid "Plain Text"
 msgstr "Text pla"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1653
+#: ../components/editor/gtkhtml-editor-actions.c:1652
 #: ../components/editor/gtkhtml-editor-builder.ui.h:76
 msgid "_Strikethrough"
 msgstr "_Barrat"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1655
+#: ../components/editor/gtkhtml-editor-actions.c:1654
 msgid "Strikethrough"
 msgstr "Barrat"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1661
+#: ../components/editor/gtkhtml-editor-actions.c:1660
 #: ../components/editor/gtkhtml-editor-builder.ui.h:82
 msgid "_Underline"
 msgstr "S_ubratlla"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1663
+#: ../components/editor/gtkhtml-editor-actions.c:1662
 msgid "Underline"
 msgstr "Subratlla"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1672
+#: ../components/editor/gtkhtml-editor-actions.c:1671
 msgid "-2"
 msgstr "-2"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1679
+#: ../components/editor/gtkhtml-editor-actions.c:1678
 msgid "-1"
 msgstr "-1"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1686
+#: ../components/editor/gtkhtml-editor-actions.c:1685
 msgid "+0"
 msgstr "+0"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1693
+#: ../components/editor/gtkhtml-editor-actions.c:1692
 msgid "+1"
 msgstr "+1"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1700
+#: ../components/editor/gtkhtml-editor-actions.c:1699
 msgid "+2"
 msgstr "+2"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1707
+#: ../components/editor/gtkhtml-editor-actions.c:1706
 msgid "+3"
 msgstr "+3"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1714
+#: ../components/editor/gtkhtml-editor-actions.c:1713
 msgid "+4"
 msgstr "+4"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1733
+#: ../components/editor/gtkhtml-editor-actions.c:1732
 msgid "Cell Contents"
 msgstr "Contingut de la cel·la"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1740
+#: ../components/editor/gtkhtml-editor-actions.c:1739
 msgid "Column"
 msgstr "Columna"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1747
+#: ../components/editor/gtkhtml-editor-actions.c:1746
 msgid "Row"
 msgstr "Fila"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1754
-#: ../components/editor/gtkhtml-editor-actions.c:1837
+#: ../components/editor/gtkhtml-editor-actions.c:1753
+#: ../components/editor/gtkhtml-editor-actions.c:1836
 msgid "Table"
 msgstr "Taula"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1763
+#: ../components/editor/gtkhtml-editor-actions.c:1762
 msgid "Table Delete"
 msgstr "Suprimeix la taula"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1770
+#: ../components/editor/gtkhtml-editor-actions.c:1769
 msgid "Input Methods"
 msgstr "Mètodes d'entrada"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1777
+#: ../components/editor/gtkhtml-editor-actions.c:1776
 msgid "Table Insert"
 msgstr "Insereix una taula"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1784
+#: ../components/editor/gtkhtml-editor-actions.c:1783
 msgid "Properties"
 msgstr "Propietats"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1802
+#: ../components/editor/gtkhtml-editor-actions.c:1801
 msgid "Column After"
 msgstr "Columna següent"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1809
+#: ../components/editor/gtkhtml-editor-actions.c:1808
 msgid "Column Before"
 msgstr "Columna anterior"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1816
+#: ../components/editor/gtkhtml-editor-actions.c:1815
 msgid "Insert _Link"
 msgstr "Insereix un _enllaç"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1823
+#: ../components/editor/gtkhtml-editor-actions.c:1822
 msgid "Row Above"
 msgstr "Fila superior"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1830
+#: ../components/editor/gtkhtml-editor-actions.c:1829
 msgid "Row Below"
 msgstr "Fila inferior"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1844
+#: ../components/editor/gtkhtml-editor-actions.c:1843
 msgid "Cell..."
 msgstr "Cel·la..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1851
+#: ../components/editor/gtkhtml-editor-actions.c:1850
 msgid "Image..."
 msgstr "Imatge..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1858
+#: ../components/editor/gtkhtml-editor-actions.c:1857
 msgid "Link..."
 msgstr "Enllaç..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1865
+#: ../components/editor/gtkhtml-editor-actions.c:1864
 msgid "Page..."
 msgstr "Pàgina..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1872
+#: ../components/editor/gtkhtml-editor-actions.c:1871
 msgid "Paragraph..."
 msgstr "Paràgraf..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1879
+#: ../components/editor/gtkhtml-editor-actions.c:1878
 msgid "Rule..."
 msgstr "Regle..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1886
+#: ../components/editor/gtkhtml-editor-actions.c:1885
 msgid "Table..."
 msgstr "Taula..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1893
+#: ../components/editor/gtkhtml-editor-actions.c:1892
 msgid "Text..."
 msgstr "Text..."
 
-#: ../components/editor/gtkhtml-editor-actions.c:1900
+#: ../components/editor/gtkhtml-editor-actions.c:1899
 msgid "Remove Link"
 msgstr "Suprimeix l'enllaç"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1917
+#: ../components/editor/gtkhtml-editor-actions.c:1916
 msgid "Add Word to Dictionary"
 msgstr "Afig la paraula al diccionari"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1924
+#: ../components/editor/gtkhtml-editor-actions.c:1923
 msgid "Ignore Misspelled Word"
 msgstr "Ignora la paraula incorrecta"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1931
+#: ../components/editor/gtkhtml-editor-actions.c:1930
 msgid "Add Word To"
 msgstr "Afig una paraula a"
 
-#: ../components/editor/gtkhtml-editor-actions.c:1940
+#: ../components/editor/gtkhtml-editor-actions.c:1939
 msgid "More Suggestions"
 msgstr "Més suggeriments"
 
-#: ../components/editor/gtkhtml-editor-actions.c:2107
+#: ../components/editor/gtkhtml-editor-actions.c:2106
 msgid "_Emoticon"
 msgstr "_Emoticona"
 
-#: ../components/editor/gtkhtml-editor-actions.c:2108
+#: ../components/editor/gtkhtml-editor-actions.c:2107
 msgid "Insert Emoticon"
 msgstr "Insereix una emoticona"
 
-#: ../components/editor/gtkhtml-editor-actions.c:2169
+#: ../components/editor/gtkhtml-editor-actions.c:2168
 msgid "_Find"
 msgstr "_Cerca"
 
-#: ../components/editor/gtkhtml-editor-actions.c:2172
+#: ../components/editor/gtkhtml-editor-actions.c:2171
 msgid "Re_place"
 msgstr "Reem_plaça"
 
-#: ../components/editor/gtkhtml-editor-actions.c:2175
+#: ../components/editor/gtkhtml-editor-actions.c:2174
 msgid "_Image"
 msgstr "_Imatge"
 
-#: ../components/editor/gtkhtml-editor-actions.c:2178
+#: ../components/editor/gtkhtml-editor-actions.c:2177
 msgid "_Link"
 msgstr "En_llaç"
 
-#: ../components/editor/gtkhtml-editor-actions.c:2181
+#: ../components/editor/gtkhtml-editor-actions.c:2180
 msgid "_Rule"
 msgstr "_Regle"
 
-#: ../components/editor/gtkhtml-editor-actions.c:2184
+#: ../components/editor/gtkhtml-editor-actions.c:2183
 #: ../components/editor/gtkhtml-editor-builder.ui.h:78
 msgid "_Table"
 msgstr "_Taula"
 
-#: ../components/editor/gtkhtml-editor-private.c:264
+#: ../components/editor/gtkhtml-editor-private.c:273
 msgid "Paragraph Style"
 msgstr "Estil de paràgraf"
 
-#: ../components/editor/gtkhtml-editor-private.c:278
+#: ../components/editor/gtkhtml-editor-private.c:287
 msgid "Editing Mode"
 msgstr "Mode d'edició"
 
-#: ../components/editor/gtkhtml-editor-private.c:290
+#: ../components/editor/gtkhtml-editor-private.c:299
 msgid "Font Color"
 msgstr "Color de la lletra"
 
-#: ../components/editor/gtkhtml-editor-private.c:300
+#: ../components/editor/gtkhtml-editor-private.c:309
 msgid "Font Size"
 msgstr "Mida de la lletra"
 
-#: ../components/editor/gtkhtml-editor-private.c:327
+#: ../components/editor/gtkhtml-editor-private.c:336
 msgid "Automatic"
 msgstr "Automàtic"
 
-#: ../components/editor/gtkhtml-editor-private.c:599
+#: ../components/editor/gtkhtml-editor-private.c:589
 msgid "Could not open the link."
 msgstr "No s'ha pogut obrir l'enllaç."
 
-#: ../components/editor/gtkhtml-editor.c:754
+#: ../components/editor/gtkhtml-editor.c:778
 msgid "Current Folder"
 msgstr "Carpeta actual"
 
-#: ../components/editor/gtkhtml-editor.c:755
+#: ../components/editor/gtkhtml-editor.c:779
 msgid "The initial folder for file chooser dialogs"
-msgstr "La carpeta inicial per els diàlegs del seleccionador de fitxers"
+msgstr "La carpeta inicial pels diàlegs del seleccionador de fitxers"
 
-#: ../components/editor/gtkhtml-editor.c:765
+#: ../components/editor/gtkhtml-editor.c:789
 msgid "Filename"
 msgstr "Nom de fitxer"
 
-#: ../components/editor/gtkhtml-editor.c:766
+#: ../components/editor/gtkhtml-editor.c:790
 msgid "The filename to use when saving"
 msgstr "El nom de fitxer a utilitzar en alçar"
 
-#: ../components/editor/gtkhtml-editor.c:776
+#: ../components/editor/gtkhtml-editor.c:800
+msgid "HTML Editing Widget"
+msgstr "Giny d'edició d'HTML"
+
+#: ../components/editor/gtkhtml-editor.c:801
+msgid "The main HTML editing widget"
+msgstr "El giny principal d'edició d'HTML"
+
+#: ../components/editor/gtkhtml-editor.c:811
 msgid "HTML Mode"
 msgstr "Mode HTML"
 
-#: ../components/editor/gtkhtml-editor.c:777
+#: ../components/editor/gtkhtml-editor.c:812
 msgid "Edit HTML or plain text"
 msgstr "Edita HTML o text pla"
 
-#: ../components/editor/gtkhtml-editor.c:787
+#: ../components/editor/gtkhtml-editor.c:822
 msgid "Inline Spelling"
 msgstr "Comprova l'ortografia"
 
-#: ../components/editor/gtkhtml-editor.c:788
+#: ../components/editor/gtkhtml-editor.c:823
 msgid "Check your spelling as you type"
 msgstr "Comprova l'ortografia mentre escric"
 
-#: ../components/editor/gtkhtml-editor.c:798
+#: ../components/editor/gtkhtml-editor.c:833
 msgid "Magic Links"
 msgstr "Enllaços màgics"
 
-#: ../components/editor/gtkhtml-editor.c:799
+#: ../components/editor/gtkhtml-editor.c:834
 msgid "Make URIs clickable as you type"
-msgstr "Fes que es puguen clicar els URI mentre escric"
+msgstr "Fes que es puga fer clic als URI mentre escric"
 
-#: ../components/editor/gtkhtml-editor.c:809
+#: ../components/editor/gtkhtml-editor.c:844
 msgid "Magic Smileys"
 msgstr "Emoticones màgiques"
 
-#: ../components/editor/gtkhtml-editor.c:810
+#: ../components/editor/gtkhtml-editor.c:845
 msgid "Convert emoticons to images as you type"
 msgstr "Converteix les emoticones en imatges mentre escric"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:2
 #, no-c-format
 msgid "%"
-msgstr ""
+msgstr "%"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:3
 msgid "Alignment"
 msgstr "Alineació"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:4
-#, fuzzy
 msgid "Alignment & Behavior"
-msgstr "<b>Alineació i comportament</b>"
+msgstr "Alineació i comportament"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:5
-#, fuzzy
 msgid "Background"
-msgstr "_Fons:"
+msgstr "Fons"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:6
 msgid "Background Image"
 msgstr "Imatge de fons"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:7
-#, fuzzy
 msgid "Blue Ink"
 msgstr "Tinta blava"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:8
 msgid "Bottom"
-msgstr ""
+msgstr "Part inferior"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:9
 msgid "C_ell"
@@ -1084,7 +1094,6 @@ msgid "General"
 msgstr "General"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:24
-#, fuzzy
 msgid "Graph Paper"
 msgstr "Paper de gràfics"
 
@@ -1101,9 +1110,8 @@ msgid "Image Properties"
 msgstr "Propietats de la imatge"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:28
-#, fuzzy
 msgid "Layout"
-msgstr "<b>Disposició</b>"
+msgstr "Disposició"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:29
 msgid "Left"
@@ -1119,7 +1127,7 @@ msgstr "Propietats de l'enllaç"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:32
 msgid "Middle"
-msgstr ""
+msgstr "Meitat"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:33
 msgid "Midnight"
@@ -1142,7 +1150,6 @@ msgid "Paragraph Properties"
 msgstr "Propietats del paràgraf"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:38
-#, fuzzy
 msgid "Perforated Paper"
 msgstr "Paper perforat"
 
@@ -1180,11 +1187,11 @@ msgstr "_Ombrejat"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:47
 msgid "Scope"
-msgstr ""
+msgstr "Abast"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:48
 msgid "Search _backwards"
-msgstr "Ce_rca endarerre"
+msgstr "Ce_rca cap arrere"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:49
 msgid "Select An Image"
@@ -1195,9 +1202,8 @@ msgid "Si_ze:"
 msgstr "_Mida:"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:51
-#, fuzzy
 msgid "Size"
-msgstr "Mida:"
+msgstr "Mida"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:52
 msgid "Style"
@@ -1217,7 +1223,7 @@ msgstr "Propietats del text"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:56
 msgid "Top"
-msgstr ""
+msgstr "Part superior"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:57
 msgid "Width:"
@@ -1324,12 +1330,8 @@ msgid "_Y-Padding:"
 msgstr "Farciment _Y:"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:89
-#, fuzzy
 msgid "follow"
-msgstr ""
-"px\n"
-"%\n"
-"segueix"
+msgstr "segueix"
 
 #: ../components/editor/gtkhtml-editor-builder.ui.h:90
 msgid "px"
@@ -1346,7 +1348,7 @@ msgstr "L'idioma que utilitza el verificador ortogràfic"
 #: ../components/editor/gtkhtml-spell-dialog.c:117
 #, c-format
 msgid "Suggestions for \"%s\""
-msgstr "Suggerències per a «%s»"
+msgstr "Suggeriments per a «%s»"
 
 #: ../components/editor/gtkhtml-spell-dialog.c:358
 msgid "Misspelled Word"
@@ -1356,37 +1358,37 @@ msgstr "Paraula incorrecta"
 msgid "The current misspelled word"
 msgstr "La paraula incorrecta actual"
 
-#: ../components/editor/gtkhtml-spell-dialog.c:449
+#: ../components/editor/gtkhtml-spell-dialog.c:447
 msgid "Spell Checker"
 msgstr "Verificador ortogràfic"
 
 #. Replace All Button
-#: ../components/editor/gtkhtml-spell-dialog.c:536
+#: ../components/editor/gtkhtml-spell-dialog.c:534
 msgid "R_eplace All"
 msgstr "Reempl_aça-ho tot"
 
 #. Ignore Button
-#: ../components/editor/gtkhtml-spell-dialog.c:550
+#: ../components/editor/gtkhtml-spell-dialog.c:548
 msgid "_Ignore"
 msgstr "_Ignora"
 
 #. Skip Button
-#: ../components/editor/gtkhtml-spell-dialog.c:564
+#: ../components/editor/gtkhtml-spell-dialog.c:562
 msgid "_Skip"
 msgstr "_Salta"
 
 #. Back Button
-#: ../components/editor/gtkhtml-spell-dialog.c:577
+#: ../components/editor/gtkhtml-spell-dialog.c:575
 msgid "_Back"
 msgstr "_Endarrere"
 
 #. Dictionary Label
-#: ../components/editor/gtkhtml-spell-dialog.c:590
+#: ../components/editor/gtkhtml-spell-dialog.c:588
 msgid "Dictionary"
 msgstr "Diccionari"
 
 #. Add Word Button
-#: ../components/editor/gtkhtml-spell-dialog.c:619
+#: ../components/editor/gtkhtml-spell-dialog.c:617
 msgid "_Add Word"
 msgstr "_Afig una paraula"
 
@@ -1465,83 +1467,83 @@ msgstr "Ori_gen HTML"
 msgid "_Plain Source"
 msgstr "_Text pla"
 
-#: ../gtkhtml/gtkhtml.c:3073
+#: ../gtkhtml/gtkhtml.c:3068
 msgid "Editable"
 msgstr "Editable"
 
-#: ../gtkhtml/gtkhtml.c:3074
+#: ../gtkhtml/gtkhtml.c:3069
 msgid "Whether the html can be edited"
-msgstr "Si es pot editar l'html"
+msgstr "Si es pot editar l'HTML"
 
-#: ../gtkhtml/gtkhtml.c:3080
+#: ../gtkhtml/gtkhtml.c:3075
 msgid "Document Title"
 msgstr "Nom del document"
 
-#: ../gtkhtml/gtkhtml.c:3081
+#: ../gtkhtml/gtkhtml.c:3076
 msgid "The title of the current document"
 msgstr "El nom del document actual"
 
-#: ../gtkhtml/gtkhtml.c:3087
+#: ../gtkhtml/gtkhtml.c:3082
 msgid "Document Base"
 msgstr "Base del document"
 
-#: ../gtkhtml/gtkhtml.c:3088
+#: ../gtkhtml/gtkhtml.c:3083
 msgid "The base URL for relative references"
 msgstr "L'URL base per a referències relatives"
 
-#: ../gtkhtml/gtkhtml.c:3094
+#: ../gtkhtml/gtkhtml.c:3089
 msgid "Target Base"
 msgstr "Base destí"
 
-#: ../gtkhtml/gtkhtml.c:3095
+#: ../gtkhtml/gtkhtml.c:3090
 msgid "The base URL of the target frame"
 msgstr "L'URL base del marc destí"
 
-#: ../gtkhtml/gtkhtml.c:3103
+#: ../gtkhtml/gtkhtml.c:3098
 msgid "Fixed Width Font"
 msgstr "Amplada de lletra fixa"
 
-#: ../gtkhtml/gtkhtml.c:3104
+#: ../gtkhtml/gtkhtml.c:3099
 msgid "The Monospace font to use for typewriter text"
 msgstr "El tipus de lletra monoespai per a text de màquina d'escriure"
 
-#: ../gtkhtml/gtkhtml.c:3110
+#: ../gtkhtml/gtkhtml.c:3105
 msgid "New Link Color"
 msgstr "Color del nou enllaç"
 
-#: ../gtkhtml/gtkhtml.c:3111
+#: ../gtkhtml/gtkhtml.c:3106
 msgid "The color of new link elements"
 msgstr "El color dels nous elements d'enllaç"
 
-#: ../gtkhtml/gtkhtml.c:3116
+#: ../gtkhtml/gtkhtml.c:3111
 msgid "Visited Link Color"
 msgstr "Color de l'enllaç visitat"
 
-#: ../gtkhtml/gtkhtml.c:3117
+#: ../gtkhtml/gtkhtml.c:3112
 msgid "The color of visited link elements"
 msgstr "El color dels elements d'enllaç visitats"
 
-#: ../gtkhtml/gtkhtml.c:3122
+#: ../gtkhtml/gtkhtml.c:3117
 msgid "Active Link Color"
 msgstr "Color de l'enllaç actiu"
 
-#: ../gtkhtml/gtkhtml.c:3123
+#: ../gtkhtml/gtkhtml.c:3118
 msgid "The color of active link elements"
 msgstr "El color dels elements d'enllaç actius"
 
-#: ../gtkhtml/gtkhtml.c:3128
+#: ../gtkhtml/gtkhtml.c:3123
 msgid "Spelling Error Color"
 msgstr "Color de l'error ortogràfic"
 
-#: ../gtkhtml/gtkhtml.c:3129
+#: ../gtkhtml/gtkhtml.c:3124
 msgid "The color of the spelling error markers"
 msgstr "El color dels marcadors d'error ortogràfic"
 
-#: ../gtkhtml/gtkhtml.c:3134
+#: ../gtkhtml/gtkhtml.c:3129
 msgid "Cite Quotation Color"
 msgstr "Color de la cita"
 
-#: ../gtkhtml/gtkhtml.c:3135
+#: ../gtkhtml/gtkhtml.c:3130
 msgid "The color of the cited text"
 msgstr "El color del text citat"
 
@@ -1556,7 +1558,7 @@ msgstr "Reinicia"
 #. TODO2 dialog instead of warning
 #: ../gtkhtml/htmlengine-print.c:231 ../gtkhtml/htmlengine-print.c:309
 msgid "Cannot allocate default font for printing"
-msgstr "No es pot ubicar el tipus de lletra predeterminada per a imprimir"
+msgstr "No es pot ubicar el tipus de lletra predeterminada per imprimir"
 
 #: ../gtkhtml/test.c:364
 msgid "GtkHTML Test"
@@ -1756,43 +1758,43 @@ msgstr "Prova del GtkHTML"
 #~ msgstr "Justifica a l'esquerra els paràgrafs"
 
 #~ msgid "Make the current Paragraph style Normal"
-#~ msgstr "Fes que l'estil del paràgraf siga Normal"
+#~ msgstr "Fes que l'estil del paràgraf sigui Normal"
 
 #~ msgid "Make the current Paragraph style Preformat"
-#~ msgstr "Fes que l'estil del paràgraf siga Preformat"
+#~ msgstr "Fes que l'estil del paràgraf sigui Preformat"
 
 #~ msgid "Make the current paragraph a bulleted list"
-#~ msgstr "Fes que l'estil del paràgraf siga una llista de pic"
+#~ msgstr "Fes que l'estil del paràgraf sigui una llista de pic"
 
 #~ msgid "Make the current paragraph a list with roman numerals"
-#~ msgstr "Fes que el paràgraf siga una llista de nombres romans"
+#~ msgstr "Fes que el paràgraf sigui una llista de nombres romans"
 
 #~ msgid "Make the current paragraph a numbered list"
-#~ msgstr "Fes que el paràgraf siga una llista de nombres"
+#~ msgstr "Fes que el paràgraf sigui una llista de nombres"
 
 #~ msgid "Make the current paragraph an H1 header"
-#~ msgstr "Fes que el paràgraf siga una capçalera H1"
+#~ msgstr "Fes que el paràgraf sigui una capçalera H1"
 
 #~ msgid "Make the current paragraph an H2 header"
-#~ msgstr "Fes que el paràgraf siga una capçalera H2"
+#~ msgstr "Fes que el paràgraf sigui una capçalera H2"
 
 #~ msgid "Make the current paragraph an H3 header"
-#~ msgstr "Fes que el paràgraf siga una capçalera H3"
+#~ msgstr "Fes que el paràgraf sigui una capçalera H3"
 
 #~ msgid "Make the current paragraph an H4 header"
-#~ msgstr "Fes que el paràgraf siga una capçalera H4"
+#~ msgstr "Fes que el paràgraf sigui una capçalera H4"
 
 #~ msgid "Make the current paragraph an H5 header"
-#~ msgstr "Fes que el paràgraf siga una capçalera H5"
+#~ msgstr "Fes que el paràgraf sigui una capçalera H5"
 
 #~ msgid "Make the current paragraph an H6 header"
-#~ msgstr "Fes que el paràgraf siga una capçalera H6"
+#~ msgstr "Fes que el paràgraf sigui una capçalera H6"
 
 #~ msgid "Make the current paragraph an address"
-#~ msgstr "Fes que el paràgraf siga una adreça"
+#~ msgstr "Fes que el paràgraf sigui una adreça"
 
 #~ msgid "Make the current paragraph an alphabetical list"
-#~ msgstr "Fes que el paràgraf siga una llista alfabètica"
+#~ msgstr "Fes que el paràgraf sigui una llista alfabètica"
 
 #~ msgid "Normal"
 #~ msgstr "Normal"
@@ -1843,7 +1845,7 @@ msgstr "Prova del GtkHTML"
 #~ msgstr "Ratllat"
 
 #~ msgid "Su_rprised"
-#~ msgstr "So_rprés"
+#~ msgstr "So_rprès"
 
 #~ msgid "Subscript"
 #~ msgstr "Subíndex"
@@ -2129,7 +2131,7 @@ msgstr "Prova del GtkHTML"
 #~ msgstr "Contingut de la cel·la"
 
 #~ msgid "Add Word to"
-#~ msgstr "Afig una paraula a"
+#~ msgstr "Afegeix una paraula a"
 
 #~ msgid "%s Dictionary"
 #~ msgstr "Diccionari %s"
@@ -2147,7 +2149,7 @@ msgstr "Prova del GtkHTML"
 #~ msgstr "Exp_ressió regular"
 
 #~ msgid "Input the words you want to search here"
-#~ msgstr "Entreu ací les paraules que vulgueu cercar"
+#~ msgstr "Entreu aquí les paraules que vulgueu cercar"
 
 #~ msgid ""
 #~ "Unable to add word to dictionary,\n"
@@ -2166,7 +2168,7 @@ msgstr "Prova del GtkHTML"
 #~ msgstr "Nota"
 
 #~ msgid "Place your text here"
-#~ msgstr "Poseu ací el vostre text"
+#~ msgstr "Poseu aquí el vostre text"
 
 #~ msgid "Image frame"
 #~ msgstr "Marc de la imatge"
@@ -2175,10 +2177,10 @@ msgstr "Prova del GtkHTML"
 #~ msgstr "Etiquetes de plantilla"
 
 #~ msgid "Open file..."
-#~ msgstr "Obri un fitxer..."
+#~ msgstr "Obre un fitxer..."
 
 #~ msgid "Save file as..."
-#~ msgstr "Anomena i alça..."
+#~ msgstr "Anomena i desa..."
 
 #~ msgid "GtkHTML Editor Test Container"
 #~ msgstr "Contenidor de prova de l'editor GtkHTML"
@@ -2237,3 +2239,130 @@ msgstr "Prova del GtkHTML"
 
 #~ msgid "GtkHTML Test Application"
 #~ msgstr "Aplicació de prova de GtkHTML"
+
+#~ msgid "_Tongue"
+#~ msgstr "Llen_gua"
+
+#~ msgid "Make the current Paragraph style Preformatted"
+#~ msgstr "Fes que l'estil del paràgraf sigui preformatat"
+
+#~ msgid "Preformatted"
+#~ msgstr "Preformatat"
+
+#~ msgid "Cannot allocate default font for printing\n"
+#~ msgstr "No es pot carregar el tipus de lletra predeterminada per imprimir\n"
+
+#~ msgid "Find Rege_x..."
+#~ msgstr "Cerca una e_xpressió regular..."
+
+#~ msgid "Modify the file's properties"
+#~ msgstr "Modifica les propieatats del fitxer"
+
+#~ msgid "Regular expression search"
+#~ msgstr "Cerca amb una expressió regular"
+
+#~ msgid "Replace a string"
+#~ msgstr "Reemplaça una cadena"
+
+#~ msgid "Search again for the same string"
+#~ msgstr "Torna a cercar la mateixa cadena"
+
+#~ msgid "Search for a string"
+#~ msgstr "Cerca una cadena"
+
+# FIXME
+#~ msgid "_Insert text file... (FIXME)"
+#~ msgstr "_Insereix un fitxer de text..."
+
+#~ msgid "_Paste Quotation"
+#~ msgstr "_Enganxa una citació"
+
+#~ msgid "_Properties..."
+#~ msgstr "_Propietats..."
+
+#~ msgid "Paste Quotation"
+#~ msgstr "Enganxa una cita"
+
+#~ msgid "Percent"
+#~ msgstr "Percentatge"
+
+#~ msgid "Pixels"
+#~ msgstr "Píxels"
+
+#~ msgid "Standard"
+#~ msgstr "Estàndard"
+
+#~ msgid "Dot item"
+#~ msgstr "Element punt"
+
+#~ msgid "Number item"
+#~ msgstr "Element nombre"
+
+#~ msgid "Roman item"
+#~ msgstr "Element romà"
+
+#~ msgid "Alphabeta item"
+#~ msgstr "Element alfabètic"
+
+#~ msgid "Li_ck"
+#~ msgstr "Ll_engot"
+
+#~ msgid "Check Word Spelling..."
+#~ msgstr "Comprova l'ortografia..."
+
+#~ msgid "Insert Lick smiley into document..."
+#~ msgstr "Insereix una careta fent un llengot al document..."
+
+#~ msgid "Find And Replace"
+#~ msgstr "Cerca i reemplaça"
+
+#~ msgid "_Preformat"
+#~ msgstr "_Preformat"
+
+#~ msgid "_Spell Check Document..."
+#~ msgstr "Comprova l'ortogra_fia del document..."
+
+#~ msgid "_Strikeout"
+#~ msgstr "_Ratllat"
+
+#~ msgid "Length:"
+#~ msgstr "Longitud:"
+
+#~ msgid "Thickness:"
+#~ msgstr "Gruix:"
+
+#~ msgid "_Visit..."
+#~ msgstr "_Visita..."
+
+#~ msgid "Background Color"
+#~ msgstr "Color de fons"
+
+#~ msgid "Blue"
+#~ msgstr "Blau"
+
+#~ msgid "Green"
+#~ msgstr "Verd"
+
+#~ msgid "Orange"
+#~ msgstr "Taronja"
+
+#~ msgid "Other..."
+#~ msgstr "Altres..."
+
+#~ msgid "Purple"
+#~ msgstr "Violeta"
+
+#~ msgid "Red"
+#~ msgstr "Vermell"
+
+#~ msgid "Su_perscript"
+#~ msgstr "Su_períndex"
+
+#~ msgid "Subs_cript"
+#~ msgstr "Subí_ndex"
+
+#~ msgid "Yellow"
+#~ msgstr "Groc"
+
+#~ msgid "etc..."
+#~ msgstr "etc..."
