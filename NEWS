@@ -1,3 +1,24 @@
+GtkHTML-3.31.1 2010-05-03
+--------------------------
+Bug Fixes:
+	Bug #575038 - Cursor/caret mode breaks magic spacebar (Milan Crha)
+	Bug #247302 - Wrong letter color with HTML content rendering (Milan Crha)
+	Bug #615205 - Translations not working in Emoticons and Find/Replace dialogs. (Mario Carrion)
+	Bug #551554 - gtkhtml translation issues (add translation comments) (Milan Crha)
+	Bug #514611 - Add translators comments and one string (Milan Crha)
+	Bug #325121 - Do not translate developer strings in g_param_spec_* (Milan Crha)
+	Bug #602634 - Not fully supported list types (Denis Pauk)
+	Bug #461203 - Do not select text on drop abort (Milan Crha)
+Miscellaneous Fixes:
+	Use gtk_accessible_get_widget() if available. (Matthew Barnes)
+	Fix most GSEAL issues. (Matthew Barnes)
+Translation:
+	Wouter Bolsterlee (nl)
+	Valencian translation  (ca)
+	Francisco Diéguez (gl)
+	Jordi Serratosa (ca)
+	Kjartan Maraas (nn)
+
 GtkHTML-3.29.92 2010-03-08
 --------------------------
 

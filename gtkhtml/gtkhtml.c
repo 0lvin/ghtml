@@ -1074,7 +1074,7 @@ link_clicked(GtkHTML *gtk_html, gchar *url)
 	g_free (expanded);
 }
 
-static gint
+static gboolean
 key_press_event (GtkWidget *widget, GdkEventKey *event)
 {
 	GtkHTML *html = GTK_HTML (widget);
@@ -1162,7 +1162,7 @@ key_press_event (GtkWidget *widget, GdkEventKey *event)
 	return retval;
 }
 
-static gint
+static gboolean
 key_release_event (GtkWidget *widget, GdkEventKey *event)
 {
 	GtkHTML *html = GTK_HTML (widget);
@@ -4932,7 +4932,7 @@ scroll_command (GtkHTML *html,
 	gdouble page_size;
 
 	/* we dont want scroll in editable (move cursor instead) */
-	if (html_engine_get_editable (html->engine) || html->engine->caret_mode)
+	if (html_engine_get_editable (html->engine))
 		return FALSE;
 
 	adjustment = gtk_layout_get_vadjustment (GTK_LAYOUT (html));

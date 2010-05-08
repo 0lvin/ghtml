@@ -40,6 +40,77 @@ static GHashTable *iso_3166_table = NULL;
 
 #define ISOCODESLOCALEDIR ISO_CODES_PREFIX "/share/locale"
 
+#ifdef G_OS_WIN32
+#ifdef DATADIR
+#undef DATADIR
+#endif
+#include <shlobj.h>
+static HMODULE hmodule;
+
+BOOL WINAPI
+DllMain (HINSTANCE hinstDLL,
+         DWORD     fdwReason,
+         LPVOID    lpvReserved);
+
+BOOL WINAPI
+DllMain (HINSTANCE hinstDLL,
+         DWORD     fdwReason,
+         LPVOID    lpvReserved)
+{
+	switch (fdwReason)
+    {
+    case DLL_PROCESS_ATTACH:
+		hmodule = hinstDLL;
+		break;
+    }
+
+	return TRUE;
+}
+
+static char *
+_get_iso_codes_prefix (void)
+{
+	static char retval[1000];
+	static int beenhere = 0;
+	gchar *temp_dir = 0;
+
+	if (beenhere)
+		return retval;
+
+	if (!(temp_dir = g_win32_get_package_installation_directory_of_module ((gpointer)hmodule))) {
+		strcpy(retval, ISO_CODES_PREFIX);
+		return retval;
+	}
+
+	strcpy (retval, temp_dir);
+	g_free (temp_dir);
+	beenhere = 1;
+	return retval;
+}
+
+static char *
+_get_isocodeslocaledir (void)
+{
+	static char retval[1000];
+	static int beenhere = 0;
+
+	if (beenhere)
+		return retval;
+	
+	strcpy (retval, _get_iso_codes_prefix ());
+	strcat (retval, "\\share\\locale" );
+	beenhere = 1;
+	return retval;
+}
+
+#undef ISO_CODES_PREFIX
+#define ISO_CODES_PREFIX _get_iso_codes_prefix ()
+
+#undef ISOCODESLOCALEDIR
+#define ISOCODESLOCALEDIR _get_isocodeslocaledir ()
+
+#endif
+
 static void
 iso_639_start_element (GMarkupParseContext *context,
                        const gchar *element_name,
