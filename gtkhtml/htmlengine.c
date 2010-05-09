@@ -6023,9 +6023,12 @@ html_engine_stream_end (GtkHTMLStream *stream,
 		e->timerId = 0;
 	}
 
-	if (e->parser)
+	if (e->parser) {
+		/* always run this on end strim*/
+		htmlParseChunk (e->parser, NULL, 0, 1);
 		if (e->parser->myDoc)
 			e->rootNode = xmlDocGetRootElement(e->parser->myDoc);
+	}
 	if(e->rootNode) {
 		e->eat_space = FALSE;
 		/* elementtree_parse_dumpnode(e->rootNode, 0); */
