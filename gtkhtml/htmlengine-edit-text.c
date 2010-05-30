@@ -82,7 +82,7 @@ html_engine_capitalize_word (HTMLEngine *e)
 						   upper_lower, GINT_TO_POINTER (FALSE));
 			html_engine_disable_selection (e);
 		}
-		html_undo_level_end (e->undo);
+		html_undo_level_end (e->undo, e);
 	}
 }
 

@@ -32,7 +32,8 @@ enum {
 	PROP_HTML_MODE,
 	PROP_INLINE_SPELLING,
 	PROP_MAGIC_LINKS,
-	PROP_MAGIC_SMILEYS
+	PROP_MAGIC_SMILEYS,
+	PROP_CHANGED
 };
 
 enum {
@@ -214,6 +215,12 @@ editor_url_requested_cb (GtkhtmlEditor *editor,
                          GtkHTMLStream *stream)
 {
 	g_signal_emit (editor, signals[URI_REQUESTED], 0, url, stream);
+}
+
+static void
+engine_undo_changed_cb (GtkhtmlEditor *editor, HTMLEngine *engine)
+{
+	g_object_notify (G_OBJECT (editor), "changed");
 }
 
 static void
@@ -500,6 +507,10 @@ editor_constructor (GType type,
 		html, "url_requested",
 		G_CALLBACK (editor_url_requested_cb), editor);
 
+	g_signal_connect_swapped (
+		html->engine, "undo-changed",
+		G_CALLBACK (engine_undo_changed_cb), editor);
+
 	/* Connect property dialog widgets to actions. */
 
 	gtk_activatable_set_related_action (
@@ -644,6 +655,11 @@ editor_set_property (GObject *object,
 				GTKHTML_EDITOR (object),
 				g_value_get_boolean (value));
 			return;
+		case PROP_CHANGED:
+			gtkhtml_editor_set_changed (
+				GTKHTML_EDITOR (object),
+				g_value_get_boolean (value));
+			return;
 	}
 
 	G_OBJECT_WARN_INVALID_PROPERTY_ID (object, property_id, pspec);
@@ -695,6 +711,11 @@ editor_get_property (GObject *object,
 		case PROP_MAGIC_SMILEYS:
 			g_value_set_boolean (
 				value, gtkhtml_editor_get_magic_smileys (
+				GTKHTML_EDITOR (object)));
+			return;
+		case PROP_CHANGED:
+			g_value_set_boolean (
+				value, gtkhtml_editor_get_changed (
 				GTKHTML_EDITOR (object)));
 			return;
 	}
@@ -846,6 +867,16 @@ editor_class_init (GtkhtmlEditorClass *class)
 			TRUE,
 			G_PARAM_READWRITE |
 			G_PARAM_CONSTRUCT));
+
+	g_object_class_install_property (
+		object_class,
+		PROP_CHANGED,
+		g_param_spec_boolean (
+			"changed",
+			_("Changed property"),
+			_("Whether editor changed"),
+			FALSE,
+			G_PARAM_READWRITE));
 
 	signals[COMMAND_AFTER] = g_signal_new (
 		"command-after",
@@ -1108,6 +1139,8 @@ gtkhtml_editor_set_changed (GtkhtmlEditor *editor,
 	}
 
 	editor->priv->changed = changed;
+
+	g_object_notify (G_OBJECT (editor), "changed");
 }
 
 const gchar *
@@ -1726,7 +1759,7 @@ gtkhtml_editor_undo_end (GtkhtmlEditor *editor)
 
 	html = gtkhtml_editor_get_html (editor);
 
-	html_undo_level_end (html->engine->undo);
+	html_undo_level_end (html->engine->undo, html->engine);
 }
 
 gboolean

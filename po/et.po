@@ -15,8 +15,8 @@ msgstr ""
 "Project-Id-Version: gtkhtml MASTER\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?"
 "product=gtkhtml&component=general\n"
-"POT-Creation-Date: 2010-01-15 04:14+0000\n"
-"PO-Revision-Date: 2010-01-28 18:18+0200\n"
+"POT-Creation-Date: 2010-05-19 21:47+0000\n"
+"PO-Revision-Date: 2010-05-27 08:22+0300\n"
 "Last-Translator: Ivar Smolin <okul@linux.ee>\n"
 "Language-Team: Estonian <gnome-et@linux.ee>\n"
 "MIME-Version: 1.0\n"
@@ -161,94 +161,14 @@ msgstr "valge"
 msgid "Choose Custom Color"
 msgstr "Kohandatud värvuse valimine"
 
-msgid "Current color"
-msgstr "Praegune värvus"
-
-msgid "The currently selected color"
-msgstr "Hetkel valitud värvus"
-
-msgid "Default color"
-msgstr "Vaikimisi värvus"
-
-msgid "The color associated with the default button"
-msgstr "Vaikimisi nupuga seotud värvus"
-
-msgid "Default label"
-msgstr "Vaikimisi silt"
-
-msgid "The label for the default button"
-msgstr "Vaikimisi nupu silt"
-
 msgid "Default"
 msgstr "Vaikimisi"
-
-msgid "Default is transparent"
-msgstr "Vaikimisi on läbipaistev"
-
-msgid "Whether the default color is transparent"
-msgstr "Kas vaikimisi värvus on läbipaistev"
-
-msgid "Color palette"
-msgstr "Värvipalett"
-
-msgid "Custom color palette"
-msgstr "Kohandatud värvipalett"
-
-#. Translators: This is the nickname for a
-#. * GtkhtmlColorCombo property named "popup-shown",
-#. * based on a similar property in GtkComboBox.
-msgid "Popup shown"
-msgstr "Valiku lahtihüppamine"
-
-#. Translators: This is the blurb for a
-#. * GtkhtmlColorCombo property named "popup-shown",
-#. * based on a similar property in GtkComboBox.
-msgid "Whether the combo's dropdown is shown"
-msgstr "Kas lahtihüppavat valikut näidatakse või mitte"
-
-#. Translators: This is the nickname for a
-#. GtkHtmlColorCombo property named "state". It holds all
-#. the internal values for a GtkHtml color combination box.
-#.
-msgid "Color state"
-msgstr "Värvuse olek"
-
-#. Translators: This is the blurb for a
-#. GtkHtmlColorCombo property named "state". It holds all
-#. the internal values for a GtkHtml color combination box.
-#.
-msgid "The state of a color combo box"
-msgstr "Värvusevalija olek"
 
 msgid "custom"
 msgstr "kohandatud"
 
 msgid "Custom Color..."
 msgstr "Kohandatud värvus..."
-
-msgid "The current color"
-msgstr "Praegune värvus"
-
-msgid "The default color"
-msgstr "Vaikimisi värvus"
-
-msgid "Description of the default color"
-msgstr "Vaikimisi värvuse kirjeldus"
-
-msgid "Color"
-msgstr "Värvus"
-
-msgid "Frame Shadow"
-msgstr "Raami vari"
-
-msgid "Appearance of the frame border"
-msgstr "Raami äärise välimus"
-
-msgid "Action"
-msgstr "Tegevus"
-
-msgid "A GtkRadioAction"
-msgstr "GtkRadioAction"
 
 #. Translators: :-)
 msgid "_Smile"
@@ -518,9 +438,11 @@ msgstr "_Viit..."
 msgid "Insert Link"
 msgstr "Viida lisamine"
 
+#. Translators: 'Rule' here means a horizontal line in an HTML text
 msgid "_Rule..."
 msgstr "_Vahejoon..."
 
+#. Translators: 'Rule' here means a horizontal line in an HTML text
 msgid "Insert Rule"
 msgstr "Vahejoone lisamine"
 
@@ -572,24 +494,31 @@ msgstr "_Allajoonitud"
 msgid "Underline"
 msgstr "Allakriipsutus"
 
+#. Translators: This is a font size level. It is shown on a tool bar. Please keep it as short as possible.
 msgid "-2"
 msgstr "-2"
 
+#. Translators: This is a font size level. It is shown on a tool bar. Please keep it as short as possible.
 msgid "-1"
 msgstr "-1"
 
+#. Translators: This is a font size level. It is shown on a tool bar. Please keep it as short as possible.
 msgid "+0"
 msgstr "+0"
 
+#. Translators: This is a font size level. It is shown on a tool bar. Please keep it as short as possible.
 msgid "+1"
 msgstr "+1"
 
+#. Translators: This is a font size level. It is shown on a tool bar. Please keep it as short as possible.
 msgid "+2"
 msgstr "+2"
 
+#. Translators: This is a font size level. It is shown on a tool bar. Please keep it as short as possible.
 msgid "+3"
 msgstr "+3"
 
+#. Translators: This is a font size level. It is shown on a tool bar. Please keep it as short as possible.
 msgid "+4"
 msgstr "+4"
 
@@ -605,12 +534,14 @@ msgstr "Rida"
 msgid "Table"
 msgstr "Tabel"
 
+#. Translators: Popup menu item caption, containing all the Delete options for a table
 msgid "Table Delete"
 msgstr "Tabeli kustutamine"
 
 msgid "Input Methods"
 msgstr "Sisestusmeetodid"
 
+#. Translators: Popup menu item caption, containing all the Insert options for a table
 msgid "Table Insert"
 msgstr "Tabeli lisamine"
 
@@ -647,6 +578,7 @@ msgstr "Lehekülg"
 msgid "Paragraph..."
 msgstr "Lõik..."
 
+#. Translators: 'Rule' here means a horizontal line in an HTML text
 msgid "Rule..."
 msgstr "Vahejoon..."
 
@@ -671,6 +603,12 @@ msgstr "Lisa sõna"
 msgid "More Suggestions"
 msgstr "Täiendavad soovitused"
 
+#. Translators: %s will be replaced with the actual dictionary name,
+#. where a user can add a word to. This is part of an "Add Word To" submenu.
+#, c-format
+msgid "%s Dictionary"
+msgstr "sõnastikku %s"
+
 msgid "_Emoticon"
 msgstr "_Tujunägu"
 
@@ -689,6 +627,7 @@ msgstr "_Pilt"
 msgid "_Link"
 msgstr "_Viit"
 
+#. Translators: 'Rule' here means a horizontal line in an HTML text
 msgid "_Rule"
 msgstr "_Vahejoon"
 
@@ -713,47 +652,11 @@ msgstr "Automaatne"
 msgid "Could not open the link."
 msgstr "Viita pole võimalik avada."
 
-msgid "Current Folder"
-msgstr "Praegune kataloog"
+msgid "Changed property"
+msgstr "Muudetud omadus"
 
-msgid "The initial folder for file chooser dialogs"
-msgstr "Failivalimise dialoogi algne kataloog"
-
-msgid "Filename"
-msgstr "Failinimi"
-
-msgid "The filename to use when saving"
-msgstr "Salvestamisel kasutatav failinimi"
-
-msgid "HTML Editing Widget"
-msgstr "HTML-redaktori vidin"
-
-msgid "The main HTML editing widget"
-msgstr "Peamine HTML-i redigeerimise vidin"
-
-msgid "HTML Mode"
-msgstr "HTML-režiim"
-
-msgid "Edit HTML or plain text"
-msgstr "HTML-i või lihtteksti redigeerimine"
-
-msgid "Inline Spelling"
-msgstr "Vahetu õigekirjakontroll"
-
-msgid "Check your spelling as you type"
-msgstr "Õigekirjakontroll sisestamise ajal"
-
-msgid "Magic Links"
-msgstr "Maagilised viidad"
-
-msgid "Make URIs clickable as you type"
-msgstr "Sisestamise ajal automaatselt URI-de muutmine klõpsatavaks"
-
-msgid "Magic Smileys"
-msgstr "Maagilised tujunäod"
-
-msgid "Convert emoticons to images as you type"
-msgstr "Sisestamise ajal tujunägude automaatne teisendamine piltideks"
+msgid "Whether editor changed"
+msgstr "Kas redaktoris on muudatusi või mitte"
 
 #, no-c-format
 msgid "%"
@@ -885,6 +788,7 @@ msgstr "Paremal"
 msgid "Row Span:"
 msgstr "Rea ulatus:"
 
+#. Translators: Caption of a window. 'Rule' here means a horizontal line in an HTML text.
 msgid "Rule Properties"
 msgstr "Vahejoone omadused"
 
@@ -1005,21 +909,9 @@ msgstr "tuletatud"
 msgid "px"
 msgstr "px"
 
-msgid "Language"
-msgstr "Keel"
-
-msgid "The language used by the spell checker"
-msgstr "Õigekirjakontrolli poolt kasutatav keel"
-
 #, c-format
 msgid "Suggestions for \"%s\""
 msgstr "Soovitused \"%s\" jaoks"
-
-msgid "Misspelled Word"
-msgstr "Kirjaveaga sõna"
-
-msgid "The current misspelled word"
-msgstr "Käesolev kirjaveaga sõna"
 
 msgid "Spell Checker"
 msgstr "Õigekirjakontroll"
@@ -1106,66 +998,6 @@ msgstr "_HTML-allikas"
 msgid "_Plain Source"
 msgstr "_Lihtallikas"
 
-msgid "Editable"
-msgstr "Redigeeritav"
-
-msgid "Whether the html can be edited"
-msgstr "Kas html-i on võimalik redigeerida"
-
-msgid "Document Title"
-msgstr "Dokumendi pealkiri"
-
-msgid "The title of the current document"
-msgstr "Aktiivse dokumendi pealkiri"
-
-msgid "Document Base"
-msgstr "Dokumendi alus"
-
-msgid "The base URL for relative references"
-msgstr "AlusURL suhteliste viitade jaoks"
-
-msgid "Target Base"
-msgstr "Sihtkoha alus"
-
-msgid "The base URL of the target frame"
-msgstr "AlusURL sihtraami jaoks"
-
-msgid "Fixed Width Font"
-msgstr "Fikseeritud laiusega kirjatüüp"
-
-msgid "The Monospace font to use for typewriter text"
-msgstr "Monospace kirjatüüp kirjutusmasinateksti jaoks"
-
-msgid "New Link Color"
-msgstr "Uus viidavärvus"
-
-msgid "The color of new link elements"
-msgstr "Uute viidaelementide värvus"
-
-msgid "Visited Link Color"
-msgstr "Külastatud viida värvus"
-
-msgid "The color of visited link elements"
-msgstr "Külastatud viidaelementide värvus"
-
-msgid "Active Link Color"
-msgstr "Aktiivse viida värvus"
-
-msgid "The color of active link elements"
-msgstr "Aktiivsete viitade värvus"
-
-msgid "Spelling Error Color"
-msgstr "Kirjavea värvus"
-
-msgid "The color of the spelling error markers"
-msgstr "Kirjavigade tähistamise värvus"
-
-msgid "Cite Quotation Color"
-msgstr "Tsiteeringu värvus"
-
-msgid "The color of the cited text"
-msgstr "Tsiteeritud teksti värvus"
-
 msgid "Submit Query"
 msgstr "Saada päring"
 
@@ -1178,3 +1010,180 @@ msgstr "Printimise vaikimisi kirjatüüpi pole võimalik eraldada"
 
 msgid "GtkHTML Test"
 msgstr "GtkHTML test"
+
+#~ msgid "Current color"
+#~ msgstr "Praegune värvus"
+
+#~ msgid "The currently selected color"
+#~ msgstr "Hetkel valitud värvus"
+
+#~ msgid "Default color"
+#~ msgstr "Vaikimisi värvus"
+
+#~ msgid "The color associated with the default button"
+#~ msgstr "Vaikimisi nupuga seotud värvus"
+
+#~ msgid "Default label"
+#~ msgstr "Vaikimisi silt"
+
+#~ msgid "The label for the default button"
+#~ msgstr "Vaikimisi nupu silt"
+
+#~ msgid "Default is transparent"
+#~ msgstr "Vaikimisi on läbipaistev"
+
+#~ msgid "Whether the default color is transparent"
+#~ msgstr "Kas vaikimisi värvus on läbipaistev"
+
+#~ msgid "Color palette"
+#~ msgstr "Värvipalett"
+
+#~ msgid "Custom color palette"
+#~ msgstr "Kohandatud värvipalett"
+
+#~ msgid "Popup shown"
+#~ msgstr "Valiku lahtihüppamine"
+
+#~ msgid "Whether the combo's dropdown is shown"
+#~ msgstr "Kas lahtihüppavat valikut näidatakse või mitte"
+
+#~ msgid "Color state"
+#~ msgstr "Värvuse olek"
+
+#~ msgid "The state of a color combo box"
+#~ msgstr "Värvusevalija olek"
+
+#~ msgid "The current color"
+#~ msgstr "Praegune värvus"
+
+#~ msgid "The default color"
+#~ msgstr "Vaikimisi värvus"
+
+#~ msgid "Description of the default color"
+#~ msgstr "Vaikimisi värvuse kirjeldus"
+
+#~ msgid "Color"
+#~ msgstr "Värvus"
+
+#~ msgid "Frame Shadow"
+#~ msgstr "Raami vari"
+
+#~ msgid "Appearance of the frame border"
+#~ msgstr "Raami äärise välimus"
+
+#~ msgid "Action"
+#~ msgstr "Tegevus"
+
+#~ msgid "A GtkRadioAction"
+#~ msgstr "GtkRadioAction"
+
+#~ msgid "Current Folder"
+#~ msgstr "Praegune kataloog"
+
+#~ msgid "The initial folder for file chooser dialogs"
+#~ msgstr "Failivalimise dialoogi algne kataloog"
+
+#~ msgid "Filename"
+#~ msgstr "Failinimi"
+
+#~ msgid "The filename to use when saving"
+#~ msgstr "Salvestamisel kasutatav failinimi"
+
+#~ msgid "HTML Editing Widget"
+#~ msgstr "HTML-redaktori vidin"
+
+#~ msgid "The main HTML editing widget"
+#~ msgstr "Peamine HTML-i redigeerimise vidin"
+
+#~ msgid "HTML Mode"
+#~ msgstr "HTML-režiim"
+
+#~ msgid "Edit HTML or plain text"
+#~ msgstr "HTML-i või lihtteksti redigeerimine"
+
+#~ msgid "Inline Spelling"
+#~ msgstr "Vahetu õigekirjakontroll"
+
+#~ msgid "Check your spelling as you type"
+#~ msgstr "Õigekirjakontroll sisestamise ajal"
+
+#~ msgid "Magic Links"
+#~ msgstr "Maagilised viidad"
+
+#~ msgid "Make URIs clickable as you type"
+#~ msgstr "Sisestamise ajal automaatselt URI-de muutmine klõpsatavaks"
+
+#~ msgid "Magic Smileys"
+#~ msgstr "Maagilised tujunäod"
+
+#~ msgid "Convert emoticons to images as you type"
+#~ msgstr "Sisestamise ajal tujunägude automaatne teisendamine piltideks"
+
+#~ msgid "Language"
+#~ msgstr "Keel"
+
+#~ msgid "The language used by the spell checker"
+#~ msgstr "Õigekirjakontrolli poolt kasutatav keel"
+
+#~ msgid "Misspelled Word"
+#~ msgstr "Kirjaveaga sõna"
+
+#~ msgid "The current misspelled word"
+#~ msgstr "Käesolev kirjaveaga sõna"
+
+#~ msgid "Editable"
+#~ msgstr "Redigeeritav"
+
+#~ msgid "Document Title"
+#~ msgstr "Dokumendi pealkiri"
+
+#~ msgid "The title of the current document"
+#~ msgstr "Aktiivse dokumendi pealkiri"
+
+#~ msgid "Document Base"
+#~ msgstr "Dokumendi alus"
+
+#~ msgid "The base URL for relative references"
+#~ msgstr "AlusURL suhteliste viitade jaoks"
+
+#~ msgid "Target Base"
+#~ msgstr "Sihtkoha alus"
+
+#~ msgid "The base URL of the target frame"
+#~ msgstr "AlusURL sihtraami jaoks"
+
+#~ msgid "Fixed Width Font"
+#~ msgstr "Fikseeritud laiusega kirjatüüp"
+
+#~ msgid "The Monospace font to use for typewriter text"
+#~ msgstr "Monospace kirjatüüp kirjutusmasinateksti jaoks"
+
+#~ msgid "New Link Color"
+#~ msgstr "Uus viidavärvus"
+
+#~ msgid "The color of new link elements"
+#~ msgstr "Uute viidaelementide värvus"
+
+#~ msgid "Visited Link Color"
+#~ msgstr "Külastatud viida värvus"
+
+#~ msgid "The color of visited link elements"
+#~ msgstr "Külastatud viidaelementide värvus"
+
+#~ msgid "Active Link Color"
+#~ msgstr "Aktiivse viida värvus"
+
+#~ msgid "The color of active link elements"
+#~ msgstr "Aktiivsete viitade värvus"
+
+#~ msgid "Spelling Error Color"
+#~ msgstr "Kirjavea värvus"
+
+#~ msgid "The color of the spelling error markers"
+#~ msgstr "Kirjavigade tähistamise värvus"
+
+#~ msgid "Cite Quotation Color"
+#~ msgstr "Tsiteeringu värvus"
+
+#~ msgid "The color of the cited text"
+#~ msgstr "Tsiteeritud teksti värvus"

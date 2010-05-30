@@ -321,7 +321,7 @@ set_empty_flow_style (HTMLEngine *e, GtkHTMLFontStyle and_mask, GtkHTMLFontStyle
 	undo->and_mask = and_mask;
 	undo->or_mask = old_or_mask;
 	undo->data.destroy = NULL;
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Set empty paragraph text style", set_empty_flow_style_undo_action,
 						    HTML_UNDO_DATA (undo), html_cursor_get_position (e->cursor),
 						    html_cursor_get_position (e->cursor)), dir);

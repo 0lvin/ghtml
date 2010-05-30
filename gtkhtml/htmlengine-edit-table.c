@@ -154,7 +154,7 @@ insert_column_undo_action (HTMLEngine *e, HTMLUndoData *data, HTMLUndoDirection 
 static void
 insert_column_setup_undo (HTMLEngine *e, gint col, guint position_before, HTMLUndoDirection dir)
 {
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Insert table column", insert_column_undo_action,
 						    insert_undo_data_new (col), html_cursor_get_position (e->cursor),
 						    position_before),
@@ -355,7 +355,7 @@ delete_column_undo_action (HTMLEngine *e, HTMLUndoData *undo_data, HTMLUndoDirec
 static void
 delete_column_setup_undo (HTMLEngine *e, HTMLTableCell **column, gint size, guint position_after, gint col, HTMLUndoDirection dir)
 {
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Delete table column", delete_column_undo_action,
 						    HTML_UNDO_DATA (delete_cells_undo_new (column, size, col)),
 						    html_cursor_get_position (e->cursor),
@@ -506,7 +506,7 @@ insert_row_undo_action (HTMLEngine *e, HTMLUndoData *data, HTMLUndoDirection dir
 static void
 insert_row_setup_undo (HTMLEngine *e, gint row, guint position_before, HTMLUndoDirection dir)
 {
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Insert table row", insert_row_undo_action,
 						    insert_undo_data_new (row),
 						    html_cursor_get_position (e->cursor),
@@ -610,7 +610,7 @@ static void
 delete_row_setup_undo (HTMLEngine *e, HTMLTableCell **row_cells, gint size, guint position_after,
 		       gint row, HTMLUndoDirection dir)
 {
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Delete table row", delete_row_undo_action,
 						    HTML_UNDO_DATA (delete_cells_undo_new (row_cells, size, row)),
 						    html_cursor_get_position (e->cursor),
@@ -817,7 +817,7 @@ table_set_border_width (HTMLEngine *e, HTMLTable *t, gint border_width, gboolean
 	html_object_change_set (HTML_OBJECT (t), HTML_CHANGE_ALL_CALC);
 	html_engine_thaw (e);
 
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Set table border width", table_set_border_width_undo_action,
 						    HTML_UNDO_DATA (undo), html_cursor_get_position (e->cursor),
 						    html_cursor_get_position (e->cursor)), dir);
@@ -860,7 +860,7 @@ table_set_bg_color (HTMLEngine *e, HTMLTable *t, GdkColor *c, HTMLUndoDirection 
 		undo->attr.color.has_bg_color = TRUE;
 	} else
 		undo->attr.color.has_bg_color = FALSE;
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Set table background color", table_set_bg_color_undo_action,
 						    HTML_UNDO_DATA (undo),
 						    html_cursor_get_position (e->cursor),
@@ -906,7 +906,7 @@ table_set_bg_pixmap (HTMLEngine *e, HTMLTable *t, gchar *url, HTMLUndoDirection 
 
 	undo = attr_undo_new (HTML_TABLE_BGPIXMAP);
 	undo->attr.pixmap = t->bgPixmap ? g_strdup (t->bgPixmap->url) : NULL;
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Set table background pixmap", table_set_bg_pixmap_undo_action,
 						    HTML_UNDO_DATA (undo),
 						    html_cursor_get_position (e->cursor),
@@ -960,7 +960,7 @@ table_set_spacing (HTMLEngine *e, HTMLTable *t, gint spacing, gboolean relative,
 
 	undo = attr_undo_new (HTML_TABLE_SPACING);
 	undo->attr.spacing = t->spacing;
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Set table spacing", table_set_spacing_undo_action,
 						    HTML_UNDO_DATA (undo),
 						    html_cursor_get_position (e->cursor),
@@ -1012,7 +1012,7 @@ table_set_padding (HTMLEngine *e, HTMLTable *t, gint padding, gboolean relative,
 
 	undo = attr_undo_new (HTML_TABLE_PADDING);
 	undo->attr.padding = t->padding;
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Set table padding", table_set_padding_undo_action,
 						    HTML_UNDO_DATA (undo),
 						    html_cursor_get_position (e->cursor),
@@ -1085,7 +1085,7 @@ table_set_align (HTMLEngine *e, HTMLTable *t, HTMLHAlignType align, HTMLUndoDire
 	} else
 		g_assert_not_reached ();
 
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Set table align", table_set_align_undo_action,
 						    HTML_UNDO_DATA (undo),
 						    html_cursor_get_position (e->cursor),
@@ -1129,7 +1129,7 @@ table_set_width (HTMLEngine *e, HTMLTable *t, gint width, gboolean percent, HTML
 		: (HTML_OBJECT (t)->flags & HTML_OBJECT_FLAG_FIXEDWIDTH
 		   ? t->specified_width : 0);
 	undo->attr.width.percent = HTML_OBJECT (t)->percent != 0;
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Set table width", table_set_width_undo_action,
 						    HTML_UNDO_DATA (undo),
 						    html_cursor_get_position (e->cursor),

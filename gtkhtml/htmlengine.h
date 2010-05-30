@@ -276,6 +276,7 @@ struct _HTMLEngineClass {
         void (* redirect) (HTMLEngine *engine, const gchar *url, gint delay);
         void (* submit) (HTMLEngine *engine, const gchar *method, const gchar *action, const gchar *encoding);
 	gboolean (* object_requested) (HTMLEngine *engine, GtkHTMLEmbedded *);
+	void (* undo_changed) (HTMLEngine *engine);
 };
 
 
@@ -499,4 +500,7 @@ GIConv     generate_iconv_to (const gchar * content_type);
 gchar *     convert_text_encoding (const GIConv iconv_cd, const gchar * token);
 /*validate result g_iconv_open*/
 gboolean   is_valid_g_iconv (const GIConv iconv_cd);
+
+void html_engine_emit_undo_changed (HTMLEngine *e);
+
 #endif /* _HTMLENGINE_H_ */

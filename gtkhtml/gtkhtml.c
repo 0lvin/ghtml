@@ -1328,12 +1328,79 @@ child_size_allocate (HTMLObject *o, HTMLEngine *e, gpointer data)
 }
 
 static void
+set_adjustment_upper (GtkAdjustment *adjustment,
+                      gdouble upper)
+{
+	gdouble page_size;
+	gdouble value;
+	gdouble min;
+
+	/* XXX Stolen from gtklayout.c and simplified. */
+
+	value = gtk_adjustment_get_value (adjustment);
+	page_size = gtk_adjustment_get_page_size (adjustment);
+	min = MAX (0., upper - page_size);
+
+	gtk_adjustment_set_upper (adjustment, upper);
+
+	if (value > min)
+		gtk_adjustment_set_value (adjustment, min);
+}
+
+static void
+gtk_layout_faux_size_allocate (GtkWidget *widget,
+                               GtkAllocation *allocation)
+{
+	GtkLayout *layout = GTK_LAYOUT (widget);
+	GtkAdjustment *adjustment;
+	guint width, height;
+
+	/* XXX This is essentially a copy of GtkLayout's size_allocate()
+	 *     method, but with the GtkLayoutChild loop removed.  We call
+	 *     this instead of chaining up to GtkLayout. */
+
+	gtk_widget_set_allocation (widget, allocation);
+	gtk_layout_get_size (layout, &width, &height);
+
+	if (gtk_widget_get_realized (widget)) {
+		gdk_window_move_resize (
+			gtk_widget_get_window (widget),
+			allocation->x, allocation->y,
+			allocation->width, allocation->height);
+
+		gdk_window_resize (
+			gtk_layout_get_bin_window (layout),
+			MAX (width, allocation->width),
+			MAX (height, allocation->height));
+	}
+
+	/* XXX Does the previous logic alter the GtkLayout size?
+	 *     Not sure, so best refetch the size just to be safe. */
+	gtk_layout_get_size (layout, &width, &height);
+
+	adjustment = gtk_layout_get_hadjustment (layout);
+	g_object_freeze_notify (G_OBJECT (adjustment));
+	gtk_adjustment_set_page_size (adjustment, allocation->width);
+	gtk_adjustment_set_page_increment (adjustment, allocation->width * 0.9);
+	gtk_adjustment_set_lower (adjustment, 0);
+	set_adjustment_upper (adjustment, MAX (allocation->width, width));
+	g_object_thaw_notify (G_OBJECT (adjustment));
+
+	adjustment = gtk_layout_get_vadjustment (layout);
+	g_object_freeze_notify (G_OBJECT (adjustment));
+	gtk_adjustment_set_page_size (adjustment, allocation->height);
+	gtk_adjustment_set_page_increment (adjustment, allocation->height * 0.9);
+	gtk_adjustment_set_lower (adjustment, 0);
+	set_adjustment_upper (adjustment, MAX (allocation->height, height));
+	g_object_thaw_notify (G_OBJECT (adjustment));
+}
+
+static void
 size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 {
 	GtkHTML *html;
 	GtkLayout *layout;
 	gboolean changed_x = FALSE, changed_y = FALSE;
-	GList *children;
 
 	g_return_if_fail (widget != NULL);
 	g_return_if_fail (GTK_IS_HTML (widget));
@@ -1344,11 +1411,7 @@ size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 
 	/* isolate childs from layout - we want to set them after calc size is performed
 	   and we know the children positions */
-	children = GTK_LAYOUT (widget)->children;
-	GTK_LAYOUT (widget)->children = NULL;
-	if (GTK_WIDGET_CLASS (parent_class)->size_allocate)
-		(*GTK_WIDGET_CLASS (parent_class)->size_allocate) (widget, allocation);
-	GTK_LAYOUT (widget)->children = children;
+	gtk_layout_faux_size_allocate (widget, allocation);
 
 	if (html->engine->width != allocation->width
 	    || html->engine->height != allocation->height) {
@@ -2784,7 +2847,7 @@ drag_data_received (GtkWidget *widget, GdkDragContext *context,
                                  pasted = TRUE;
                          }
                  } while (list_len);
-                 html_undo_level_end (engine->undo);
+                 html_undo_level_end (engine->undo, engine);
 	}
 	break;
 	}
@@ -6295,7 +6358,7 @@ gtk_html_insert_html_generic (GtkHTML *html, GtkHTML *tmp, const gchar *html_src
 			html_object_remove_child (o->parent, o);
 			html_engine_append_flow (html->engine, o, html_object_get_recursive_length (o));
 		}
-		html_undo_level_end (html->engine->undo);
+		html_undo_level_end (html->engine->undo, html->engine);
 	} else {
 		g_return_if_fail (tmp->engine->clue);
 

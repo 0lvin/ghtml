@@ -1,5 +1,22 @@
+GtkHTML-3.31.2 2010-05-24
+-------------------------
+
+Bug Fixes:
+	#220672 - Excessive autosaving uses lots of resources (Milan Crha)
+	#220672 - Excessive autosaving uses lots of resources (Milan Crha)
+	#512468 - Wrap Lines keeps spaces in quoted text (Milan Crha)
+	#597111 - Line wrap only acts on current paragraph regardless
+	          selection (Milan Crha)
+	#615294 - Does not compile with -DGSEAL_ENABLE (Matthew Barnes)
+	#618368 - Doesn't make all pasted links clickable (Milan Crha)
+
+Translations:
+	Thomas Thurman (en@shaw)
+	Fran Diéguez (gl)
+
 GtkHTML-3.31.1 2010-05-03
 --------------------------
+
 Bug Fixes:
 	Bug #575038 - Cursor/caret mode breaks magic spacebar (Milan Crha)
 	Bug #247302 - Wrong letter color with HTML content rendering (Milan Crha)
@@ -12,7 +29,8 @@ Bug Fixes:
 Miscellaneous Fixes:
 	Use gtk_accessible_get_widget() if available. (Matthew Barnes)
 	Fix most GSEAL issues. (Matthew Barnes)
-Translation:
+
+Translations:
 	Wouter Bolsterlee (nl)
 	Valencian translation  (ca)
 	Francisco Diéguez (gl)

@@ -241,7 +241,7 @@ static void
 add_undo (HTMLEngine *engine,
 	  ClueFlowStyleOperation *op, HTMLUndoDirection dir)
 {
-	html_undo_add_action (engine->undo, undo_action_from_op (engine, op), dir);
+	html_undo_add_action (engine->undo, engine, undo_action_from_op (engine, op), dir);
 }
 
 

@@ -476,8 +476,13 @@ try_break_this_line (HTMLEngine *e, guint line_offset, guint last_space)
 				}
 			}
 			if (uc == ' ' || uc == '\t') {
+				gchar c;
+
 				html_engine_insert_empty_paragraph (e);
 				html_engine_delete_n (e, 1, TRUE);
+
+				while (c = html_cursor_get_current_char (e->cursor), c == ' ' || c == '\t')
+					html_engine_delete_n (e, 1, TRUE);
 
 				flow        = e->cursor->object->parent;
 				last_space  = 0;
@@ -515,52 +520,76 @@ html_engine_indent_paragraph (HTMLEngine *e)
 	guint position;
 	guint line_offset;
 	guint last_space;
+	guint i, selection_start, selection_len;
 
 	g_assert (e->cursor->object);
 	if (!HTML_IS_CLUEFLOW (e->cursor->object->parent))
 		return;
 
-	html_engine_disable_selection (e);
 	position = e->cursor->position;
+
+	if (e->selection) {
+		HTMLInterval selection = *e->selection;
+
+		html_cursor_jump_to (e->cursor, e, selection.from.object, selection.from.offset);
+		selection_start = e->cursor->position;
+
+		html_cursor_jump_to (e->cursor, e, selection.to.object, selection.to.offset);
+		selection_len = e->cursor->position - selection_start;
+	} else {
+		selection_start = -1;
+		selection_len = 0;
+	}
+
+	html_engine_disable_selection (e);
+
+	if (selection_start == -1)
+		selection_start = position;
 
 	html_undo_level_begin (e->undo, "Indent paragraph", "Reverse paragraph indentation");
 	html_engine_freeze (e);
 
-	go_to_begin_of_para (e);
+	for (i = 0; i <= selection_len; i++) {
+		html_cursor_jump_to_position (e->cursor, e, selection_start + selection_len - i);
 
-	line_offset = 0;
-	last_space  = 0;
-	do {
-		HTMLObject *flow;
+		go_to_begin_of_para (e);
 
-		line_offset = try_break_this_line (e, line_offset, last_space);
-		flow = e->cursor->object->parent;
-		if (html_cursor_forward (e->cursor, e)
-		    && e->cursor->offset == 0 && html_object_get_length (e->cursor->object)
-		    && !html_object_is_container (e->cursor->object)
-		    && html_clueflow_style_equals (HTML_CLUEFLOW (e->cursor->object->parent), HTML_CLUEFLOW (flow))
-		    && html_object_prev_not_slave (e->cursor->object) == NULL) {
-			if (line_offset < LINE_LEN - 1) {
-				gunichar prev;
-				html_engine_delete_n (e, 1, FALSE);
-				prev = html_cursor_get_prev_char (e->cursor);
-				if (prev != ' ' && prev != '\t') {
-					html_engine_insert_text (e, " ", 1);
-					line_offset ++;
-				} else if (position > e->cursor->position)
-					position --;
-				last_space = line_offset - 1;
-			} else {
-				line_offset = 0;
-				last_space  = 0;
-			}
-		} else
-			break;
-	} while (1);
+		i = selection_start + selection_len - e->cursor->position;
+
+		line_offset = 0;
+		last_space  = 0;
+		do {
+			HTMLObject *flow;
+
+			line_offset = try_break_this_line (e, line_offset, last_space);
+			flow = e->cursor->object->parent;
+			if (html_cursor_forward (e->cursor, e)
+			    && e->cursor->offset == 0 && html_object_get_length (e->cursor->object)
+			    && !html_object_is_container (e->cursor->object)
+			    && html_clueflow_style_equals (HTML_CLUEFLOW (e->cursor->object->parent), HTML_CLUEFLOW (flow))
+			    && html_object_prev_not_slave (e->cursor->object) == NULL) {
+				if (line_offset < LINE_LEN - 1) {
+					gunichar prev;
+					html_engine_delete_n (e, 1, FALSE);
+					prev = html_cursor_get_prev_char (e->cursor);
+					if (prev != ' ' && prev != '\t') {
+						html_engine_insert_text (e, " ", 1);
+						line_offset ++;
+					} else if (position > e->cursor->position)
+						position --;
+					last_space = line_offset - 1;
+				} else {
+					line_offset = 0;
+					last_space  = 0;
+				}
+			} else
+				break;
+		} while (1);
+	}
 
 	html_cursor_jump_to_position (e->cursor, e, position);
 	html_engine_thaw (e);
-	html_undo_level_end (e->undo);
+	html_undo_level_end (e->undo, e);
 }
 
 void
@@ -615,7 +644,7 @@ html_engine_indent_pre_line (HTMLEngine *e)
 
 	html_cursor_jump_to_position (e->cursor, e, position);
 	html_engine_thaw (e);
-	html_undo_level_end (e->undo);
+	html_undo_level_end (e->undo, e);
 }
 
 void
@@ -682,7 +711,7 @@ html_engine_space_and_fill_line (HTMLEngine *e)
 	html_engine_fill_pre_line (e);
 
 	html_engine_thaw (e);
-	html_undo_level_end (e->undo);
+	html_undo_level_end (e->undo, e);
 }
 
 void
@@ -697,7 +726,7 @@ html_engine_break_and_fill_line (HTMLEngine *e)
 
 	html_engine_insert_empty_paragraph (e);
 	html_engine_thaw (e);
-	html_undo_level_end (e->undo);
+	html_undo_level_end (e->undo, e);
 }
 
 gboolean

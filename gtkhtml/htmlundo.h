@@ -41,10 +41,12 @@ void      html_undo_do_redo          (HTMLUndo          *undo,
 				      HTMLEngine        *engine);
 void      html_undo_discard_redo     (HTMLUndo          *undo);
 void      html_undo_add_undo_action  (HTMLUndo          *undo,
+				      HTMLEngine	*engine,
 				      HTMLUndoAction    *action);
 void      html_undo_add_redo_action  (HTMLUndo          *undo,
 				      HTMLUndoAction    *action);
 void      html_undo_add_action       (HTMLUndo          *undo,
+				      HTMLEngine	*engine,
 				      HTMLUndoAction    *action,
 				      HTMLUndoDirection  dir);
 gboolean  html_undo_has_undo_steps   (HTMLUndo          *undo);
@@ -52,7 +54,8 @@ void      html_undo_reset            (HTMLUndo          *undo);
 void      html_undo_level_begin      (HTMLUndo          *undo,
 				      const gchar       *undo_description,
 				      const gchar       *redo_description);
-void      html_undo_level_end        (HTMLUndo          *undo);
+void      html_undo_level_end        (HTMLUndo          *undo,
+				      HTMLEngine	*engine);
 gint      html_undo_get_step_count   (HTMLUndo          *undo);
 void      html_undo_freeze           (HTMLUndo          *undo);
 void      html_undo_thaw             (HTMLUndo          *undo);

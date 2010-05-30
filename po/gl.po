@@ -13,19 +13,20 @@
 # Mancomún - Centro de Referencia e Servizos de Software Libre <g11n@mancomun.org>, 2009.
 # Antón Méixome <meixome@mancomun.org>, 2009.
 # Fran Diéguez <frandieguez@ubuntu.com>, 2010.
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: gtkhtml.master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-04-17 21:53+0200\n"
-"PO-Revision-Date: 2010-04-14 12:35+0200\n"
+"POT-Creation-Date: 2010-05-20 19:01+0200\n"
+"PO-Revision-Date: 2010-05-20 19:02+0200\n"
 "Last-Translator: Fran Diéguez <frandieguez@ubuntu.com>\n"
 "Language-Team: Galician <gnome@g11.net>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Language: gl\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"Plural-Forms: nplurals=2; plural=(n!=1);\\\n"
 "X-Generator: KBabel 1.11.4\n"
 
 #: ../a11y/image.c:151
@@ -42,7 +43,7 @@ msgstr "O URL é %s"
 msgid "grab focus"
 msgstr "obter o foco"
 
-#: ../a11y/object.c:253
+#: ../a11y/object.c:257
 msgid "Panel containing HTML"
 msgstr "Panel con contido HTML"
 
@@ -206,20 +207,20 @@ msgstr "púrpura claro"
 msgid "white"
 msgstr "branco"
 
-#: ../components/editor/gtkhtml-color-combo.c:274
+#: ../components/editor/gtkhtml-color-combo.c:277
 msgid "Choose Custom Color"
 msgstr "Escoller unha cor personalizada"
 
-#: ../components/editor/gtkhtml-color-combo.c:750
+#: ../components/editor/gtkhtml-color-combo.c:745
 #: ../components/editor/gtkhtml-color-state.c:228
 msgid "Default"
 msgstr "Predefinido"
 
-#: ../components/editor/gtkhtml-color-combo.c:973
+#: ../components/editor/gtkhtml-color-combo.c:968
 msgid "custom"
 msgstr "personalizada"
 
-#: ../components/editor/gtkhtml-color-combo.c:981
+#: ../components/editor/gtkhtml-color-combo.c:976
 msgid "Custom Color..."
 msgstr "Cor personalizada..."
 
@@ -868,6 +869,14 @@ msgstr "Automático"
 msgid "Could not open the link."
 msgstr "Non foi posíbel abrir a ligazón."
 
+#: ../components/editor/gtkhtml-editor.c:876
+msgid "Changed property"
+msgstr "Propiedade cambiada"
+
+#: ../components/editor/gtkhtml-editor.c:877
+msgid "Whether editor changed"
+msgstr "Indica se o editor cambiou"
+
 #: ../components/editor/gtkhtml-editor-builder.ui.h:2
 #, no-c-format
 msgid "%"
@@ -1242,7 +1251,7 @@ msgid "_Add Word"
 msgstr "_Engadir palabra"
 
 #. Translators: %s is the language ISO code.
-#: ../components/editor/gtkhtml-spell-language.c:184
+#: ../components/editor/gtkhtml-spell-language.c:255
 #, c-format
 msgctxt "language"
 msgid "Unknown (%s)"
@@ -1250,8 +1259,8 @@ msgstr "Descoñecido (%s)"
 
 #. Translators: The first %s is the language name, and the
 #. * second is the country name. Example: "French (France)"
-#: ../components/editor/gtkhtml-spell-language.c:199
-#: ../components/editor/gtkhtml-spell-language.c:204
+#: ../components/editor/gtkhtml-spell-language.c:270
+#: ../components/editor/gtkhtml-spell-language.c:275
 #, c-format
 msgctxt "language"
 msgid "%s (%s)"
@@ -1259,7 +1268,7 @@ msgstr "%s (%s)"
 
 #. Translators: This refers to the default language used
 #. * by the spell checker.
-#: ../components/editor/gtkhtml-spell-language.c:389
+#: ../components/editor/gtkhtml-spell-language.c:460
 msgctxt "language"
 msgid "Default"
 msgstr "Predefinida"
@@ -1455,9 +1464,6 @@ msgstr "Proba GtkHTML"
 
 #~ msgid "Editable"
 #~ msgstr "Editábel"
-
-#~ msgid "Whether the html can be edited"
-#~ msgstr "Indica se o HTML se pode editar"
 
 #~ msgid "Document Title"
 #~ msgstr "Título do documento"

@@ -133,7 +133,7 @@ table_cell_set_bg_color (HTMLEngine *e, HTMLTableCell *cell, GdkColor *c, HTMLUn
 	undo = attr_undo_new (HTML_TABLE_CELL_BGCOLOR);
 	undo->attr.color.color        = cell->bg;
 	undo->attr.color.has_bg_color = cell->have_bg;
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Set cell background color", table_cell_set_bg_color_undo_action,
 						    HTML_UNDO_DATA (undo),
 						    html_cursor_get_position (e->cursor),
@@ -172,7 +172,7 @@ table_cell_set_bg_pixmap (HTMLEngine *e, HTMLTableCell *cell, gchar *url, HTMLUn
 
 	undo = attr_undo_new (HTML_TABLE_CELL_BGPIXMAP);
 	undo->attr.pixmap = cell->have_bgPixmap ? g_strdup (cell->bgPixmap->url) : NULL;
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Set cell background pixmap", table_cell_set_bg_pixmap_undo_action,
 						    HTML_UNDO_DATA (undo),
 						    html_cursor_get_position (e->cursor),
@@ -214,7 +214,7 @@ table_cell_set_halign (HTMLEngine *e, HTMLTableCell *cell, HTMLHAlignType halign
 
 	undo = attr_undo_new (HTML_TABLE_CELL_HALIGN);
 	undo->attr.halign = HTML_CLUE (cell)->halign;
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Set cell horizontal align", table_cell_set_halign_undo_action,
 						    HTML_UNDO_DATA (undo),
 						    html_cursor_get_position (e->cursor),
@@ -252,7 +252,7 @@ table_cell_set_valign (HTMLEngine *e, HTMLTableCell *cell, HTMLVAlignType valign
 
 	undo = attr_undo_new (HTML_TABLE_CELL_VALIGN);
 	undo->attr.valign = HTML_CLUE (cell)->valign;
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Set cell vertical align", table_cell_set_valign_undo_action,
 						    HTML_UNDO_DATA (undo),
 						    html_cursor_get_position (e->cursor),
@@ -291,7 +291,7 @@ table_cell_set_no_wrap (HTMLEngine *e, HTMLTableCell *cell, gboolean no_wrap, HT
 
 		undo = attr_undo_new (HTML_TABLE_CELL_NOWRAP);
 		undo->attr.no_wrap = cell->no_wrap;
-		html_undo_add_action (e->undo,
+		html_undo_add_action (e->undo, e,
 				      html_undo_action_new ("Set cell wrapping", table_cell_set_no_wrap_undo_action,
 							    HTML_UNDO_DATA (undo),
 							    html_cursor_get_position (e->cursor),
@@ -331,7 +331,7 @@ table_cell_set_heading (HTMLEngine *e, HTMLTableCell *cell, gboolean heading, HT
 
 		undo = attr_undo_new (HTML_TABLE_CELL_HEADING);
 		undo->attr.heading = cell->heading;
-		html_undo_add_action (e->undo,
+		html_undo_add_action (e->undo, e,
 				      html_undo_action_new ("Set cell style", table_cell_set_heading_undo_action,
 							    HTML_UNDO_DATA (undo),
 							    html_cursor_get_position (e->cursor),
@@ -374,7 +374,7 @@ table_cell_set_width (HTMLEngine *e, HTMLTableCell *cell, gint width, gboolean p
 		undo = attr_undo_new (HTML_TABLE_CELL_WIDTH);
 		undo->attr.width.width = cell->fixed_width;
 		undo->attr.width.percent = cell->percent_width;
-		html_undo_add_action (e->undo,
+		html_undo_add_action (e->undo, e,
 				      html_undo_action_new ("Set cell style", table_cell_set_width_undo_action,
 							    HTML_UNDO_DATA (undo),
 							    html_cursor_get_position (e->cursor),
@@ -584,7 +584,7 @@ expand_cspan_undo_action (HTMLEngine *e, HTMLUndoData *data, HTMLUndoDirection d
 static void
 expand_cspan_setup_undo (HTMLEngine *e, GSList *slist, gint cspan, guint position_before, HTMLUndoDirection dir)
 {
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Expand Column Span", expand_cspan_undo_action,
 						    expand_undo_data_new (cspan, slist), html_cursor_get_position (e->cursor),
 						    position_before),
@@ -666,7 +666,7 @@ collapse_cspan_undo_action (HTMLEngine *e, HTMLUndoData *data, HTMLUndoDirection
 static void
 collapse_cspan_setup_undo (HTMLEngine *e, gint cspan, guint position_before, HTMLUndoDirection dir)
 {
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Collapse Column Span", collapse_cspan_undo_action,
 						    collapse_undo_data_new (cspan), html_cursor_get_position (e->cursor),
 						    position_before),
@@ -777,7 +777,7 @@ collapse_rspan_undo_action (HTMLEngine *e, HTMLUndoData *data, HTMLUndoDirection
 static void
 collapse_rspan_setup_undo (HTMLEngine *e, gint rspan, guint position_before, HTMLUndoDirection dir)
 {
-	html_undo_add_action (e->undo,
+	html_undo_add_action (e->undo, e,
 			      html_undo_action_new ("Collapse Row Span", collapse_rspan_undo_action,
 						    collapse_undo_data_new (rspan), html_cursor_get_position (e->cursor),
 						    position_before),

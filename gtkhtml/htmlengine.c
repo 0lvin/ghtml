@@ -157,6 +157,7 @@ enum {
 	REDIRECT,
 	SUBMIT,
 	OBJECT_REQUESTED,
+	UNDO_CHANGED,
 	LAST_SIGNAL
 };
 
@@ -3370,6 +3371,15 @@ html_engine_class_init (HTMLEngineClass *klass)
 			      html_g_cclosure_marshal_BOOL__OBJECT,
 			      G_TYPE_BOOLEAN, 1,
 			      G_TYPE_OBJECT);
+
+	signals [UNDO_CHANGED] =
+		g_signal_new ("undo-changed",
+			      G_TYPE_FROM_CLASS (object_class),
+			      G_SIGNAL_RUN_FIRST,
+			      G_STRUCT_OFFSET (HTMLEngineClass, undo_changed),
+			      NULL, NULL,
+			      g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
 
 	object_class->finalize = html_engine_finalize;
 	object_class->set_property = html_engine_set_property;
@@ -7104,7 +7114,7 @@ html_engine_replace_do (HTMLEngine *e, HTMLReplaceQueryAnswer answer)
 		replace (e);
 		while (html_engine_search_next (e))
 			replace (e);
-		html_undo_level_end (e->undo);
+		html_undo_level_end (e->undo, e);
 	case RQA_Cancel:
 		html_replace_destroy (e->replace_info);
 		e->replace_info = NULL;
@@ -7115,7 +7125,7 @@ html_engine_replace_do (HTMLEngine *e, HTMLReplaceQueryAnswer answer)
 	case RQA_Replace:
 		html_undo_level_begin (e->undo, "Replace", "Revert replace");
 		replace (e);
-		html_undo_level_end (e->undo);
+		html_undo_level_end (e->undo, e);
 	case RQA_Next:
 		finished = !html_engine_search_next (e);
 		if (finished)
@@ -8118,4 +8128,13 @@ convert_text_encoding (const GIConv iconv_cd,
 		return returnbuffer;
 	}
 	return g_strdup (token);
+}
+
+void
+html_engine_emit_undo_changed (HTMLEngine *e)
+{
+	g_return_if_fail (e != NULL);
+	g_return_if_fail (HTML_IS_ENGINE (e));
+
+	g_signal_emit (e, signals [UNDO_CHANGED], 0);
 }
