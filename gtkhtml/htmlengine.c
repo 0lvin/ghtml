@@ -310,6 +310,7 @@ HTMLObject* element_parse_nodedump_htmlobject  (xmlNode* xmlelement, gint pos, H
 #endif
 void           process_node             (xmlNode* node, const gchar * css);
 void           html_element_parse_styleattrs (HTMLElement *node);
+const gchar*   to_standart_attr         (const gchar* element_name,const gchar* attribute_name);
 void           set_style_to_text        (HTMLText *text, HTMLStyle *style, HTMLEngine *e, gint start_index, gint end_index);
 HTMLObject*    create_from_xml_fix_align(HTMLObject *o, HTMLElement *element, gint max_width);
 HTMLText *     create_text_from_xml     (HTMLEngine *e, HTMLElement *element, const gchar* text);
@@ -411,6 +412,48 @@ html_element_get_attr (HTMLElement *node, gchar *name, gchar **value)
 #endif
 
 /* parse style*/
+const gchar*
+to_standart_attr(const gchar* element_name,const gchar* attribute_name)
+{
+	if (
+		(
+			!g_ascii_strcasecmp (ID_OL, element_name) ||
+			!g_ascii_strcasecmp (ID_LI, element_name)
+		) && 
+		!g_ascii_strcasecmp ("type", attr)
+	)
+		return "list-style-type";
+
+	if (
+		!g_ascii_strcasecmp (ID_HR, element_name) &&
+		!g_ascii_strcasecmp ("length", attr) )
+		return "width";
+
+	if (
+		(
+			!g_ascii_strcasecmp (ID_HR, element_name) ||
+			!g_ascii_strcasecmp (ID_SELECT, element_name) ||
+			!g_ascii_strcasecmp (ID_FONT, element_name)
+		) && 	
+		!g_ascii_strcasecmp ("size", attr))
+		return "height";
+
+	if (
+		(
+			!g_ascii_strcasecmp (ID_TH, element_name) ||
+			!g_ascii_strcasecmp (ID_TD, element_name)
+		) &&
+		!g_ascii_strcasecmp ("background", attr))
+	return "background-image";
+
+		   !g_ascii_strcasecmp ("background", attr)
+		   
+	if ( !g_ascii_strcasecmp ("background-color", attr))
+		return "bgcolor";
+
+	return attribute_name;
+}
+
 void
 html_element_parse_styleattrs (HTMLElement *node)
 {
@@ -609,7 +652,7 @@ html_element_from_xml (HTMLEngine *e, const xmlNode* xmlelement, HTMLStyle *styl
 				value = g_strdup("");
 			if (!g_hash_table_lookup (element->attributes, lower)) {
 				DE (g_print ("attrs (%s, %s)", lower, value));
-				element->style = html_style_add_attribute (element->style, lower, value);
+				element->style = html_style_add_attribute (element->style, to_standart_attr(name, lower), value);
 				g_hash_table_insert (element->attributes, lower, value);
 			} else {
 				g_free (lower);

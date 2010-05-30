@@ -695,11 +695,9 @@ html_style_add_styleattribute (HTMLStyle *style, const gchar *attr, const gchar 
 		style = html_style_add_text_align (style, parse_halign (value, HTML_VALIGN_NONE));
 	} else if (!g_ascii_strcasecmp ("valign", attr)) {
 		style = html_style_add_text_valign (style, parse_valign (value, HTML_VALIGN_MIDDLE));
-	} else if (!g_ascii_strcasecmp ("width", attr) ||
-		   !g_ascii_strcasecmp ("length", attr) ) { //hr
+	} else if (!g_ascii_strcasecmp ("width", attr)) {
 		style = html_style_add_width (style, value);
-	} else if (!g_ascii_strcasecmp ("height", attr) ||
-		   !g_ascii_strcasecmp ("size", attr)) { //hr,font,select
+	} else if (!g_ascii_strcasecmp ("height", attr)) {
 		style = html_style_add_height (style, value);
 	} else if (!g_ascii_strcasecmp ("color", attr)) {
 		GdkColor color;
@@ -712,16 +710,6 @@ html_style_add_styleattribute (HTMLStyle *style, const gchar *attr, const gchar 
 		}
 	} else if (!g_ascii_strcasecmp ("face", attr)) {
 		style = html_style_add_font_face (style, value);
-	} else if (!g_ascii_strcasecmp ("background-color", attr) ||
-		   !g_ascii_strcasecmp ("background", attr) ||
-		   !g_ascii_strcasecmp ("bgcolor", attr) ) {
-		GdkColor color;
-
-		if (html_parse_color (value, &color)) {
-			HTMLColor *hc = html_color_new_from_gdk_color (&color);
-			style = html_style_add_background_color (style, hc);
-			html_color_unref (hc);
-		}
 	} else if (!g_ascii_strcasecmp ("background-image", attr)) {
 		style = html_style_add_background_image (style, value);
 	} else if (!g_ascii_strcasecmp ("border", attr)) {
@@ -736,6 +724,14 @@ html_style_add_styleattribute (HTMLStyle *style, const gchar *attr, const gchar 
 		style = parse_border_width (style, value);
 	} else if (!g_ascii_strcasecmp ("padding", attr)) {
 		style = html_style_set_padding (style, atoi (value));
+	} else if (!g_ascii_strcasecmp ("bgcolor", attr) ) {
+		GdkColor color;
+
+		if (html_parse_color (value, &color)) {
+			HTMLColor *hc = html_color_new_from_gdk_color (&color);
+			style = html_style_add_background_color (style, hc);
+			html_color_unref (hc);
+		}
 	} else if (!g_ascii_strcasecmp ("white-space", attr)) {
 		/* normal, pre, nowrap, pre-wrap, pre-line, inherit  */
 		/*
@@ -804,8 +800,7 @@ html_style_add_styleattribute (HTMLStyle *style, const gchar *attr, const gchar 
 		if (style->target)
 			g_free (style->target);
 		style->target = g_strdup(value);
-	} else if ( !g_ascii_strcasecmp ("type", attr) ||
-			!g_ascii_strcasecmp ("list-style-type", attr)) { /*ol li*/
+	} else if ( !g_ascii_strcasecmp ("list-style-type", attr)) {
 		style = parse_list_type (style, value);
 	} else if (!g_ascii_strcasecmp ("leftmargin", attr)) {
 		if (!style)
