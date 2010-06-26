@@ -5,9 +5,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gtkhtml 3.30\n"
-"Report-Msgid-Bugs-To:\n"
-"POT-Creation-Date: 2010-05-02 11:05+0200\n"
-"PO-Revision-Date: 2010-05-02 11:06+0200\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-06-01 21:25+0200\n"
+"PO-Revision-Date: 2010-06-01 21:25+0200\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian <i18n-nb@lister.ping.uio.no>\n"
 "MIME-Version: 1.0\n"
@@ -854,6 +854,14 @@ msgstr "Automatisk"
 msgid "Could not open the link."
 msgstr "Kunne ikke åpne lenken."
 
+#: ../components/editor/gtkhtml-editor.c:876
+msgid "Changed property"
+msgstr "Endret egenskaper"
+
+#: ../components/editor/gtkhtml-editor.c:877
+msgid "Whether editor changed"
+msgstr "Om redigering endret denne"
+
 #: ../components/editor/gtkhtml-editor-builder.ui.h:2
 #, no-c-format
 msgid "%"
@@ -1228,7 +1236,7 @@ msgid "_Add Word"
 msgstr "_Legg til ord"
 
 #. Translators: %s is the language ISO code.
-#: ../components/editor/gtkhtml-spell-language.c:184
+#: ../components/editor/gtkhtml-spell-language.c:255
 #, c-format
 msgctxt "language"
 msgid "Unknown (%s)"
@@ -1236,8 +1244,8 @@ msgstr "Ukjent (%s)"
 
 #. Translators: The first %s is the language name, and the
 #. * second is the country name. Example: "French (France)"
-#: ../components/editor/gtkhtml-spell-language.c:199
-#: ../components/editor/gtkhtml-spell-language.c:204
+#: ../components/editor/gtkhtml-spell-language.c:270
+#: ../components/editor/gtkhtml-spell-language.c:275
 #, c-format
 msgctxt "language"
 msgid "%s (%s)"
@@ -1245,7 +1253,7 @@ msgstr "%s (%s)"
 
 #. Translators: This refers to the default language used
 #. * by the spell checker.
-#: ../components/editor/gtkhtml-spell-language.c:389
+#: ../components/editor/gtkhtml-spell-language.c:460
 msgctxt "language"
 msgid "Default"
 msgstr "Forvalgt"

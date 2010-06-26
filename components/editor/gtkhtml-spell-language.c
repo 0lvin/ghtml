@@ -67,11 +67,11 @@ DllMain (HINSTANCE hinstDLL,
 	return TRUE;
 }
 
-static char *
+static gchar *
 _get_iso_codes_prefix (void)
 {
-	static char retval[1000];
-	static int beenhere = 0;
+	static gchar retval[1000];
+	static gint beenhere = 0;
 	gchar *temp_dir = 0;
 
 	if (beenhere)
@@ -88,15 +88,15 @@ _get_iso_codes_prefix (void)
 	return retval;
 }
 
-static char *
+static gchar *
 _get_isocodeslocaledir (void)
 {
-	static char retval[1000];
-	static int beenhere = 0;
+	static gchar retval[1000];
+	static gint beenhere = 0;
 
 	if (beenhere)
 		return retval;
-	
+
 	strcpy (retval, _get_iso_codes_prefix ());
 	strcat (retval, "\\share\\locale" );
 	beenhere = 1;

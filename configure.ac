@@ -1,6 +1,6 @@
 dnl Initialization
 AC_PREREQ(2.58)
-AC_INIT([gtkhtml], [3.31.3], [http://bugzilla.gnome.org/enter_bug.cgi?product=GtkHtml])
+AC_INIT([gtkhtml], [3.31.4], [http://bugzilla.gnome.org/enter_bug.cgi?product=GtkHtml])
 AM_INIT_AUTOMAKE([gnu 1.9])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS(config.h)
@@ -237,6 +237,16 @@ if test "x$have_iso_codes" = "xyes"; then
 	AC_DEFINE([HAVE_ISO_CODES], [1],
 		[Define if you have the iso-codes package])
 fi
+
+dnl **************************************************
+dnl XF86 multimedia keys support
+dnl **************************************************
+AC_CHECK_HEADER([X11/XF86keysym.h],
+	[AC_DEFINE([HAVE_XFREE], 1, [Have <X11/XF86keysym.h>])],,
+	[[	#if HAVE_XFREE
+		#include <X11/XF86keysym.h>
+		#endif
+	]])
 
 dnl **************************************************
 dnl regex library

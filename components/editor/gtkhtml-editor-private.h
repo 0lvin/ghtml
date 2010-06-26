@@ -25,6 +25,10 @@
 
 #include <glib/gi18n-lib.h>
 
+#ifdef HAVE_XFREE
+#include <X11/XF86keysym.h>
+#endif
+
 /* Custom Widgets */
 #include "gtkhtml-color-combo.h"
 #include "gtkhtml-color-palette.h"

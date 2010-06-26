@@ -315,7 +315,8 @@ delete_cells_undo_destroy (HTMLUndoData *undo_data)
 	gint i;
 
 	for (i = 0; i < data->size; i ++)
-		html_object_destroy (HTML_OBJECT (data->cells [i]));
+		if (data->cells [i])
+			html_object_destroy (HTML_OBJECT (data->cells [i]));
 	g_free(data->cells);
 }
 

@@ -747,6 +747,23 @@ editor_finalize (GObject *object)
 	G_OBJECT_CLASS (parent_class)->finalize (object);
 }
 
+static gboolean
+editor_key_press_event (GtkWidget *widget,
+                        GdkEventKey *event)
+{
+#ifdef HAVE_XFREE
+	GtkhtmlEditor *editor = GTKHTML_EDITOR (widget);
+
+	if (event->keyval == XF86XK_Spell) {
+		gtk_action_activate (ACTION (SPELL_CHECK));
+		return TRUE;
+	}
+#endif
+
+	/* Chain up to parent's key_press_event() method. */
+	return GTK_WIDGET_CLASS (parent_class)->key_press_event (widget, event);
+}
+
 static void
 editor_cut_clipboard (GtkhtmlEditor *editor)
 {
@@ -775,6 +792,7 @@ static void
 editor_class_init (GtkhtmlEditorClass *class)
 {
 	GObjectClass *object_class;
+	GtkWidgetClass *widget_class;
 
 	parent_class = g_type_class_peek_parent (class);
 	g_type_class_add_private (class, sizeof (GtkhtmlEditorPrivate));
@@ -785,6 +803,9 @@ editor_class_init (GtkhtmlEditorClass *class)
 	object_class->get_property = editor_get_property;
 	object_class->dispose = editor_dispose;
 	object_class->finalize = editor_finalize;
+
+	widget_class = GTK_WIDGET_CLASS (class);
+	widget_class->key_press_event = editor_key_press_event;
 
 	class->cut_clipboard = editor_cut_clipboard;
 	class->copy_clipboard = editor_copy_clipboard;
