@@ -421,13 +421,14 @@ to_standart_attr(const gchar* element_name,const gchar* attribute_name)
 			!g_ascii_strcasecmp (ID_OL, element_name) ||
 			!g_ascii_strcasecmp (ID_LI, element_name)
 		) && 
-		!g_ascii_strcasecmp ("type", attr)
+		!g_ascii_strcasecmp ("type", attribute_name)
 	)
 		return "list-style-type";
 
 	if (
 		!g_ascii_strcasecmp (ID_HR, element_name) &&
-		!g_ascii_strcasecmp ("length", attr) )
+		!g_ascii_strcasecmp ("length", attribute_name)
+	)
 		return "width";
 
 	if (
@@ -436,7 +437,8 @@ to_standart_attr(const gchar* element_name,const gchar* attribute_name)
 			!g_ascii_strcasecmp (ID_SELECT, element_name) ||
 			!g_ascii_strcasecmp (ID_FONT, element_name)
 		) && 	
-		!g_ascii_strcasecmp ("size", attr))
+		!g_ascii_strcasecmp ("size", attribute_name)
+	)
 		return "height";
 
 	if (
@@ -444,12 +446,11 @@ to_standart_attr(const gchar* element_name,const gchar* attribute_name)
 			!g_ascii_strcasecmp (ID_TH, element_name) ||
 			!g_ascii_strcasecmp (ID_TD, element_name)
 		) &&
-		!g_ascii_strcasecmp ("background", attr))
-	return "background-image";
-
-		   !g_ascii_strcasecmp ("background", attr)
+		!g_ascii_strcasecmp ("background", attribute_name)
+	)
+		return "background-image";
 		   
-	if ( !g_ascii_strcasecmp ("background-color", attr))
+	if ( !g_ascii_strcasecmp ("background-color", attribute_name))
 		return "bgcolor";
 
 	return attribute_name;
@@ -5098,7 +5099,8 @@ create_image_from_xml(HTMLEngine *e, HTMLElement *element, gint max_width)
 
 	html_image_set_map (HTML_IMAGE (image), mapname, ismap);
 
-	return create_from_xml_fix_align(image, element, max_width);
+	return image;
+	//return create_from_xml_fix_align(image, element, max_width);
 }
 
 HTMLObject*

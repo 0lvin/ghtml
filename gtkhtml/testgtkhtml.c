@@ -957,7 +957,7 @@ got_data (SoupSession *session, SoupMessage *msg, gpointer user_data)
 						!g_ascii_strncasecmp(ContentType,"image/",6 /*strlen("image/")*/) /*recieve image*/
 				) {
 					/*generate html with include image*/
-					gchar * new_content = g_strdup_printf("<html><body><img src='%s'>%s</img></body></html>",href,href);
+					gchar * new_content = g_strdup_printf("<html><body><img src='%s' alt='%s' /></body></html>",href,href);
 					gtk_html_write (html, handle, new_content, strlen(new_content));
 					gtk_html_end (html, handle, GTK_HTML_STREAM_OK);
 					g_free (href);
