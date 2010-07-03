@@ -27,6 +27,7 @@
    If `e->flow' is not NULL, it must contain something.  */
 
 #include <config.h>
+#include "gtk-compat.h"
 #include "gtkhtml-compat.h"
 
 #include <stdio.h>

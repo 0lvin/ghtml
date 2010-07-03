@@ -1,3 +1,19 @@
+GtkHTML-3.31.4 2010-06-29
+-------------------------
+
+Bug Fixes:
+	Bug 444709 - Add support for multimedia keys (Matthew Barnes)
+	Bug 344076 - Crash after closing an inline view of text attachment (Chenthill Palanisamy)
+	Bug #607324 - Crash doing table editing. (Bharath Acharya)
+
+Miscellaneous Fixes:
+	Remove bogus drag destination targets. (Matthew Barnes)
+	Split target lists for drag source and drag destination. (Matthew Barnes)
+	Build with gtk3 and have backward compatibility (Chenthill Palanisamy, Matthew Barnes)
+
+Translations:
+	Anita Reitere (lv)
+
 GtkHTML-3.31.3 2010-06-07
 -------------------------
 

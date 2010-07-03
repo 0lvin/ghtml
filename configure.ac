@@ -1,6 +1,6 @@
 dnl Initialization
 AC_PREREQ(2.58)
-AC_INIT([gtkhtml], [3.31.4], [http://bugzilla.gnome.org/enter_bug.cgi?product=GtkHtml])
+AC_INIT([gtkhtml], [3.31.5], [http://bugzilla.gnome.org/enter_bug.cgi?product=GtkHtml])
 AM_INIT_AUTOMAKE([gnu 1.9])
 AC_CONFIG_MACRO_DIR([m4])
 AC_CONFIG_HEADERS(config.h)
@@ -9,16 +9,36 @@ AC_CONFIG_SRCDIR(README)
 PACKAGE=gtkhtml
 
 dnl Required Package Versions
-m4_define([gtk_minimum_version], [2.20.0])
-m4_define([gail_minimum_version], [1.1.0])
 m4_define([enchant_minimum_version], [1.1.7])
 m4_define([gnome_icon_theme_minimum_version], [2.22.0])
 
-GTKHTML_API_VERSION=3.14
+dnl **********************************
+dnl GTK version
+dnl **********************************
+
+AC_ARG_ENABLE([gtk3],
+	AS_HELP_STRING([--enable-gtk3],
+	[Attempt to use gtk+-3]),
+	[enable_gtk3=$enableval],[enable_gtk3=no])
+
+if test "x${enable_gtk3}" = "xyes"; then
+	GTK_PACKAGE="gtk+-3.0"
+	GAIL_PACKAGE="gail-3.0"
+	gtk_minimum_version="2.90.4"
+	GTKHTML_API_VERSION=4.0
+	EDITOR_API_VERSION=4.0
+else	
+	GTK_PACKAGE="gtk+-2.0"
+	GAIL_PACKAGE="gail"
+	gtk_minimum_version="2.20.0"
+	GTKHTML_API_VERSION=3.14
+	EDITOR_API_VERSION=3.14
+fi
+AM_CONDITIONAL([ENABLE_GTK3], [test "$enable_gtk3" = yes])
+
 AC_DEFINE_UNQUOTED(GTKHTML_API_VERSION, "${GTKHTML_API_VERSION}", [GtkHTML API Version])
 AC_SUBST(GTKHTML_API_VERSION)
 
-EDITOR_API_VERSION=3.14
 AC_DEFINE_UNQUOTED(EDITOR_API_VERSION, "${EDITOR_API_VERSION}", [Editor API Version])
 AC_SUBST(EDITOR_API_VERSION)
 
@@ -129,7 +149,7 @@ AC_SUBST(LDFLAGS)
 dnl **********************************
 dnl GAIL modules
 dnl **********************************
-GAIL_MODULES="gail >= gail_minimum_version"
+GAIL_MODULES="$GAIL_PACKAGE >= $gtk_minimum_version"
 PKG_CHECK_MODULES(GAIL, $GAIL_MODULES)
 AC_SUBST(GAIL_CFLAGS)
 AC_SUBST(GAIL_LIBS)
@@ -146,7 +166,7 @@ AC_SUBST(GTHREAD_LIBS)
 dnl **********************************
 dnl GTKHTML modules
 dnl **********************************
-GTKHTML_MODULES="gtk+-2.0 >= gtk_minimum_version enchant >= enchant_minimum_version iso-codes libxml-2.0 libcroco-0.6"
+GTKHTML_MODULES="$GTK_PACKAGE >= $gtk_minimum_version enchant >= enchant_minimum_version iso-codes libxml-2.0 libcroco-0.6"
 PKG_CHECK_MODULES(GTKHTML, $GTKHTML_MODULES)
 AC_SUBST(GTKHTML_CFLAGS)
 AC_SUBST(GTKHTML_LIBS)
@@ -281,19 +301,25 @@ dnl **********************************
 dnl Increment the following if the interface has additions, changes,
 dnl removals.
 GTKHTML_CURRENT=20
+GTKHTML_GTK3_CURRENT=0
 
 dnl Increment any time the source changes; set to 0 if you
 dnl increment CURRENT.
 GTKHTML_REVISION=1
+GTKHTML_GTK3_REVISION=0
 
 dnl Increment if any interfaces have been added; set to 0
 dnl if any interfaces have been removed. removal has
 dnl precedence over adding, so set to 0 if both happened.
 GTKHTML_AGE=1
+GTKHTML_GTK3_AGE=0
 
 AC_SUBST(GTKHTML_CURRENT)
 AC_SUBST(GTKHTML_REVISION)
 AC_SUBST(GTKHTML_AGE)
+AC_SUBST(GTKHTML_GTK3_CURRENT)
+AC_SUBST(GTKHTML_GTK3_REVISION)
+AC_SUBST(GTKHTML_GTK3_AGE)
 
 dnl **************
 dnl Done.
@@ -316,6 +342,7 @@ AC_OUTPUT
 echo "
 Configuration:
 
+	GTK+ package            :		${GTK_PACKAGE}
 	Cookies support in soup :		${HAVE_NEWSOUP}
 	Support gconf           :		${HAVE_GCONF}
 	Editor component type   :		${GNOME_GTKHTML_EDITOR_TYPE}

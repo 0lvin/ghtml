@@ -1,5 +1,7 @@
 ACLOCAL_AMFLAGS=-I m4
 
+DISTCHECK_CONFIGURE_FLAGS = --enable-gtk3
+
 SUBDIRS =					\
 	a11y					\
 	gtkhtml					\
@@ -30,7 +32,6 @@ MAINTAINERCLEANFILES =				\
 	$(srcdir)/m4/ltsugar.m4			\
 	$(srcdir)/m4/ltversion.m4		\
 	$(srcdir)/m4/lt~obsolete.m4
-
 
 EXTRA_DIST =					\
 	gtkhtml-zip.in				\

@@ -9,5 +9,5 @@ Name: gtkhtml-editor
 Description: HTML editor widget
 Requires: libgtkhtml-@GTKHTML_API_VERSION@
 Version: @VERSION@
-Libs: -L${libdir} -lgtkhtml-editor
+Libs: -L${libdir} -lgtkhtml-editor-@GTKHTML_API_VERSION@
 Cflags: -I${includedir}/libgtkhtml-@GTKHTML_API_VERSION@/editor
